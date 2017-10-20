@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 17-Oct-2013   Version 1.0  -->
+<xsd:schema xmlns="http://northgate-is.com/FL/Core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgate-is.com/FL/Core" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:complexType name="PersonNameType">
+		<xsd:sequence>
+			<xsd:element name="Title" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="10"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Forename">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="50"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Othername" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="100"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Surname">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="50"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="YesNoType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="yes"/>
+			<xsd:enumeration value="no"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AddressType">
+		<xsd:sequence>
+			<xsd:element name="AddressLine1" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressLine2" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressLine3" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressLine4" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressTownOrCity" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressCountyOrRegion" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressPostcodeOrZip" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddressCountryCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="QASMoniker" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>QAS unique reference fior the address</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="SeverityType">
+		<xsd:annotation>
+			<xsd:documentation>Severity Type (for message) - error,validation,warning,information. Note that validation messages should be treated as error messages</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ERR"/>
+			<xsd:enumeration value="VAL"/>
+			<xsd:enumeration value="WAR"/>
+			<xsd:enumeration value="INF"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="MessageStructure">
+		<xsd:annotation>
+			<xsd:documentation>Common Structure for returning a message in the response.The logical data item, row and InLineText are used for in-line errors, ifthe logical data item is not present on the page then it is treated as a norma error, the the standard text is used if the in-line text is not present</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Text" type="xsd:string"/>
+			<xsd:element name="Severity" type="SeverityType" minOccurs="0"/>
+			<xsd:element name="Code" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LogicalDataItem" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Row" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="InLineText" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="MessagesStructure">
+		<xsd:annotation>
+			<xsd:documentation>Common Structure for returning a multiple messages in the response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Message" type="MessageStructure" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="StandardResponseStructure">
+		<xsd:annotation>
+			<xsd:documentation>Common Response structure for returning a success or failure and optional messages</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Success" type="xsd:boolean"/>
+			<xsd:element name="Fatal" type="xsd:boolean" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Optional tag set to true if there is fatal error, this means there has been an oracle error</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Messages" type="MessagesStructure" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="StandardTextTranslationStructure">
+		<xsd:annotation>
+			<xsd:documentation>Common Response structure for returning foriegn language translations</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Translation" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Language" type="xsd:string"/>
+						<xsd:element name="Text" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="StandardRequestStructure">
+		<xsd:annotation>
+			<xsd:documentation>Common Request structure for passing standard information in the request, currently used just to set language</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="LanguageCode" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

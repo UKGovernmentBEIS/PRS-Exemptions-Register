@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--  Schema version Date:2014-12-15 (by Northgate Information Solutions)  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgate-is.com/NAS/AddressDetailResponse-v1.0"
+            xmlns:core="http://northgate-is.com/FL/Core"
+            targetNamespace="http://northgate-is.com/NAS/AddressDetailResponse-v1.0" elementFormDefault="qualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+    <xsd:element name="AddressDetailResponse">
+        <xsd:annotation>
+            <xsd:documentation>NAS Address details</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardResponseStructure">
+                    <xsd:sequence>
+                        <xsd:element name="Address">
+                            <xsd:complexType>
+                                <xsd:annotation>
+                                    <xsd:documentation>Address</xsd:documentation>
+                                </xsd:annotation>
+                                <xsd:sequence>
+                                    <xsd:element name="AddressIdentifier">
+                                        <xsd:annotation>
+                                            <xsd:documentation>UDPRN + UMPRN, 8 characters each, UMPRN is space padded if there isn't a value</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="16"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="AddressLine1">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="AddressLine2" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="AddressLine3" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="AddressLine4" minOccurs="0">
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="255"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="Town">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Post Town</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="100"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="County" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Administrative County</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="100"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="Postcode" type="PostCodeType"></xsd:element>
+                                    <xsd:element name="Country" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Country code</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="10"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="LocalEdAuthCode" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Local Education Authority Code (Upper tier authority)</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="10"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="LocalAuthCode" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>District Authority Code (Lower tier authority)</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="10"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="UDPRN" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Royal Mail Unique Delivery Point Reference Number</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="8"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="UMPRN" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Royal Mail Unique Multiple Residence Reference Number</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="8"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                    <xsd:element name="DeliveryPointSuffix" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>Royal Mail Delivery Point Suffix code</xsd:documentation>
+                                        </xsd:annotation>
+                                        <xsd:simpleType>
+                                            <xsd:restriction base="xsd:string">
+                                                <xsd:maxLength value="2"/>
+                                            </xsd:restriction>
+                                        </xsd:simpleType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!--  PostCode Definition -->
+    <xsd:simpleType name="PostCodeType">
+        <xsd:annotation>
+            <xsd:documentation>complex pattern for postcode, which matches definition, accepted by some parsers is: "(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})"</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
+

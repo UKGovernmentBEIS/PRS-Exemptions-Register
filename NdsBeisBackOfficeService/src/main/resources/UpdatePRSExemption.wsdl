@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:ns="http://northgateps.com/BEIS/UpdatePRSExemptionRequest"
+xmlns:ns1="http://northgateps.com/BEIS/UpdatePRSExemptionResponse"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:wsdl1="http://www.northgateps.com/UpdatePRSExemption.wsdl"
+targetNamespace="http://www.northgateps.com/UpdatePRSExemption.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/UpdatePRSExemptionRequest" schemaLocation="UpdatePRSExemptionRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/UpdatePRSExemptionResponse" schemaLocation="UpdatePRSExemptionResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="UpdatePRSExemptionRequest">
+		<wsdl:part name="parameters" element="ns:UpdatePRSExemptionRequest" />
+	</wsdl:message>
+	<wsdl:message name="UpdatePRSExemptionResponse">
+		<wsdl:part name="parameters" element="ns1:UpdatePRSExemptionResponse" />
+	</wsdl:message>
+	<wsdl:portType name="UpdatePRSExemptionWSDLPort">
+		<wsdl:operation name="UpdatePRSExemptionWSDL">
+			<wsdl:input message="wsdl1:UpdatePRSExemptionRequest" />
+			<wsdl:output message="wsdl1:UpdatePRSExemptionResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="UpdatePRSExemptionWSDLBinding" type="wsdl1:UpdatePRSExemptionWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="UpdatePRSExemptionWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/UpdatePRSExemptionRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="UpdatePRSExemptionWSDLService">
+		<wsdl:port binding="wsdl1:UpdatePRSExemptionWSDLBinding" name="UpdatePRSExemptionWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/UpdatePRSExemptionRequest"/>
+			 <!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

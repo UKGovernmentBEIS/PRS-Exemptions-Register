@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns="http://northgateps.com/BEIS/UpdatePRSExemptionResponse" 
+xmlns:core="http://northgate-is.com/FL/Core" 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://northgateps.com/BEIS/UpdatePRSExemptionResponse">
+<xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+<xsd:element name="UpdatePRSExemptionResponse">
+        <xsd:annotation>
+            <xsd:documentation>Message defining a response for Update PRS Exemption</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardResponseStructure">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

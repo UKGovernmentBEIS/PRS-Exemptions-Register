@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.10.xsd
+        ">
+
+	<!-- For the session lifetime, see the app.session.maxInactiveIntervalInSeconds property. -->
+    
+    <!-- 
+        Enable Spring Session's Java annotation configuration since it doesn't have proper XML namespace support
+        yet and we are not a Spring Boot application. 
+    -->
+	<context:annotation-config />
+
+	<!-- 
+		Set up Spring Session backed by a MongoDB connection, overrides Spring Session's annotation based configuration.
+	-->
+ 	<bean class="org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration" />
+	<bean class="com.northgateps.nds.platform.ui.session.mongodb.MongoHttpSessionConfig">
+		<constructor-arg name="maxInactiveIntervalInSeconds" value="${app.session.maxInactiveIntervalInSeconds}" />
+		<constructor-arg name="maxInactiveIntervalInSecondsForNonLoggedInUsers" value="${app.session.maxInactiveIntervalInSecondsForNonLoggedInUsers}" />
+	</bean>
+
+	<!-- 
+		Create our own Mongo DB connection rather than using the spring-data-mongo project's version which
+		does not support custom SocketFactories yet.  Doing this allows us to trust our self signed certificates.
+	-->
+    <mongo:db-factory dbname="${ndsdb.name}" mongo-ref="mongo" />
+
+	<bean id="mongo" class="com.northgateps.nds.platform.application.mongo.NdsTrustAllMongoClient">
+        <constructor-arg name="serverList" value="${ndsdb.server}" />
+        <constructor-arg name="portList" value="${ndsdb.port}" />
+        <constructor-arg name="username" value="${ndsdb.user}" />
+        <constructor-arg name="password" value="${ndsdb.password}" />
+        <constructor-arg name="maxPoolSize" value="${ndsdb.max.connection}" />
+        <constructor-arg name="replicaSet" value="${ndsdb.replicaset}" />
+	</bean>
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongo" ref="mongo"/>
+        <constructor-arg name="databaseName" value="${ndsdb.name}"/>
+    </bean>
+
+</beans>

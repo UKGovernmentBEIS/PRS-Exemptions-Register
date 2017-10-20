@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+   		<!-- There is meta data we can add to the page to stop searches finding the site.  -->
+    	<meta name="robots" content="noindex, nofollow">
+		<title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE"></title>
+
+		<script
+			th:src="'/NdsBeisUi/assets/javascripts/jquery-init.js?version=' + ${@environment.getProperty('version')}"></script>
+		
+		<!--[if gt IE 8]><!-->
+		<link
+			th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-template' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}"
+			media="screen" rel="stylesheet" />
+		<!--<![endif]-->
+		<!--[if IE 6]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-template-ie6' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		<!--[if IE 7]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-template-ie7' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		<!--[if IE 8]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-template-ie8' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		<link
+			th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-template-print' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}"
+			media="print" rel="stylesheet" />
+		<!--[if IE 8]>
+		    <script th:inline="javascript">		
+		    /*<![CDATA[*/    		    
+		      (function(){if(window.opera){return;}
+		       setTimeout(function(){var a=document,g,b={families:(g=
+		       ["nta"]),urls:["/NdsBeisUi/assets/stylesheets/fonts-ie8[[${@environment.getProperty('minify')}]].css?version=[[${@environment.getProperty('version')}]]"]},
+		       c="/assets/javascripts/vendor/goog/webfont-debug[[${@environment.getProperty('minify')}]].js?version=[[${@environment.getProperty('version')}]]",d="script",
+		       e=a.createElement(d),f=a.getElementsByTagName(d)[0],h=g.length;WebFontConfig
+		       ={custom:b},e.src=c,f.parentNode.insertBefore(e,f);for(;h=h-1;a.documentElement
+		       .className+=' wf-'+g[h].replace(/\s/g,'').toLowerCase()+'-n4-loading');},0)
+		      })()
+		      /*]]>*/
+		    </script>
+		    <![endif]-->
+		<!--[if gte IE 9]><!-->
+		<link
+			th:href="'/NdsBeisUi/assets/stylesheets/fonts' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}"
+			media="all" rel="stylesheet" />
+		<!--<![endif]-->
+		<!--[if lt IE 9]>
+		      <script th:src="'/NdsBeisUi/assets/javascripts/ie' + ${@environment.getProperty('minify')} + '.js?version=' + ${@environment.getProperty('version')}" ></script>
+		    <![endif]-->
+		
+		
+		<!--[if gt IE 8]><!-->
+		<link
+			th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-elements' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}"
+			media="screen" rel="stylesheet" />
+		<!--<![endif]-->
+		<!--[if IE 6]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-elements-ie6' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		<!--[if IE 7]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-elements-ie7' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		<!--[if IE 8]><link th:href="'/NdsBeisUi/assets/stylesheets/sass_css/govuk-elements-ie8' + ${@environment.getProperty('minify')} + '.css?version=' + ${@environment.getProperty('version')}" media="screen" rel="stylesheet" /><![endif]-->
+		
+		<link rel="shortcut icon"
+			th:href="'/NdsBeisUi/assets/images/favicon.ico?version=' + ${@environment.getProperty('version')}"
+			type="image/x-icon" />
+		<!-- Size for iPad and iPad mini (high resolution) -->
+		<link rel="apple-touch-icon-precomposed" sizes="152x152"
+			th:href="'/NdsBeisUi/assets/images/apple-touch-icon-152x152.png?version=' + ${@environment.getProperty('version')}" />
+		<!-- Size for iPhone and iPod touch (high resolution) -->
+		<link rel="apple-touch-icon-precomposed" sizes="120x120"
+			th:href="'/NdsBeisUi/assets/images/apple-touch-icon-120x120.png?version=' + ${@environment.getProperty('version')}" />
+		<!-- Size for iPad 2 and iPad mini (standard resolution) -->
+		<link rel="apple-touch-icon-precomposed" sizes="76x76"
+			th:href="'/NdsBeisUi/assets/images/apple-touch-icon-76x76.png?version=' + ${@environment.getProperty('version')}" />
+		<!-- Default non-defined size, also used for Android 2.1+ devices -->
+		<link rel="apple-touch-icon-precomposed"
+			th:href="'/NdsBeisUi/assets/images/apple-touch-icon-60x60.png?version=' + ${@environment.getProperty('version')}" />
+		
+		<meta id="springViewName" name="dcterms.identifier" content="login-form" />
+	</head>
+
+	<body>
+		<div th:replace="fragments/logo" />
+		<div id="container" class="container">
+	
+			<main layout:fragment="content" id="content">
+			<h1 />
+			<p />
+			</main>
+	
+		</div>
+		<div th:replace="fragments/footer" />
+	
+		<div th:insert="fragments/bottom" />
+	
+	</body>
+</html>

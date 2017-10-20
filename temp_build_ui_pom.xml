@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 
+ 	<!-- Temporary pom to build the UI without current unknown build issues stopping it.  
+ 		TODO #NDS-260 Should be removed as part of NDS-260  -->
+ 
+ 	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis</groupId>
+	<artifactId>beis</artifactId>
+	<version>0.0.0</version>
+	<packaging>pom</packaging>
+	<url>${homepage.url}</url>
+
+	<name>Northgate Public Services Digital Services Beis</name>
+	<description>
+		Northgate Public Services Digital Service BEIS POM
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/beis</id>
+			<url>${distro.url}</url>
+		</site>
+	</distributionManagement>
+
+	<properties>
+		<maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
+		<maven.site.plugin.version>3.4</maven.site.plugin.version>
+		<maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+
+		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.plugin.versions.version>2.2</maven.plugin.versions.version>
+		<!-- override the following on command line -->
+		<homepage.url></homepage.url>
+		<distro.url></distro.url>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>	
+				<module>NdsBeisSharedModel</module>
+				<module>NdsBeisUi</module>
+			</modules>
+		</profile>
+	</profiles>
+		
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven.site.plugin.version}</version>
+					<dependencies>
+						<!-- add support for ssh/scp -->
+						<dependency>
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<!-- ensure we have the deloyAtEnd option -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>${maven.deploy.plugin.version}</version>
+				</plugin>
+				<!-- Maven version number plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${maven.plugin.versions.version}</version>
+					<dependencies>
+						<dependency>
+						  <groupId>org.apache.maven.wagon</groupId>
+						  <artifactId>wagon-provider-api</artifactId>
+						  <version>2.9</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.javadoc.plugin.version}</version>
+				<configuration>
+					<show>public</show>
+					<encoding>UTF8</encoding>
+					<includeDependencySources>true</includeDependencySources>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<id>aggregate</id>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+  	</reporting>
+	
+</project>

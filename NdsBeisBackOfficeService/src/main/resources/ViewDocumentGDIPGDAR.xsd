@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" xmlns="urn:ViewPdf" targetNamespace="urn:ViewPdf" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.00000.0">
+	<xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xsd:element name="ViewPdf">
+		<xsd:annotation>
+			<xsd:documentation>Message defining a request for View document</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardRequestStructure">
+			<xsd:sequence>
+				<xsd:element name="RRN" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>The code the document is known by, e.g. GDIP RRN or GDAR RRN. 
+					                           RRN will be of one of below format 1) [0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}
+					                                                              2) [0-9]{10}-[0-9]{10}
+					                                                              3) [0-9]{3}-[0-9]{4}-[0-9]{5}-[0-9]{4}-[0-9]{4}
+					    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="IncludeDocument" type="xsd:boolean"  minOccurs="0" default="true"/>
+			</xsd:sequence>
+			</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

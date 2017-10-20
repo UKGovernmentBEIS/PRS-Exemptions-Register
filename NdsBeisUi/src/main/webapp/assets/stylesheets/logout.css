@@ -1,0 +1,212 @@
+/* Adapted from the stylesheet for the IDP login page. */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+footer, section, nav {
+    display: block;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: "nta", Arial, sans-serif;
+    font-size: 19px;
+}
+
+a:link, a:visited {
+    color: #0b0c0c;
+    text-decoration:none;
+    border-bottom:1px solid #0b0c0c;
+}
+
+img {
+    max-width: 100%;
+    margin-bottom: 12px;
+}
+
+.wrapper {
+    background-color: #fff;
+    border-bottom: 1px solid #a1acb2;
+}
+
+.container {
+    left: 0;
+    margin: 0 auto;
+    position: relative;
+    width: 960px;
+    max-width:100vw;
+    font-family: "nta",Arial,sans-serif;
+}
+
+.content:before {
+    display:block;
+    font-size: 36px;
+    line-height:2;
+    font-weight:bold;
+}
+
+.header {
+	display: block;
+	background-color: #023045;
+	border: none;
+	margin: 0;
+	padding: 0;
+	text-align:center;
+	font-size: 160%;
+	color: #0b0c0c;
+	line-height: 1.5;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+
+.header img {
+	padding: 12px 250px 18px 0px;
+	vertical-align:middle;
+	margin: 3px auto 7px;
+}
+
+.header:after {
+  width: 314px;
+  display:inline-block;
+  content: 'Public engagement';
+  text-align: right;
+  vertical-align:middle;
+  color:#FFF;
+  font-size:24px;
+  line-height:1.25;
+  font-family: "nta",Arial,sans-serif;
+  font-weight:bold;
+}
+
+
+.logo img {
+    border: none;
+}
+
+@media only screen and (max-width: 650px) {
+    .logo img {
+        display: none;
+    }
+    .logo {
+        background: url(images/dummylogo-mobile.png) no-repeat top center;
+        display: block;
+        height: 115px;
+        width: 100px;
+        margin: 0 auto;
+    }
+}
+
+.content {
+    padding-bottom: 80px;
+	  display:block;
+	  margin-left: auto;
+	  margin-right: auto;
+}
+
+.column.one {
+    width: auto;
+}
+
+.item-marker { 
+    display:none;
+}
+
+input[type="checkbox"] {
+    margin-right:6px;
+}
+
+form {
+    padding-bottom: 21px;
+}
+form label { 
+    font-weight: normal;
+    display: block;
+}
+form legend {
+    font-size:1.2em;
+    margin-bottom: 12px;
+}
+.form-element-wrapper {
+    margin-bottom: 12px;
+}
+.form-button-wrapper {
+    margin-top: 39px;
+    margin-bottom: 12px;
+}
+.form-element {
+    width: 50%;
+    padding: 4px;
+    border: none;
+    font-size:19px;
+    line-height:1.25;
+    font-family: "nta",Arial,sans-serif;
+    color: #000;
+}
+
+.form-field {
+    border: 2px solid #6f777b;
+}
+.form-field:focus {
+    outline: 3px solid #ffbf47;
+}
+.form-button {
+	background-color: #00823b;
+	position: relative;
+	display: -moz-inline-stack;
+	display: inline-block;
+	padding: 0.3em 0.6em 0.2em 0.6em;
+	margin-bottom: 10px;
+	border: none;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+	-webkit-box-shadow: 0 2px 0 #003618;
+	-moz-box-shadow: 0 2px 0 #003618;
+	box-shadow: 0 2px 0 #003618;
+	font-size: 1em;
+	line-height: 1.25;
+	text-decoration: none;
+	-webkit-font-smoothing: antialiased;
+	cursor: pointer;
+	color: #fff;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 0.5263157895em 0.7894736842em 0.2631578947em 0.7894736842em;
+	vertical-align: top;
+	width: 100px;
+}
+
+.form-button:hover, .form-button:focus {
+  background-color: #00692f;
+}
+
+.form-error {
+    padding: 0;
+    color: #B61601;
+}
+
+.list-help {
+    margin-top: 40px; /* offset padding on first anchor */
+    list-style: none;
+}
+.list-help-item a {
+    padding: 6px 0;
+    display: table;
+}
+.item-marker {
+    color: #be0000;
+}
+
+body {
+    background-color: #023045;
+}
+footer {
+    display:none;
+}

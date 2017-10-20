@@ -1,0 +1,11 @@
+/target/
+/build/
+/.sass-cache/
+/.settings/
+/.gradle/
+/bin/
+*.jar
+/eclipse_classes/
+/classes/
+/src/main/webapp/assets/stylesheets/sass_css/
+*.p12

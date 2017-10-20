@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:camel-security="http://camel.apache.org/schema/spring-security"
+	xsi:schemaLocation="
+		 http://www.springframework.org/schema/beans
+		 http://www.springframework.org/schema/beans/spring-beans.xsd
+		 http://www.springframework.org/schema/security
+		 http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		 http://camel.apache.org/schema/spring-security
+ 		 http://camel.apache.org/schema/spring-security/camel-spring-security.xsd
+ ">
+
+	<!-- 
+		Provides X509 Certificate security for the ESB, ie only https connections providing a certificate
+		that is valid in our keystore, will be allowed.
+	 -->
+ 	<http>
+ 	
+ 		<!-- URLs and the roles required to access them -->
+		<intercept-url pattern="/**" requires-channel="https" access="hasRole('ROLE_BEIS_UI')" />
+		
+		<!-- Checks the certificate is valid against our trust store (defined in Tomcat's server.xml) to authenticate the user. -->
+		<x509 subject-principal-regex="CN=(.*)" />
+		
+		<!-- there's no form to inject csrf token into (and we're clustered) so this isn't wanted -->
+		<csrf disabled="true"/> 
+ 	</http>
+  
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider ref="preauthAuthProvider" />
+	</authentication-manager>
+	
+	<beans:bean id="preauthAuthProvider"
+		class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+		<beans:property name="preAuthenticatedUserDetailsService" ref="userDetailsService" />
+	</beans:bean>
+
+	<!-- Assigns the role from the x509 certificate --> 
+	<beans:bean id="userDetailsService" class="com.northgateps.nds.platform.esb.security.PreAuthEsbUserDetailsService" />
+
+	<!-- 
+		Defines Camel-Spring Security policy "generalSecurityPolicy" which specifies a single role required.
+		Can be used in the camel context file by adding a <policy> tag to restrict access by role.
+		Roles must be prefixed by the rolePrefix here ie "ROLE_"
+	-->
+    <camel-security:authorizationPolicy id="generalSecurityPolicy"
+    					access="ROLE_BEIS_UI"  
+                        authenticationManager="authenticationManager"
+                        accessDecisionManager="accessDecisionManager" />
+
+	<!-- Security policies for imported routes -->
+    <camel-security:authorizationPolicy id="addressSearchSecurityPolicy"
+    					access="ROLE_BEIS_UI"  
+                        authenticationManager="authenticationManager"
+                        accessDecisionManager="accessDecisionManager" />
+                        
+    <camel-security:authorizationPolicy id="generateReferenceSecurityPolicy"
+    					access="ROLE_BEIS_UI"  
+                        authenticationManager="authenticationManager"
+                        accessDecisionManager="accessDecisionManager" />
+	<camel-security:authorizationPolicy id="directorySecurityPolicy"
+										access="ROLE_BEIS_UI"
+										authenticationManager="authenticationManager"
+										accessDecisionManager="accessDecisionManager"/>
+										
+	<camel-security:authorizationPolicy id="auditSecurityPolicy"
+    					access="ROLE_BEIS_UI, ROLE_BEIS_CAS" 
+                        authenticationManager="authenticationManager"
+                        accessDecisionManager="accessDecisionManager" />
+
+
+	<!-- Standard bean setup required for Camel to use spring security -->
+    <beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <beans:property name="allowIfAllAbstainDecisions" value="false" />
+        <beans:constructor-arg name="decisionVoters">
+        	<beans:list>
+        		<beans:ref bean="roleVoter" />
+        	</beans:list>
+        </beans:constructor-arg>
+    </beans:bean>
+    	
+	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+		<beans:property name="rolePrefix" value="ROLE_" />
+	</beans:bean>
+    
+</beans:beans>

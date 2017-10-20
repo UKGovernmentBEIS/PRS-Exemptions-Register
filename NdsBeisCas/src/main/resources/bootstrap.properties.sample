@@ -1,0 +1,18 @@
+##
+# CAS Spring Cloud Config Client
+#
+# Name of the application for which environment settings and properties should be fetched.
+# This should map to a cas.yml or cas.properties file.
+spring.application.name=cas
+spring.profiles.active=standalone
+
+# Configuration server is off by default.
+spring.cloud.config.enabled=false
+
+spring.cloud.config.fail-fast=true
+health.config.enabled=true
+
+# CAS recommends not changing this line and specifying this as a -D VM argument.
+# You can do that if you really want to but since this file is for dev only we just
+# update the config location
+cas.standalone.config=C:/git/beis/NdsBeisCas/etc/cas/config

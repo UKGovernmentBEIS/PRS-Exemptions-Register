@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataRequest"
+xmlns:ns1="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataResponse"
+xmlns:wsdl1="http://www.northgateps.com/GetPRSPenaltyReferenceData.wsdl"
+name="GetPRSPenaltyReferenceData"
+targetNamespace="http://www.northgateps.com/GetPRSPenaltyReferenceData.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataRequest" schemaLocation="GetPRSPenaltyReferenceDataRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataResponse" schemaLocation="GetPRSPenaltyReferenceDataResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPRSPenaltyReferenceDataRequest">
+		<wsdl:part name="parameters" element="ns:GetPRSPenaltyReferenceDataRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetPRSPenaltyReferenceDataResponse">
+		<wsdl:part name="parameters" element="ns1:GetPRSPenaltyReferenceDataResponse" />
+	</wsdl:message>
+	<wsdl:portType name="GetPRSPenaltyReferenceDataWSDLPort">
+		<wsdl:operation name="GetPRSPenaltyReferenceDataWSDL">
+			<wsdl:input message="wsdl1:GetPRSPenaltyReferenceDataRequest" />
+			<wsdl:output message="wsdl1:GetPRSPenaltyReferenceDataResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetPRSPenaltyReferenceDataWSDLBinding" type="wsdl1:GetPRSPenaltyReferenceDataWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetPRSPenaltyReferenceDataWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/GetPRSPenaltyReferenceData" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetPRSPenaltyReferenceDataWSDLService">
+		<wsdl:port binding="wsdl1:GetPRSPenaltyReferenceDataWSDLBinding" name="GetPRSPenaltyReferenceDataWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/GetPRSPenaltyReferenceData" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

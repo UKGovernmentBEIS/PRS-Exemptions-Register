@@ -1,0 +1,9 @@
+/build/
+/target/
+/.gradle/
+/.settings/
+/bin/
+/eclipse_classes/
+/classes/
+/src/main/java/com/northgateps/nds/beis/esb/transforms/*.*
+*.p12

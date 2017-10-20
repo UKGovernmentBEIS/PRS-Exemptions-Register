@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataResponse"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:core="http://northgate-is.com/FL/Core"
+            targetNamespace="http://northgateps.com/BEIS/GetPRSPenaltyReferenceDataResponse"
+            xmlns:beisc="http://northgateps.com/BEISCommonTypes"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core"
+                schemaLocation="FLCore.xsd"/>
+    <xsd:import namespace="http://northgateps.com/BEISCommonTypes"
+                schemaLocation="BEISCommonTypes.xsd"/>
+    <xsd:element name="GetPRSPenaltyReferenceDataResponse">
+        <xsd:annotation>
+            <xsd:documentation>PRS Penalty reference data Response</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardResponseStructure">
+                    <xsd:sequence>
+                        <xsd:element name="ServiceDetails" maxOccurs="1">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="ServiceDetail"
+                                                 maxOccurs="unbounded">
+                                        <xsd:complexType>
+                                            <xsd:sequence>
+                                                <xsd:element name="Service">
+                                                    <xsd:simpleType>
+                                                        <xsd:restriction base="xsd:string">
+                                                            <xsd:enumeration value="PRSD"/>
+                                                            <xsd:enumeration value="PRSN"/>
+                                                        </xsd:restriction>
+                                                    </xsd:simpleType>
+                                                </xsd:element>
+                                                <xsd:element name="PenaltyTypes"
+                                                             minOccurs="0"
+                                                             maxOccurs="1">
+                                                    <xsd:complexType>
+                                                        <xsd:sequence>
+                                                            <xsd:element name="PenaltyType"
+                                                                         maxOccurs="unbounded">
+                                                                <xsd:complexType>
+                                                                    <xsd:sequence>
+                                                                        <xsd:element name="PenaltyReasonCode"
+                                                                                     type="xsd:string"/>
+																		<xsd:element name="Description"
+                                                                                     type="xsd:string"/>
+                                                                        <xsd:element name="DescriptionTranslations"
+                                                                                     type="core:StandardTextTranslationStructure"
+                                                                                     minOccurs="0"
+                                                                                     maxOccurs="1"/>
+                                                                        <xsd:element name="PWSBreachDescription"
+                                                                                     type="xsd:string"/>
+                                                                        <xsd:element name="PWSBreachDescriptionTranslations"
+                                                                                     type="core:StandardTextTranslationStructure"
+                                                                                     maxOccurs="1"
+                                                                                     minOccurs="0"/>
+																		 <xsd:element name="MaximumValue"
+                                                                                     type="xsd:integer"/>
+																		<xsd:element name="ExemptionRequired"    
+ 																	               	type="xsd:boolean"/>
+																	                
+                                                                    </xsd:sequence>
+                                                                </xsd:complexType>
+                                                            </xsd:element>
+                                                        </xsd:sequence>
+                                                    </xsd:complexType>
+                                                </xsd:element>
+                                            </xsd:sequence>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

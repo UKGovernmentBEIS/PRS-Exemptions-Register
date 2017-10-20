@@ -1,0 +1,26 @@
+#logo{
+	background: none!important;	
+}
+
+.gd-logo{
+	float: right;
+	margin-right: 15px;
+}
+
+@media (min-width: 769px){
+	#global-header .header-wrapper .header-global .header-logo {
+    	width: 66.33%!important;
+	}
+}
+
+#global-header, #global-header .header-wrapper {
+	background-color: #274513!important;
+}
+
+#global-header-bar {
+	background-color: #447d1f!important;
+}
+
+.button{	
+    background-color: #447d1f!important;
+}

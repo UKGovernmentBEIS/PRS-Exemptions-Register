@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.northgateps.beis</groupId>
+    <artifactId>beis-cas</artifactId>
+    <packaging>war</packaging>
+    <version>0.0.0</version>
+    <url>${homepage.url}beis-cas/</url>
+    
+	<name>NDS BEIS CAS</name>
+    <description>
+        Northgate Public Services Digital Service BEIS CAS Overlay
+    </description>
+  	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds/beis</id>
+			<url>${distro.url}beis-cas/</url>
+		</site>
+	</distributionManagement>
+    
+	<parent>
+		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<artifactId>sharedpoms-cas</artifactId>
+		<version>(,1.0.0]</version>
+		<relativePath>../NdsSharedPoms/NdsSharedPomCas/pom.xml</relativePath>
+	</parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.rimerosolutions.maven.plugins</groupId>
+                <artifactId>wrapper-maven-plugin</artifactId>
+                <version>0.0.4</version>
+                <configuration>
+                    <verifyDownload>true</verifyDownload>
+                    <checksumAlgorithm>MD5</checksumAlgorithm>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${springboot.version}</version>
+                <configuration>
+                    <mainClass>org.springframework.boot.loader.WarLauncher</mainClass>
+                    <addResources>true</addResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <recompressZippedFiles>false</recompressZippedFiles>
+                    <archive>
+                        <compress>false</compress>
+                        <manifestFile>${project.build.directory}/war/work/com.northgateps.nds.platform/platform-cas/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                    
+                    <!-- Overlays the NdsPlatformCas project -->
+                    <overlays>
+                        <overlay>
+                        	<groupId>com.northgateps.nds.platform</groupId>
+                        	<artifactId>platform-cas</artifactId>
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.plugin.source.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven.plugin.site.version}</version>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+    	<!-- The parent NdsPlatformCas project -->
+        <dependency>
+            <groupId>com.northgateps.nds.platform</groupId>
+            <artifactId>platform-cas</artifactId>
+            <version>(,1.0.0]</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
+
+		<!-- Enables authentication delegation eg to Facebook via OAUTH -->
+		<!-- 
+		<dependency>
+			<groupId>org.apereo.cas</groupId>
+			<artifactId>cas-server-support-pac4j-webflow</artifactId>
+			<version>${cas.version}</version>
+		</dependency>
+ 		-->
+
+    </dependencies>
+
+    <properties>
+        <springboot.version>1.4.1.RELEASE</springboot.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.plugin.site.version>3.4</maven.plugin.site.version>
+        <junit.version>[4.12,)</junit.version>
+        <maven.plugin.source.version>2.4</maven.plugin.source.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>sonatype-releases</id>
+            <url>http://oss.sonatype.org/content/repositories/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>shibboleth-releases</id>
+            <url>https://build.shibboleth.net/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <id>pgp</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.s4u.plugins</groupId>
+                        <artifactId>pgpverify-maven-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <pgpKeyServer>hkp://pool.sks-keyservers.net</pgpKeyServer>
+                            <pgpKeysCachePath>${settings.localRepository}/pgpkeys-cache</pgpKeysCachePath>
+                            <scope>test</scope>
+                            <verifyPomFiles>true</verifyPomFiles>
+                            <failNoSignature>false</failNoSignature>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

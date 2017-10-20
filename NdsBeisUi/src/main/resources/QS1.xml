@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FlexibleQuestionsDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FlexibleQuestions.xsd">
+    <!-- See https://docs.google.com/document/d/1vE2_0Cn_b9nbPksQqPpQ3e7Q5Zmt_ntjbEXVu954wZA for some advice on maintaining these questions -->
+	<Name>Victim - additional questions</Name>
+    <!-- The name of the associated resource bundle -->
+	<BundleName>IC_FieldsBundle</BundleName>
+	<Model>
+        <!-- 
+            For the avoidance of confusion, the question order in the Model section is completely arbitrary. Neither alphabetic nor 
+            numeric ordering is used, except by coincidence. The order that the questions are presented to the user, if at all, 
+            is determined for each web page by the question groups in the View section, and between the web pages by the PageFlow section.
+         -->
+		<Question id="Q-Free-Text-Describe">
+            <!-- If multiple revisions are here, the revision used is the one whose releaseDate is most recent but not in the future, and does not have passed withdrawalDate  -->
+			<Revision releaseDate="2012-12-13T12:12:12">
+                <!-- the key to a string in the associated resource bundle, used as a label to the question -->
+				<PhraseCode>Describe_the_incident_in_detail</PhraseCode>
+			</Revision>
+			<DataType>
+                <!-- The name of the data type of the field -->
+				<Name>textarea</Name>
+			</DataType>
+		</Question>
+        <Question id="Q-Repeat">
+            <!-- If multiple revisions are here, the revision used is the one whose releaseDate is most recent but not in the future, and does not have passed withdrawalDate  -->
+            <Revision releaseDate="2012-12-13T12:12:12">
+                <!-- the key to a string in the associated resource bundle, used as a label to the question -->
+                <PhraseCode>Is-repeat</PhraseCode>
+            </Revision>
+            <DataType>
+                <!-- The name of the data type of the field -->
+                <Name>yesno</Name>
+            </DataType>
+        </Question>
+        <Question id="Q-Distinguishing-Features">
+            <Revision releaseDate="2012-12-13T12:12:12">
+                <PhraseCode>Any_distinguishing_features_lost</PhraseCode>
+            </Revision>
+            <DataType>
+                <Group>
+                    <Item>
+                        <Revision releaseDate="2012-12-13T12:12:12">
+                            <PhraseCode>Name</PhraseCode>
+                        </Revision>                
+                        <DataType>
+                            <Name>text</Name>
+                        </DataType>
+                    </Item>
+                    <Item>
+                        <Revision releaseDate="2012-12-13T12:12:12">
+                            <PhraseCode>Material</PhraseCode>
+                        </Revision>                
+                        <DataType>
+                            <Name>optionvalue</Name>
+                            <Revision releaseDate="2012-12-13T12:12:12">
+                                <Constraints>
+                                    <Enum>
+                                        <PhraseCode></PhraseCode>
+                                        <PhraseCode>Metal</PhraseCode>
+                                        <PhraseCode>Plastic</PhraseCode>
+                                        <PhraseCode>Fabric</PhraseCode>
+                                        <PhraseCode>Paper</PhraseCode>
+                                        <PhraseCode>Other</PhraseCode>
+                                    </Enum>
+                                </Constraints>
+                            </Revision>
+                        </DataType>
+                    </Item>
+                    <Item>
+                        <Revision releaseDate="2012-12-13T12:12:12">
+                            <PhraseCode>Colour</PhraseCode>
+                        </Revision>                
+                        <DataType>
+                            <Name>text</Name>
+                        </DataType>
+                    </Item>
+                </Group>
+            </DataType>
+        </Question>
+        <Question id="Q-Last-Location">
+            <Revision releaseDate="2012-12-13T12:12:12">
+                <PhraseCode>Where_did_you_last_see_it</PhraseCode>
+            </Revision>
+            <DataType>
+                <Name>address</Name>
+            </DataType>
+        </Question>
+	</Model>
+	<View>
+		<QuestionGroup id="G-Lost-Item">
+			<Revision releaseDate="2012-12-13T12:12:12">
+				<PhraseCode>Additional_lost_questions</PhraseCode>
+				<QuestionId>Q-Free-Text-Describe</QuestionId>
+                <QuestionId>Q-Repeat</QuestionId>
+                <QuestionId>Q-Distinguishing-Features</QuestionId>
+                <QuestionId>Q-Last-Location</QuestionId>
+			</Revision>
+		</QuestionGroup>
+	</View>
+	<PageFlow>
+		<Revision releaseDate="2012-12-13T12:12:12">
+			<QuestionGroupId id="P-Lost-Additional-Page1">G-Lost-Item</QuestionGroupId>
+		</Revision>
+	</PageFlow>
+</FlexibleQuestionsDefinition>

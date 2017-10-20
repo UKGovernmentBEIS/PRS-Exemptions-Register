@@ -1,0 +1,96 @@
+version: '1'
+files:
+  "NdsBeisUi/src/main/resources/beisUi.dev.properties":
+    actions:
+      blank_properties:
+        - ndsdb.server
+        - ndsdb.user
+        - ndsdb.password
+        - app.keyStore.password
+        - googleAnalytic.trackingId
+        - client.keyStore.password
+        - client.trustStore.password
+  "NdsBeisUi/src/main/resources/services/https-cas-service.json":
+    actions:
+      remove_file:
+  "NdsBeisUi/src/main/resources/services/localhost-cas-service.json":
+    actions:
+      remove_file:
+  "NdsBeisEsb/src/main/resources/beisEsb.dev.properties":
+    actions:
+      blank_properties:
+        - beis.server
+        - beis.protocol
+        - beis.port
+        - beis.userId
+        - beis.secret
+        - smtp.host.server
+        - ldap.url
+        - ldap.uid
+        - ldap.password
+        - ndsdb.server
+        - ndsdb.port
+        - ndsdb.user
+        - ndsdb.password
+        - address.search.server
+  "NdsBeisEsb/src/test/resources/beisEsb.test.properties":
+      actions:
+        blank_properties:
+          - beis.server
+          - beis.protocol
+          - beis.port
+          - beis.userId
+          - beis.secret
+          - smtp.host.server
+          - ldap.url
+          - ldap.uid
+          - ldap.password
+          - ndsdb.server
+          - ndsdb.port
+          - ndsdb.user
+          - ndsdb.password
+          - address.search.server
+  "NdsBeisCas/etc/cas/config/cas.properties.sample":
+    actions:
+      blank_properties:
+        - cas.tgc.encryptionKey
+        - cas.tgc.signingKey
+        - cas.webflow.encryption.key
+        - cas.webflow.signing.key
+        - nds.authn.ldap[0].ldapUrl
+        - nds.authn.ldap[0].trustCertificates
+        - nds.authn.ldap[0].trustStorePassword
+        - nds.httpClient.truststore.psw
+        - nds.audit.keyStore_password
+        - nds.audit.trustStore_password
+        - nds.ticketRegistryMongo.hosts
+        - nds.ticketRegistryMongo.ports
+        - nds.ticketRegistryMongo.userId
+        - nds.ticketRegistryMongo.password
+  "NdsBeisCas/src/main/resources/services/beis-ssl-service.json":
+    actions:
+      remove_file:
+  "Jenkinsfile":
+    actions:
+      remove_file:
+  "Jenkinsfile.declarative":
+    actions:
+      remove_file:
+  "NdsBeis/release-settings.xml":
+    actions:
+      remove_file:
+  "NdsBeisUi/pom.xml":
+    actions:
+      replace_strings:
+        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:4444=testServer
+  "NdsSharedPoms/NdsSharedPomCas/pom.xml":
+    actions:
+      replace_strings:
+        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:9090=mavenRepo
+        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}=gitServer
+  "NdsSharedPoms/pom.xml":
+    actions:
+      replace_strings:
+        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:9090=mavenRepo
+        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}=gitServer
+  

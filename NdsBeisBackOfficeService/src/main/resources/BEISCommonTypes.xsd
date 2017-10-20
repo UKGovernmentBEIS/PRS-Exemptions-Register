@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgateps.com/BEISCommonTypes"
+	elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://northgateps.com/BEISCommonTypes">
+	<xsd:complexType name="Money">
+		<xsd:sequence>
+			<xsd:element name="Pounds" type="xsd:int" />
+			<xsd:element name="Pence">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:int">
+						<xsd:maxInclusive value="99" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+    <xsd:simpleType name="PlanIdType">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="12"/>
+        </xsd:restriction>
+    </xsd:simpleType>   
+    <xsd:simpleType name="RRNType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}"/>
+        </xsd:restriction>
+    </xsd:simpleType>           
+    
+    <xsd:simpleType name="PRNType">
+        <xsd:restriction base="xsd:long">
+            <xsd:maxExclusive value="1000000000000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+   <xsd:simpleType name="CertificateNumberType">
+		<xsd:annotation>
+			<xsd:documentation>The Certificate Number is a 10-character fixed-length alphanumeric code consisting of 4 characters identifying the Certification Scheme and a 6-digit zero-padded identifier for each Energy Assessor certified by that Certification Scheme. For example ABCD987654, XYZ_123456 etc.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="10"/>
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[A-Z/_]{4}[0-9]{6}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+    <xsd:simpleType name="UPRNType">
+        <xsd:annotation>
+            <xsd:documentation>Unique Property Reference Number - a 10-digit numeric string uniquely identifying each property that may have an EPC registered against it.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{10}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+	<xsd:complexType name="AddressType">
+        <xsd:annotation>
+            <xsd:documentation>An address is composed of a number of structured elements such as Postcode, Post-Town, Street etc</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Line1" type="xsd:string"/>
+            <xsd:element name="Line2" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Town"  type="xsd:string"/>
+            <xsd:element name="County"  type="xsd:string" minOccurs="0"/>
+            <xsd:element name="Postcode" type="PostcodeType" minOccurs="0"/>
+            <xsd:element name="Country" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="PostcodeType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+<xsd:simpleType name="PhoneNumberType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9\-\.\)\(\+ ]+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType  name="PRSUserType">
+	              <xsd:restriction base="xsd:string">
+	                      <xsd:enumeration value="LANDLORD"/>
+	              </xsd:restriction>
+	      </xsd:simpleType>
+    
+	
+</xsd:schema>

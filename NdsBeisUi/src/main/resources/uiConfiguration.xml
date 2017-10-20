@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<configuration>
+	<header>
+		<result throwExceptionOnMissing="true"/>
+    </header>
+	<override>
+		<!-- these are the "production" settings for the application, which override those given in the 
+		     definition below. As long as the developers do not have the .properties file they will
+		     automatically get a working development environment. Whereas for production like environments
+		     we ensure the .properties file is present. -->
+		<properties fileName="config/beisUi.properties" throwExceptionOnMissing="true" config-name="properties" config-optional="true">
+			<listDelimiterHandler
+	        	config-class="org.apache.commons.configuration2.convert.DefaultListDelimiterHandler">
+	        	<config-constrarg config-value=";"/>
+	      	</listDelimiterHandler>
+		</properties>
+
+		<!-- Java system properties -->
+		<system/>
+		
+		<!-- these are the developer properties for the reference application -->
+		<properties fileName="beisUi.dev.properties" throwExceptionOnMissing="false" config-name="dev-properties" config-optional="true">
+			<listDelimiterHandler
+	        	config-class="org.apache.commons.configuration2.convert.DefaultListDelimiterHandler">
+	        	<config-constrarg config-value=";"/>
+	      	</listDelimiterHandler>
+		</properties>
+
+		<!-- load environment variables -->	
+		<env/>
+
+	</override>
+
+</configuration>

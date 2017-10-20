@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/MaintainPartyDetailsRequest"
+xmlns:ns1="http://northgateps.com/BEIS/MaintainPartyDetailsResponse"
+xmlns:wsdl1="http://www.northgateps.com/MaintainPartyDetails.wsdl"
+name="MaintainPartyDetails"
+targetNamespace="http://www.northgateps.com/MaintainPartyDetails.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/MaintainPartyDetailsRequest" schemaLocation="MaintainPartyDetailsRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/MaintainPartyDetailsResponse" schemaLocation="MaintainPartyDetailsResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="MaintainPartyDetailsRequest">
+		<wsdl:part name="parameters" element="ns:MaintainPartyDetailsRequest" />
+	</wsdl:message>
+	<wsdl:message name="MaintainPartyDetailsResponse">
+		<wsdl:part name="parameters" element="ns1:MaintainPartyDetailsResponse" />
+	</wsdl:message>
+	<wsdl:portType name="MaintainPartyDetailsWSDLPort">
+		<wsdl:operation name="MaintainPartyDetailsWSDL">
+			<wsdl:input message="wsdl1:MaintainPartyDetailsRequest" />
+			<wsdl:output message="wsdl1:MaintainPartyDetailsResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="MaintainPartyDetailsWSDLBinding" type="wsdl1:MaintainPartyDetailsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="MaintainPartyDetailsWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/MaintainPartyDetailsRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetEPCDetailsWSDLService">
+		<wsdl:port binding="wsdl1:MaintainPartyDetailsWSDLBinding" name="MaintainPartyDetailsWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/MaintainPartyDetailsRequest" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

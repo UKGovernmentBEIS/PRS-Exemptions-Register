@@ -1,0 +1,489 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis.sharedpoms</groupId>
+	<artifactId>sharedpoms</artifactId>
+	<version>0.0.1503</version>
+	<packaging>pom</packaging>
+
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
+			</properties>
+		</profile>
+		
+	
+		<!--This plugin's configuration is used to store Eclipse m2e settings 
+		only. It has no influence on the Maven build itself. -->
+		<profile>
+			<id>only-eclipse</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<!-- 
+											Tells Eclipse to run the AspectJ weaving as part of its builds so the logging system 
+											will still work in Tomcat after a Maven Update (Alt+F5 in Eclipse) 
+										-->
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.codehaus.mojo</groupId>
+												<artifactId>aspectj-maven-plugin</artifactId>
+												<versionRange>[${aspectj.maven.plugin.version},)</versionRange>
+												<goals>
+													<goal>compile</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<execute>
+													<!-- 
+														If this plugin is causing performance issues on Eclipse, set this to false.
+														However you may then need to run the plugin manually (
+														eg build from the command line) to ensure the logging 
+														system is weaved in. 
+													  -->
+													<runOnIncremental>true</runOnIncremental>
+													<runOnConfiguration>true</runOnConfiguration>
+												</execute>
+											</action>
+										</pluginExecution>
+										
+										<!-- Tell Eclipse to ignore this plugin -->
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>com.northgateps.nds.plugins</groupId>
+												<artifactId>plugins-checkweaving</artifactId>
+												<versionRange>[${nds.checkweaving.version},)</versionRange>
+												<goals>
+													<goal>checkAspectWeaving</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore/>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	
+	</profiles>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<java.source.version>1.8</java.source.version>
+		<java.target.version>1.8</java.target.version>
+
+		<maven.plugin.compiler.version>3.3</maven.plugin.compiler.version>
+		<maven.plugin.site.version>3.4</maven.plugin.site.version>
+		<maven.plugin.surefire.version>2.18.1</maven.plugin.surefire.version>
+		<maven.plugin.javadoc.version>2.10.3</maven.plugin.javadoc.version>
+		<maven.plugin.source.version>2.4</maven.plugin.source.version>
+		<maven.plugin.scm.version>1.8.1</maven.plugin.scm.version>
+		<maven.plugin.versions.version>2.2</maven.plugin.versions.version>
+		
+		<simple.logging.facade.version>1.7.7</simple.logging.facade.version>
+		<log4j.version>1.2.17</log4j.version>
+		
+		<junit.version>[4.12,)</junit.version>
+		<!--|o| TODO joda-time deprecated now -->
+		<joda-time.version>2.7</joda-time.version>
+		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
+		
+		<!-- common version numbers of artifacts shared between the UI and ESB 
+			 but not included in this file -->
+		<fasterxml.jackson.core.version>2.8.6</fasterxml.jackson.core.version>	 
+		<cxf.version>3.1.10</cxf.version>
+		<cxf.plugin.version>3.1.10</cxf.plugin.version>
+		<maven.war.plugin.version>2.6</maven.war.plugin.version>
+		<springframework.version>4.3.6.RELEASE</springframework.version> <!-- also defined in NdsSharedPomAspects/pom.xml -->
+        <ehcache.version>2.10.0</ehcache.version>
+        <commons-io.version>2.5</commons-io.version>
+		<cukes.version>1.2.2</cukes.version>
+		<codemodel.version>2.6</codemodel.version>
+		<org.bouncycastle.version>1.52</org.bouncycastle.version>
+		<commons-codec.version>1.10</commons-codec.version>
+		<aspectjtools.version>1.8.6</aspectjtools.version>
+		<aspectj.maven.plugin.version>1.7</aspectj.maven.plugin.version>
+        <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
+		<nds.logging.version>[0.0.0,1.0.0)</nds.logging.version>
+		<nds.checkweaving.version>0.0.0</nds.checkweaving.version>
+        <springframework.security.version>4.2.1.RELEASE</springframework.security.version>
+		<nds.mongodb.version>3.4.2</nds.mongodb.version>
+		<httpasyncclient.version>4.1.3</httpasyncclient.version>
+
+        <!-- Serenity Versions; later versions of serenity-cucumber cause an NPE -->
+        <serenity.version>1.4.0</serenity.version>
+        <serenity.maven.version>1.4.0</serenity.maven.version>
+        <serenity.cucumber.version>1.0.18</serenity.cucumber.version>
+
+		<!-- override the following on command line -->
+		<!-- these are used *only* in the JavaDoc production and deployment -->
+		<!-- ensure both URLs have a trailing / -->
+		<homepage.url></homepage.url>
+		<distro.url></distro.url>
+		
+	</properties>
+
+	<!--<scm>
+		<connection>scm:git@gitServer:/opt/git/nds/NDS.git</connection>
+	</scm>-->
+	
+	<name>NDS base POM</name>
+	<description>
+		Northgate Public Services Digital Service base POM
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<!-- required to ensure that javadocs site has the correct links back to the aggregate project-->
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds</id>
+			<url>${distro.url}</url>
+		</site>
+	    <repository>
+			<id>internal</id>
+			<url>http://mavenRepo/repository/internal/</url>
+		</repository>
+	    <snapshotRepository>
+			<id>snapshots</id>
+			<url>http://mavenRepo/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<!-- manages versions to ensure they're all from the same release without having to give each one a version number -->	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${springframework.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- TODO |o| joda-time deprecated -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${simple.logging.facade.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${simple.logging.facade.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${simple.logging.facade.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+        	<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-service-description</artifactId>
+            <version>${cxf.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>${ehcache.version}</version>
+		</dependency>	
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- 
+			Used by various projects and dependencies.  
+			Specifying a version to prevent errors accidentally using an earlier version.
+		-->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons-codec.version}</version>
+		</dependency>
+
+		<!-- @AspectJ annotation/tools-->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectjtools.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- AspectJ Weaving MOJO -->
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>aspectj-maven-plugin</artifactId>
+			<version>${aspectj.maven.plugin.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun</groupId>
+					<artifactId>tools</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- JSON -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${fasterxml.jackson.core.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<!-- TODO |o| PE has : <artifactId>jackson-datatype-jsr310</artifactId> -->
+			<artifactId>jackson-datatype-joda</artifactId>
+			<version>${fasterxml.jackson.core.version}</version>
+		</dependency>
+		
+		<dependency>
+		   <groupId>org.springframework</groupId>
+		   <artifactId>spring-oxm</artifactId>
+	   </dependency>
+
+	   <dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpasyncclient</artifactId>
+		  <version>${httpasyncclient.version}</version>
+		</dependency>
+
+	</dependencies>
+	
+	<build>
+		<outputDirectory>classes</outputDirectory>
+
+		<plugins>
+			<!-- This generates the javadocs in a jar file, and builds it as part of the normal build -->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.plugin.javadoc.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<show>private</show>
+							<nohelp>true</nohelp>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> -->
+			<!-- This generates a source jar file, so we can drop that into the local maven repo -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.plugin.source.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<!-- Sets the compiler/java version -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.plugin.compiler.version}</version>
+					<configuration>
+						<source>${java.source.version}</source>
+						<target>${java.target.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<!-- ensure we have the deloyAtEnd option -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				<!-- enable scp:// file copying... -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven.plugin.site.version}</version>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<!-- surefile plugin version -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven.plugin.surefire.version}</version>
+				</plugin>
+				<!-- Maven version number plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${maven.plugin.versions.version}</version>
+				</plugin>
+				<!-- Maven source control plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-scm-plugin</artifactId>
+					<version>${maven.plugin.scm.version}</version>
+					<configuration>
+						<tag>${project.artifactId}-${project.version}</tag>
+					</configuration>
+				</plugin>
+				<!-- turn off DocLint for now with Java 8 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9.1</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<configuration>
+								<additionalparam>${javadoc.opts}</additionalparam>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<!-- generate public JavaDoc -->
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.plugin.javadoc.version}</version>
+				<configuration>
+					<show>public</show>
+					<encoding>UTF8</encoding>
+					<additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
+			</plugin>
+		</plugins>
+  	</reporting>
+	
+</project>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:cxf="http://camel.apache.org/schema/cxf" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:cxfcore="http://cxf.apache.org/core"
+	xmlns:ndsext="http://www.northgateps.com/schema/spring/nds-camel-extensions"
+	xsi:schemaLocation="
+ http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://camel.apache.org/schema/spring
+ http://camel.apache.org/schema/spring/nds-camel-spring-2.17.2.xsd
+ http://camel.apache.org/schema/cxf 
+ http://camel.apache.org/schema/cxf/camel-cxf.xsd
+ http://cxf.apache.org/jaxrs
+ http://cxf.apache.org/schemas/jaxrs.xsd
+ http://cxf.apache.org/core 
+ http://cxf.apache.org/schemas/core.xsd
+  http://www.northgateps.com/schema/spring/nds-camel-extensions
+ http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd">
+
+<!-- define some properties that define our configuration environment. -->
+    <bean id="properties" 
+        class="com.northgateps.nds.platform.esb.util.configuration.NdsPropertiesComponent" />	
+
+	<!-- bridge spring property placeholder with Camel -->
+	<!-- you must NOT use the <context:property-placeholder at the same time, only this bridge bean -->
+	<bean id="bridgePropertyPlaceholder" 
+	    class="com.northgateps.nds.platform.esb.util.configuration.NdsBridgePropertyPlaceholderConfigurer"/>	 
+	
+	<bean id="abstractLoggingInterceptor" abstract="true">
+    	<property name="prettyLogging" value="true"/>
+	</bean>
+	<bean id="loggingInInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor" 
+	    parent="abstractLoggingInterceptor"/>
+	<bean id="loggingOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor" 
+	    parent="abstractLoggingInterceptor"/>
+	<bean id="ndsDirectoryErrorRecoveryProcessor" 
+	    class="com.northgateps.nds.platform.esb.exception.NdsDirectoryErrorRecoveryProcessor" />	
+
+	<cxfcore:bus>
+	    <cxfcore:inInterceptors>
+        	<ref bean="loggingInInterceptor"/>
+    	</cxfcore:inInterceptors>
+    	<cxfcore:outInterceptors>
+        	<ref bean="loggingOutInterceptor"/>
+    	</cxfcore:outInterceptors>
+    	<cxfcore:outFaultInterceptors>
+	        <ref bean="loggingOutInterceptor"/>
+	    </cxfcore:outFaultInterceptors>
+	    <cxfcore:inFaultInterceptors>
+        	<ref bean="loggingInInterceptor"/>
+    	</cxfcore:inFaultInterceptors>
+	</cxfcore:bus>
+
+</beans>
+
+

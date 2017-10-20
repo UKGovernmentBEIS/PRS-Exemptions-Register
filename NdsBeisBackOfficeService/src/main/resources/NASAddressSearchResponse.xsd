@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--  Schema version Date:2014-12-15 (by Northgate Information Solutions)  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgate-is.com/NAS/AddressSearchResponse-v1.0"
+            xmlns:core="http://northgate-is.com/FL/Core"
+            targetNamespace="http://northgate-is.com/NAS/AddressSearchResponse-v1.0" elementFormDefault="qualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+    <xsd:element name="AddressSearchResponse">
+        <xsd:annotation>
+            <xsd:documentation>List of addresses matched in a search</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardResponseStructure">
+                    <xsd:sequence>
+                        <xsd:element name="AddressList" minOccurs="1">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="Address" minOccurs="0" maxOccurs="unbounded">
+                                        <xsd:complexType>
+                                            <xsd:annotation>
+                                                <xsd:documentation>Address</xsd:documentation>
+                                            </xsd:annotation>
+                                            <xsd:sequence>
+                                                <xsd:element name="AddressIdentifier">
+                                                    <xsd:annotation>
+                                                        <xsd:documentation>UDPRN + UMPRN, 8 characters each, UDPRN and UMPRN are space padded to 8 characters</xsd:documentation>
+                                                    </xsd:annotation>
+                                                    <xsd:simpleType>
+                                                        <xsd:restriction base="xsd:string">
+                                                            <xsd:maxLength value="16"/>
+                                                        </xsd:restriction>
+                                                    </xsd:simpleType>
+                                                </xsd:element>
+                                                <xsd:element name="FormattedAddress">
+                                                    <xsd:simpleType>
+                                                        <xsd:restriction base="xsd:string">
+                                                            <xsd:maxLength value="1020"/>
+                                                        </xsd:restriction>
+                                                    </xsd:simpleType>
+                                                </xsd:element>
+                                                <xsd:element name="Score">
+                                                    <xsd:simpleType>
+                                                        <xsd:restriction base="xsd:string">
+                                                            <xsd:maxLength value="10"/>
+                                                        </xsd:restriction>
+                                                    </xsd:simpleType>
+                                                </xsd:element>
+                                            </xsd:sequence>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!--  PostCode Definition -->
+    <xsd:simpleType name="PostCodeType">
+        <xsd:annotation>
+            <xsd:documentation>complex pattern for postcode, which matches definition, accepted by some parsers is: "(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})"</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

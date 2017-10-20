@@ -1,0 +1,623 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+        
+        <util:set id="entryPoints" value-type="java.lang.String">
+			<value>failover-landing</value>
+			<value>SessionExpired</value>
+			<value>used-service-before</value>
+			<value>register-search-penalties</value>
+			<value>register-search-exemptions</value>
+			<value>register-search-gdar-gdip</value>
+			<value>personalised-dashboard</value>
+			<value>account-activation</value>
+			<value>report-forgotten-username</value>
+			<value>report-forgotten-password</value>
+			<value>cookies</value>
+			<value>gdar-gdip-cookies</value>
+			<value>gdar-gdip-terms-and-conditions</value>
+			<value>privacy-policy</value>
+			<value>terms-and-conditions</value>
+			<value>expired-password</value>
+			<value>activatepasswordreset</value>
+			<value>password-reset-confirmation</value>
+			<value>select-landlord-or-agent</value>
+         </util:set>
+
+	<bean id="siteMap" class="com.northgateps.nds.platform.ui.controller.flow.Flow">
+		<property name="name" value="siteMap" />
+		<property name="bundleName">
+			<list>
+				<value>Beis_FieldsBundle</value>
+			</list>
+		</property>
+		<property name="flowUnits">
+			<list>
+				<!-- failover landing page to provide link to personalised-dashboard 
+					which is the real landing page -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="failover-landing" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="used-service-before" />
+				</bean>				
+
+				<!-- Register a user -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+			        <property value="select-landlord-or-agent" name="name" />
+		        </bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path"
+								value="beisRegistrationDetails.userDetails.userType" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.EnumValue">
+							<property name="value" value="LANDLORD" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="select-landlord-type" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+				
+				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="account-details" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="account-address" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="security-details" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="account-confirmation" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="account-activation" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="account-activation-confirmation" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-search-exemptions" name="name" />
+				</bean>
+				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-exemptions" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-search-exemptions" name="name" />
+				</bean>
+				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-search-penalties" name="name" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-penalties" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-search-penalties" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+
+				<!-- Dashboard -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-dashboard" />
+					<property name="security" value="personalised" />													
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.DistributeFlowGate">
+					<property name="value">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path" value="action" />
+						</bean>
+					</property>
+					<property name="divisions">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_MYACCOUNTDETAILS" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:MyAccountDetails" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-account-summary" />
+											<property name="aliasNavigationalState"
+												value="siteMap/personalised-account-summary" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path"
+								value="uiData.userType" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.EnumValue">
+							<property name="value" value="AGENT" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="personalised-select-landlord-type-agent" />
+								<property name="aliasNavigationalState" value="siteMap/personalised-select-landlord-type-agent" />
+							</bean>							
+						</list>
+					</property>
+				</bean>
+				<!-- Register Exemption -->				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-select-property-type" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-select-exemption-type" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-exemption-requirements" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-property-address" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="personalised-epc-details" name="name" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path"
+								value="uiData.selectedExemptionTypeText.documentsRequired" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.StringValue">
+							<property name="value" value="true" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="personalised-exemption-document-upload" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path"
+								value="uiData.selectedExemptionTypeText.textRequired" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.StringValue">
+							<property name="value" value="true" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="personalised-exemption-text" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path" value="uiData.selectedExemptionTypeText.startDateRequired" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.StringValue">
+							<property name="value" value="true" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="personalised-exemption-start-date" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.ComparisonFlowGate">
+					<property name="value1">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path" value="uiData.selectedExemptionTypeText.frvRequired" />
+						</bean>
+					</property>
+					<property name="value2">
+						<bean class="com.northgateps.nds.platform.ui.controller.value.StringValue">
+							<property name="value" value="true" />
+						</bean>
+					</property>
+					<property name="trueFlow">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+								<property name="name" value="personalised-exemption-list-of-values" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-exemption-declaration" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-exemption-confirmation" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-print-exemption-summary-error" />
+					<property name="security" value="personalised" />
+				</bean>
+
+				<!-- Account summary -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.DistributeFlowGate">
+					<property name="value">
+						<bean class="com.northgateps.nds.platform.api.model.utilities.ModelField">
+							<property name="path" value="action" />
+						</bean>
+					</property>
+					<property name="divisions">
+						<list>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_EDITPERSONALDETAILS" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:EditPersonalDetails" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-change-account-details" />
+											<property name="aliasNavigationalState"
+												value="siteMap/personalised-change-account-details" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_CHANGEEMAIL" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:ChangeEmail" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-change-email-address" />
+											<property name="aliasNavigationalState" value="siteMap/personalised-change-email-address" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_CHANGEPASSWORD" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:ChangePassword" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-change-password" />
+											<property name="aliasNavigationalState" value="siteMap/personalised-change-password" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_CHANGEADDRESS" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:ChangeAddress" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-change-account-address" />
+											<property name="aliasNavigationalState"
+												value="siteMap/personalised-change-account-address" />
+										</bean>
+
+									</list>
+								</property>
+							</bean>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:Home" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-dashboard" />
+											<property name="aliasNavigationalState" value="siteMap/personalised-dashboard" />
+											<property name="security" value="personalised" />
+										</bean>
+
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Edit personal details -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-change-account-details" />
+					<property name="security" value="personalised" />
+				</bean>
+				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Change email -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-change-email-address" />
+					<property name="security" value="personalised" />
+				</bean>				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Change password -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-change-password" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-change-password-confirmation" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Expired password detected by CAS -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="expired-password" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="expired-password-confirmation" />
+				</bean>
+                <!-- back to start page -->
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="failover-landing" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Change Address -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-change-account-address" />
+					<property name="security" value="personalised" />
+				</bean>				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-account-summary" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Report a forgotten username -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="report-forgotten-username" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="report-forgotten-username-confirmation" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Reset a forgotten password -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="report-forgotten-password" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="forgotten-password-confirmation" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- Password Reset -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="activate-password-reset" />
+					<property name="entryPointName" value="activatepasswordreset" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="password-reset-confirmation" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+
+				<!-- End Exemption -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-end-exemption" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-end-exemption-confirmation" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-dashboard" />
+					<property name="security" value="personalised" />
+				</bean>
+				
+
+				<!-- GDAR / GDIP Search -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="register-search-gdar-gdip" name="name" />
+				</bean>				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property value="gdar-gdip-terms-and-conditions" name="name" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+				
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="select-landlord-type" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>
+				
+				<!-- Register an exemption as agent  -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-select-landlord-type-agent" />
+					<property name="security" value="personalised" />
+				</bean>			
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-landlord-details" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-landlord-address" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-select-property-type" />
+					<property name="security" value="personalised" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="end" />
+				</bean>				
+				
+				
+                <!-- Common options -->
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="cookies" />
+                    <property name="commonOption" value="true" />
+                </bean>
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="privacy-policy" />
+                    <property name="commonOption" value="true" />
+                </bean>
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="terms-and-conditions" />
+                    <property name="commonOption" value="true" />
+                </bean>
+                 <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="gdar-gdip-cookies" />
+                    <property name="commonOption" value="true" />
+                </bean>
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="SessionExpired" />
+                    <property name="viewName" value="session-expired" />
+                    <property name="commonOption" value="true" />
+                </bean>
+                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+                    <property name="name" value="SessionException" />
+                    <property name="viewName" value="session-exception" />
+                    <property name="commonOption" value="true" />
+                </bean>
+			</list>
+		</property>
+	</bean>
+</beans>

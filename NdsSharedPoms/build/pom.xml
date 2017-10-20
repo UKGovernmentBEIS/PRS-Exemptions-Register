@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 
+ 	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis.sharedpoms</groupId>
+	<artifactId>sharedpoms-parentAggregate</artifactId>
+	<version>0.0.1503</version>
+	<packaging>pom</packaging>
+
+	<name>NDS shared POM aggregate POM</name>
+	<description>
+		Northgate Public Services Digital Service Shared POMS build
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<maven.plugin.versions.version>2.2</maven.plugin.versions.version>
+	</properties>
+
+	<modules>
+		<module>../pom.xml</module>
+		<module>../NdsSharedPomEsb/pom.xml</module>
+		<module>../NdsSharedPomTest/pom.xml</module>
+		<module>../NdsSharedPomUi/pom.xml</module>
+		<module>../NdsSharedPomCas/pom.xml</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- Maven version number plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${maven.plugin.versions.version}</version>
+					<dependencies>
+						<dependency>
+						  <groupId>org.apache.maven.wagon</groupId>
+						  <artifactId>wagon-provider-api</artifactId>
+						  <version>2.9</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+</project>

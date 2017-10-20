@@ -1,0 +1,32 @@
+{   
+    "loginUsername" : "selenium",
+    "loginPassword" : "test@123456789",
+    "loginOrgUsername" : "seleniumorg",
+    "loginOrgPassword" : "password01",
+    "loginDashboardUsername" : "dashboarduser",
+    "loginDashboardPassword" : "password01",
+    "loginAgentUsername" : "seleniumagentuser",
+    "loginAgentPassword" : "password01",
+    "loginPartiallyRegisteredUserName" : "partiallyregistereduser",
+    "loginPartiallyRegisteredPassword" : "Donotchangethis01",
+    "loginPartiallyRegisteredFirstName" : "Partially",
+    "loginPartiallyRegisteredSurname" : "Registereduser",
+    "loginPartiallyRegisteredEmail" : "partiallyregistereduser@northgateps.com",
+    "loginPartiallyRegisteredConfirmEmail" : "partiallyregistereduser@northgateps.com",
+    "loginPartiallyRegisteredTelephoneNumber" : "02085822870",
+    "loginPartiallyRegisteredPostCode" : "RG1 1ET",
+    "loginPartiallyRegisteredOrgUserName" : "partiallyregisteredorgansationuser",
+    "loginPartiallyRegisteredOrgPassword" : "Donotchangethis01",
+    "loginPartiallyRegisteredOrganisationName" : "PartiallyRegisteredTestOrg",
+    "loginPartiallyRegisteredOrgEmail" : "partiallyregisteredorgansationuser@northgateps.com",
+    "loginPartiallyRegisteredOrgConfirmEmail" : "partiallyregisteredorgansationuser@northgateps.com",
+    "loginPartiallyRegisteredOrgTelephoneNumber" : "02085822865",
+    "loginPartiallyRegisteredAgentUserName" : "partiallyregisteredagentuser",
+    "loginPartiallyRegisteredAgentPassword" : "Donotchangethis01",
+    "loginPartiallyRegisteredAgentName" : "PartiallyRegisteredTestAgent",
+    "loginPartiallyRegisteredAgentEmail" : "partiallyregisteredagentuser@northgateps.com",
+    "loginPartiallyRegisteredAgentConfirmEmail" : "partiallyregisteredagentuser@northgateps.com",
+    "loginPartiallyRegisteredAgentTelephoneNumber" : "01234567890"
+    
+    
+};

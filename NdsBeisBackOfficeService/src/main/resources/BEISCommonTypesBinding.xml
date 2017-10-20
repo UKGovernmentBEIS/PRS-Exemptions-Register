@@ -1,0 +1,7 @@
+<jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">    
+    <jxb:bindings schemaLocation="BEISCommonTypes.xsd">        
+        <jxb:schemaBindings>
+          <jxb:package name="com.northgateps.nds.beis.backoffice.service.common"/>
+        </jxb:schemaBindings>
+    </jxb:bindings>
+</jxb:bindings>

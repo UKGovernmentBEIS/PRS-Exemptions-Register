@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 1.0.0_1 (NorthgatePS)
+Implementation-Title: NdsBeisEsb
+Implementation-Version: 1.0.0.DISCOVERY

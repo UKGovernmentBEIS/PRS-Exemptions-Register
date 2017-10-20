@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/RegisterPRSExemptionRequest" xmlns:core="http://northgate-is.com/FL/Core" 
+    xmlns:beis="http://northgateps.com/BEISCommonTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://northgateps.com/BEIS/RegisterPRSExemptionRequest"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	version="1.0.00000.0">
+	<xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd" />
+	<xsd:import namespace="http://northgateps.com/BEISCommonTypes" schemaLocation="BEISCommonTypes.xsd"/>
+	
+	<xsd:element name="RegisterPRSExemptionRequest">
+		<xsd:complexType>
+		<xsd:complexContent>
+                <xsd:extension base="core:StandardRequestStructure">
+			<xsd:sequence>
+				<xsd:annotation>
+					<xsd:documentation>This might change to allow codes as well as
+						descriptions of for verification
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:element name="LandlordPartyRef" type="xsd:integer" minOccurs="0"/>
+				<xsd:element name="AgentPartyRef" type="xsd:integer" minOccurs="0"/>
+				<xsd:element name="LandlordDetails" minOccurs="0" >
+				  <xsd:complexType>
+		            <xsd:annotation>
+			        <xsd:documentation>Landlord Details</xsd:documentation>
+		            </xsd:annotation>
+		            <xsd:sequence>
+		             <xsd:element name="FirstName" type="xsd:string" minOccurs="0"/>
+				     <xsd:element name="LastName" type="xsd:string" minOccurs="0"/>
+				     <xsd:element name="OrganisationName" type="xsd:string" minOccurs="0"/>
+				     <xsd:element name="EmailAddress" type="xsd:string" />
+				     <xsd:element name="PhoneNumber" type="xsd:string" />
+				     <xsd:element name="AddressMoniker" type="xsd:string" minOccurs="0"/>
+				     <xsd:element name="Address" type="beis:AddressType"  />
+			 	</xsd:sequence>
+				</xsd:complexType>
+			    </xsd:element>	
+				<xsd:element name="Service" type="xsd:string" />
+				<xsd:element name="ExemptionCode" type="xsd:string" />
+				<xsd:element name="ExemptionReference" type="xsd:string" />
+				<xsd:element name="EPCReference" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="LandmarkUPRN" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="EPCBand" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="EPCRating" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="Address" type="core:AddressType" />
+				<xsd:element name="AddressMoniker" type="xsd:string" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>
+							The address moniker is provided when the address has been searched via the address search, otherwise it is a manual address
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="ExemptionText" type="xsd:string"
+					minOccurs="0" />
+				<xsd:element name="ExemptionStartDate" type="xsd:date" minOccurs="0"/>
+				<xsd:element name="ExemptionOptionCode" type="xsd:string"
+					minOccurs="0" />
+				<xsd:element name="ExemptionOptionText" type="xsd:string"
+					minOccurs="0" />
+				<xsd:element name="ExemptionDocuments" type="ExemptionDocumentType"
+					minOccurs="0" />
+			</xsd:sequence>
+			</xsd:extension>
+            </xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="ExemptionDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Any supporting documents submitted with the
+				application
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ExemptionDocument" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="DocumentType" minOccurs="0">
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:string">
+									<xsd:maxLength value="20" />
+									<xsd:enumeration value="PRS_PROOF" />
+									<xsd:enumeration value="PRS_NOTES" />
+									<xsd:enumeration value="EPC" />
+								</xsd:restriction>
+							</xsd:simpleType>
+						</xsd:element>
+						<xsd:element name="DocumentFileName" type="xsd:string" />
+						<xsd:element name="DocumentFileType" type="xsd:string" />
+						<xsd:element name="DocumentDescription" type="xsd:string"
+							minOccurs="0" />
+						<xsd:element name="DocumentObject" type="xsd:base64Binary" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

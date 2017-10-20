@@ -1,0 +1,9 @@
+/build/
+/target/
+/.gradle/
+/.settings/
+apache-tomcat-7.0.59/*
+**/eclipse_classes/**
+**/dist/**
+**/scratch/
+allocPort.txt

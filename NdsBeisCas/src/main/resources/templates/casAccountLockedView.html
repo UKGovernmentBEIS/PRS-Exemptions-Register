@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout">
+
+<head>
+    <title th:text="#{screen.accountlocked.heading}"></title>
+</head>
+
+<body id="cas">
+<main layout:fragment="content">
+  <div class="phase-banner-beta">
+        <p>
+          <strong class="phase-tag" th:text="#{screen.welcome.applicationphase}"></strong> <span th:text="#{screen.welcome.applicationphase.label}"></span>
+        </p>
+      </div>
+        
+        <h3 class="heading-medium" th:utext="#{screen.accountlocked.heading}"/>
+        <p>
+          <span th:utext="#{screen.accountlocked.message}"/>
+        </p>
+    </div>
+</main>
+</body>
+</html>

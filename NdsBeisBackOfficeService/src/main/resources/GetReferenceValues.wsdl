@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:ns="http://www.northgate-is.com/FL/GetReferenceValues" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="northgate-is.com/GetReferenceValues.wsdl" targetNamespace="northgate-is.com/GetReferenceValues.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://www.northgate-is.com/FL/GetReferenceValues" schemaLocation="GetReferenceValues.xsd"/>
+			<xsd:import namespace="http://www.northgate-is.com/FL/GetReferenceValues" schemaLocation="GetReferenceValuesResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetReferenceValuesRequest">
+		<wsdl:part name="parameters" element="ns:GetReferenceValues"/>
+	</wsdl:message>
+	<wsdl:message name="GetReferenceValuesResponse">
+		<wsdl:part name="parameters" element="ns:GetReferenceValuesResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="GetReferenceValuesWSDLPort">
+		<wsdl:operation name="GetReferenceValuesWSDL">
+			<wsdl:input message="tns:GetReferenceValuesRequest"/>
+			<wsdl:output message="tns:GetReferenceValuesResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetReferenceValuesWSDLBinding" type="tns:GetReferenceValuesWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- Define document style -->
+		<!-- define literal -->
+		<wsdl:operation name="GetReferenceValuesWSDL">
+			<soap:operation soapAction="https://server/DATABASE/communication/getReferenceValues"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetReferenceValuesWSDLService">
+		<wsdl:port name="GetReferenceValuesWSDLPort" binding="tns:GetReferenceValuesWSDLBinding">
+			<soap:address location="https://server/DATABASE/communication/getReferenceValues"/>
+			<!-- give the binding an network address -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

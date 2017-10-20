@@ -1,0 +1,191 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis</groupId>
+	<artifactId>beis-esb</artifactId>
+	<version>0.0.0</version>
+	<packaging>war</packaging>
+	<url>${homepage.url}beis-esb/</url>
+
+	<name>NDS Beis ESB</name>
+	<description>
+		Northgate Public Services Digital Service Beis POM (ESB)
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds/beis</id>
+			<url>${distro.url}beis-esb/</url>
+		</site>
+	</distributionManagement>
+
+	<parent>
+		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<artifactId>sharedpoms-esb</artifactId>
+		<version>(,1.0.0]</version>
+		<relativePath>../NdsSharedPoms/NdsSharedPomEsb/</relativePath>
+	</parent>
+
+	<properties>
+		<nds.beis.version>[0.0.0,1.0.0)</nds.beis.version>
+		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.northgateps.nds.platform</groupId>
+			<artifactId>platform-shared</artifactId>
+			<version>${nds.platform.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.northgateps.nds.platform</groupId>
+			<artifactId>platform-esb</artifactId>
+			<version>${nds.platform.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-fop</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.52</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-test-spring</artifactId>
+			<version>${camel.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.northgateps.nds.platform</groupId>
+			<artifactId>platform-esb-test</artifactId>
+			<version>${nds.platform.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-ws-security</artifactId>
+   			<version>${cxf.version}</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>  
+					<groupId>org.apache.santuario</groupId>
+					<artifactId>xmlsec</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>
+		<dependency>
+			<groupId>org.apache.santuario</groupId>
+			<artifactId>xmlsec</artifactId>
+			<version>2.0.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.northgateps.beis</groupId>
+			<artifactId>beis-backofficeservice</artifactId>
+			<version>${nds.beis.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.northgateps.beis</groupId>
+			<artifactId>beis-shared-model</artifactId>
+			<version>${nds.beis.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-pool</artifactId>
+			<version>5.12.2</version>
+		</dependency>
+		<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-camel</artifactId>
+				<version>5.12.2</version>
+		</dependency>
+		 <!-- https://search.maven.org/#artifactdetails%7Ccom.googlecode.owasp-java-html-sanitizer%7Cowasp-java-html-sanitizer%7C20160924.1%7Cjar -->
+    	<dependency>
+        	<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+        	<artifactId>owasp-java-html-sanitizer</artifactId>
+        	<version>20160924.1</version>
+    	</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- this configures the WAR file -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${maven.war.plugin.version}</version>
+				<configuration>
+					<webXml>src\main\webapp\WEB-INF\web.xml</webXml>
+					
+					<!-- The dev properties files are excluded so that they get to the test/live servers where they can be confusing. -->
+					<!-- If you need to run the war file locally outside of Eclipse, you'll need to add the properties file manually. -->
+					<packagingExcludes>**/*.p12, **/*.dev.properties, **/*.pem</packagingExcludes>
+				</configuration>
+			</plugin>
+			
+			<!--  tell the unit tests where to find our additional resources -->			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+        		<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${basedir}/src/test/java</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven.resources.plugin.version}</version>
+				<executions>
+					<execution>
+						<!-- Copy the public key for the LDAP CA -->
+						<id>copy-root-ca-cert</id>
+						<phase>validate</phase>
+						<goals><goal>copy-resources</goal></goals>
+						<configuration>
+							<outputDirectory>${basedir}/classes/config/certs/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/../NdsEnvironment/environment/develop/certs/ca/vm-nds-tst03</directory>
+									<includes>
+										<include>ca-key-cert.pem</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
+	</build>
+	
+	<profiles>
+		
+	</profiles>
+
+</project>

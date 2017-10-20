@@ -1,0 +1,6 @@
+/classes/
+
+/target/
+
+/src/main/java/**/*.java
+/.settings/

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/GetPRSAccountExemptionsRequest"
+xmlns:ns1="http://northgateps.com/BEIS/GetPRSAccountExemptionsResponse"
+xmlns:wsdl1="http://www.northgateps.com/GetPRSAccountExemptions.wsdl"
+name="GetPRSAccountExemptions"
+targetNamespace="http://www.northgateps.com/GetPRSAccountExemptions.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSAccountExemptionsRequest" schemaLocation="GetPRSAccountExemptionsRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSAccountExemptionsResponse" schemaLocation="GetPRSAccountExemptionsResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPRSAccountExemptionsRequest">
+		<wsdl:part name="parameters" element="ns:GetPRSAccountExemptionsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetPRSAccountExemptionsResponse">
+		<wsdl:part name="parameters" element="ns1:GetPRSAccountExemptionsResponse" />
+	</wsdl:message>
+	<wsdl:portType name="GetPRSAccountExemptionsWSDLPort">
+		<wsdl:operation name="GetPRSAccountExemptionsWSDL">
+			<wsdl:input message="wsdl1:GetPRSAccountExemptionsRequest" />
+			<wsdl:output message="wsdl1:GetPRSAccountExemptionsResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetPRSAccountExemptionsWSDLBinding" type="wsdl1:GetPRSAccountExemptionsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetPRSAccountExemptionsWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/GetPRSExemptionsRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetPRSAccountExemptionsWSDLService">
+		<wsdl:port binding="wsdl1:GetPRSAccountExemptionsWSDLBinding" name="GetPRSAccountExemptionsWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/GetPRSExemptionsRequest" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

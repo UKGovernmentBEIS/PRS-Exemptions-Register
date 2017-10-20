@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/GetEPCDetailsRequest"
+xmlns:ns1="http://northgateps.com/BEIS/GetEPCDetailsResponse"
+xmlns:wsdl1="http://www.northgateps.com/GetEPCDetails.wsdl"
+name="GetEPCDetails"
+targetNamespace="http://www.northgateps.com/GetEPCDetails.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetEPCDetailsRequest" schemaLocation="GetEPCDetailsRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetEPCDetailsResponse" schemaLocation="GetEPCDetailsResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetEPCDetailsRequest">
+		<wsdl:part name="parameters" element="ns:GetEPCDetailsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetEPCDetailsResponse">
+		<wsdl:part name="parameters" element="ns1:GetEPCDetailsResponse" />
+	</wsdl:message>
+	<wsdl:portType name="GetEPCDetailsWSDLPort">
+		<wsdl:operation name="GetEPCDetailsWSDL">
+			<wsdl:input message="wsdl1:GetEPCDetailsRequest" />
+			<wsdl:output message="wsdl1:GetEPCDetailsResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetEPCDetailsWSDLBinding" type="wsdl1:GetEPCDetailsWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetEPCDetailsWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/GetEPCDetailsRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetEPCDetailsWSDLService">
+		<wsdl:port binding="wsdl1:GetEPCDetailsWSDLBinding" name="GetEPCDetailsWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/GetEPCDetailsRequest" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

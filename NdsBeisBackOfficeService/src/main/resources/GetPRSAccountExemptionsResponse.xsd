@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/GetPRSAccountExemptionsResponse" 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" 
+targetNamespace="http://northgateps.com/BEIS/GetPRSAccountExemptionsResponse" elementFormDefault="qualified" attributeFormDefault="unqualified" 
+xmlns:beisc="http://northgateps.com/BEISCommonTypes">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>    
+    <xsd:import namespace="http://northgateps.com/BEISCommonTypes" schemaLocation="BEISCommonTypes.xsd"/>
+	<xsd:element name="GetPRSAccountExemptionsResponse">
+		<xsd:annotation>
+			<xsd:documentation>Message defining a response of get PRS Exemption</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardResponseStructure">
+				<xsd:sequence>
+					<xsd:element name="Exemptions"
+							minOccurs="0" maxOccurs="1">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Exemption" maxOccurs="unbounded">
+										<xsd:complexType>
+							<xsd:sequence>
+							<xsd:element name="ExemptionRefNo" type="xsd:integer"/>
+							<xsd:element name="ExemptionReference" type="xsd:string" minOccurs="0"/>
+							<xsd:element name="Service">
+							<xsd:annotation>
+									<xsd:documentation>PRSD or PRSN</xsd:documentation>
+							</xsd:annotation>
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:string" >
+									<xsd:enumeration value="PRSD"/>
+									<xsd:enumeration value="PRSN"/>
+								</xsd:restriction>
+							</xsd:simpleType>
+							</xsd:element>
+							<xsd:element name="ExemptionReasonCode" type="xsd:string">
+							<xsd:annotation>
+								<xsd:documentation>Exemption code</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="PWSDescription" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>Exemption description for use on PWS</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="RegisteredDate" type="xsd:date">
+							<xsd:annotation>
+								<xsd:documentation>The date the exemption was created</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="EndDate" type="xsd:date">
+							<xsd:annotation>
+								<xsd:documentation>Exemption end date</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="Address" type="xsd:string">
+								<xsd:annotation>
+								<xsd:documentation>The address as a single string i.e. formatted address</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+							</xsd:element>
+				</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

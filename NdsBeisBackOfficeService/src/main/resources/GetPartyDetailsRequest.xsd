@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/GetPartyDetailsRequest" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:core="http://northgate-is.com/FL/Core"
+ targetNamespace="http://northgateps.com/BEIS/GetPartyDetailsRequest" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+    <xsd:element name="GetPartyDetailsRequest">
+        <xsd:annotation>
+            <xsd:documentation>Message request containing party reference and return a user that is registered </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardRequestStructure">
+                                <xsd:sequence>
+                                    <xsd:element name="PartyRef" type="xsd:integer">
+                                        <xsd:annotation>
+                                            <xsd:documentation>The users party ref</xsd:documentation>
+                                        </xsd:annotation>                                        
+                                   </xsd:element>   
+                             </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

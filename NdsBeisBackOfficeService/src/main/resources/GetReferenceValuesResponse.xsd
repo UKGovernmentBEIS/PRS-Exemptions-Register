@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Mark Stanley (SX3 PUBLIC SECTOR) -->
+<xs:schema xmlns="http://www.northgate-is.com/FL/GetReferenceValues" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgate-is.com/FL/GetReferenceValues" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xs:element name="GetReferenceValuesResponse">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="flc:StandardResponseStructure">
+					<xs:sequence>
+						<xs:element name="ReferenceValues" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ReferenceValue" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="DomainCode">
+													<xs:annotation>
+														<xs:documentation>The domain or type of this code e.g. Titles</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="20"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ServiceCode">
+													<xs:annotation>
+														<xs:documentation>Where the system has multiple services the service to which this list belongs. Those for the 'SYS' service are valid for all services</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="10"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="WorkplaceCode">
+													<xs:annotation>
+														<xs:documentation>Where the system has multiple tenants (workplaces) the workplace to which this list belongs.  The details for the system workplace (workplace 1) are valid for all workplaces</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="10"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="Code">
+													<xs:annotation>
+														<xs:documentation>The available code e.g. Mr</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="10"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="Name">
+													<xs:annotation>
+														<xs:documentation>The name of the code, the value that would normally be shown to the user</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="40"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="NameTranslations" type="flc:StandardTextTranslationStructure" minOccurs="0"/>
+												<xs:element name="Comment" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>A longer text string associated with the code, a long description</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="240"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="Default" type="flc:YesNoType">
+													<xs:annotation>
+														<xs:documentation>Is this the default value for this domain</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="Sequence" type="xs:integer" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>an optional numeric value, normally used for sorting the codes</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

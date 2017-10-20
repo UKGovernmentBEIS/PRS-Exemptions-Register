@@ -1,0 +1,327 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.northgateps.beis.sharedpoms</groupId>
+  <artifactId>sharedpoms-ui</artifactId>
+  <version>0.0.1503</version>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>com.northgateps.beis.sharedpoms</groupId>
+    <artifactId>sharedpoms</artifactId>
+	<version>0.0.1503</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <wro4j.version>1.7.7</wro4j.version>
+    <jruby.version>1.7.19</jruby.version>
+    <n4u.sass.version>3.2.1</n4u.sass.version>
+    <javax.version>2.2</javax.version>
+    <javax.el.version>3.0.0</javax.el.version>
+    <jstl.version>1.2</jstl.version>
+    <nu.validator.htmlparser.version>1.4</nu.validator.htmlparser.version>
+    <jmockit.version>1.15</jmockit.version>
+    <javax.servlet.version>3.1.0</javax.servlet.version>
+    <geodienstencentrum.sass.version>2.8</geodienstencentrum.sass.version>
+    <org.eclipse.persistence.version>2.6.0</org.eclipse.persistence.version>
+    <maven.plugin.failsafe.version>2.18.1</maven.plugin.failsafe.version>
+	<nds.generatepageobjects.version>0.0.0</nds.generatepageobjects.version>
+    <owasp.version>1.2</owasp.version>
+	<httpclient.version>4.5.3</httpclient.version>
+	<fest.assert.version>1.4</fest.assert.version>
+	<slf4j.simple.version>1.7.7</slf4j.simple.version>
+	<hamcrest.all.version>1.1</hamcrest.all.version>
+    <samaxes.version>1.7.4</samaxes.version>
+    <commons.fileupload.version>1.3.1</commons.fileupload.version>
+	<springframework.session.version>1.3.0.RELEASE</springframework.session.version>
+    <springframework.boot.version>1.5.1.RELEASE</springframework.boot.version>
+    <xml-apis.version>1.4.01</xml-apis.version>
+    <fst.version>2.48</fst.version>
+  </properties>
+
+  <name>NDS base POM for UI type projects</name>
+  <description>
+		Northgate Public Services Digital Service base POM for UI type projects
+	</description>
+  <organization>
+    <name>Northgate Public Services</name>
+    <url>http://www.northgatepublicservices.co.uk/</url>
+  </organization>
+
+  <!-- required to ensure that javadocs site has the correct links back to 
+    the aggregate project -->
+  <distributionManagement>
+    <site>
+      <id>www.northgatepublicservices.co.uk/nds/beis</id>
+      <url>${distro.url}</url>
+    </site>
+  </distributionManagement>
+
+  <dependencyManagement>
+	<dependencies>
+	
+		<!-- 
+			manages versions to ensure they're all from the same release without 
+			having to give each one a version number
+		  -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-framework-bom</artifactId>
+			<version>${springframework.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		
+        <!-- Enables Spring Boot without specifying it as a parent -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>${springframework.boot.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+	</dependencies>
+  </dependencyManagement>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ro.isdc.wro4j</groupId>
+      <artifactId>wro4j-core</artifactId>
+      <version>${wro4j.version}</version>
+      <scope>compile</scope>
+    </dependency>
+	
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-web</artifactId>
+		<version>${springframework.security.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-config</artifactId>
+		<version>${springframework.security.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-cas</artifactId>
+		<version>${springframework.security.version}</version>
+	</dependency>
+	
+	<dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>${xml-apis.version}</version>
+    </dependency>
+	<dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>${javax.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+      <version>${javax.el.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>${jstl.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-hc</artifactId>
+      <version>${cxf.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-client</artifactId>
+      <version>${cxf.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>nu.validator.htmlparser</groupId>
+      <artifactId>htmlparser</artifactId>
+      <version>${nu.validator.htmlparser.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+      <version>${owasp.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${javax.servlet.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jmockit</groupId>
+      <artifactId>jmockit</artifactId>
+      <version>${jmockit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>${cukes.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-core</artifactId>
+      <version>${cukes.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>${cukes.version}</version>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
+		<groupId>org.hamcrest</groupId>
+		<artifactId>hamcrest-all</artifactId>
+		<version>${hamcrest.all.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>net.serenity-bdd</groupId>
+		<artifactId>serenity-core</artifactId>
+		<version>${serenity.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>net.serenity-bdd</groupId>
+		<artifactId>serenity-junit</artifactId>
+		<version>${serenity.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>net.serenity-bdd</groupId>
+		<artifactId>serenity-cucumber</artifactId>
+		<version>${serenity.cucumber.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+   		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>${slf4j.simple.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.easytesting</groupId>
+		<artifactId>fest-assert</artifactId>
+		<version>${fest.assert.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpclient</artifactId>
+		<version>${httpclient.version}</version>
+	</dependency>
+    <dependency>
+        <groupId>de.ruedigermoeller</groupId>
+        <artifactId>fst</artifactId>
+        <version>${fst.version}</version>
+    </dependency>
+	<!-- Logging systems -->
+	<dependency>
+		<groupId>com.northgateps.nds.logging</groupId>
+		<artifactId>logging</artifactId>
+		<version>${nds.logging.version}</version>
+	</dependency>
+  </dependencies>
+
+  <build>
+		<plugins>
+			<!-- 
+				AOP Weaving.  
+				Looks for @Aspect in Java files which define where and what to add to the bytecode.
+				Cannot be in the parent pom since the NdsLoggingSystem project has the same root
+				pom and would fail to compile with the aspectLibrary definition below (since it
+				points to the NdsLoggingsystem).
+			 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>${aspectj.maven.plugin.version}</version>
+				<configuration>
+					<complianceLevel>${java.target.version}</complianceLevel>
+					<verbose>true</verbose>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>com.northgateps.nds.logging</groupId>
+							<artifactId>logging</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectjtools.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			
+			<!-- Plugin to check the aspectj-maven-plugin actually did what we want it to do. -->
+			<plugin>
+				<groupId>com.northgateps.nds.plugins</groupId>
+				<artifactId>plugins-checkweaving</artifactId>
+				<version>${nds.checkweaving.version}</version>
+				<configuration>
+					<skipProject>
+						<param>com.northgateps.beis.sharedpoms:sharedpoms-ui</param>
+					</skipProject>						
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>checkAspectWeaving</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven.plugin.failsafe.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

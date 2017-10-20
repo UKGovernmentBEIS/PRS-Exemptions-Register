@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--  Schema version Date:2014-05-22 (by Northgate Information Solutions)  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgate-is.com/NAS/AddressDetailRequest-v1.0"
+            xmlns:core="http://northgate-is.com/FL/Core"
+            targetNamespace="http://northgate-is.com/NAS/AddressDetailRequest-v1.0" elementFormDefault="qualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+    <xsd:element name="AddressDetailRequest">
+        <xsd:annotation>
+            <xsd:documentation>Request NAS address detail</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="RequestParameters" type="core:StandardRequestStructure"/>
+                <xsd:element name="Address">
+                    <xsd:complexType>
+                        <xsd:annotation>
+                            <xsd:documentation>Identify Address for which details are required</xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:sequence>
+                            <xsd:element name="AddressIdentifier">
+                                <xsd:annotation>
+                                    <xsd:documentation>UDPRN + UMPRN, 8 characters each, UMPRN is space padded if there isn't a value</xsd:documentation>
+                                </xsd:annotation>
+                                <xsd:simpleType>
+                                    <xsd:restriction base="xsd:string">
+                                        <xsd:maxLength value="16"/>
+                                    </xsd:restriction>
+                                </xsd:simpleType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

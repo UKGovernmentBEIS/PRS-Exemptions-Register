@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/PRSPenaltySearchResponse" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="http://northgateps.com/BEIS/PRSPenaltySearchResponse" 
+xmlns:beisc="http://northgateps.com/BEISCommonTypes"
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xsd:import namespace="http://northgateps.com/BEISCommonTypes" schemaLocation="BEISCommonTypes.xsd"/>    
+    <xsd:element name="PRSPenaltySearchResponse">
+        <xsd:annotation>
+            <xsd:documentation>Exemption Search Response</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="core:StandardResponseStructure">
+                                <xsd:sequence>
+                                <xsd:element name="Penalties" minOccurs="0" maxOccurs="1">
+						            <xsd:annotation>
+                                        <xsd:documentation>Details of the exemptions returned</xsd:documentation>
+                                    </xsd:annotation>
+                        		<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Penalty" maxOccurs="unbounded">
+										<xsd:complexType>
+										<xsd:sequence>
+							                <xsd:element name="PenaltyRefNo" type="xsd:integer"/>
+	                                        <xsd:element name="Service">
+		                                        <xsd:annotation>
+													<xsd:documentation>PRSD or PRSN</xsd:documentation>
+												</xsd:annotation>
+												<xsd:simpleType>
+													<xsd:restriction base="xsd:string" >
+														<xsd:enumeration value="PRSD"/>
+														<xsd:enumeration value="PRSN"/>
+													</xsd:restriction>
+												</xsd:simpleType>
+											</xsd:element>
+	                                        <xsd:element name="PenaltyReasonCode"  type="xsd:string"/>
+	                                        <xsd:element name="PWSDescription"  type="xsd:string" minOccurs="0"/>
+	                                        <xsd:element name="Amount" type="xsd:decimal"  minOccurs="0"/>
+	                                        <xsd:element name="LandLordName" type="xsd:string"  minOccurs="0"/>
+	                                        <xsd:element name="Address" type="xsd:string" minOccurs="0">
+													<xsd:annotation>
+													<xsd:documentation>The address as a single string i.e. formatted address</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+                                    </xsd:sequence>
+                                    </xsd:complexType>
+                                    </xsd:element>
+                               </xsd:sequence>    
+                               </xsd:complexType>
+                               </xsd:element>
+                               </xsd:sequence> 
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

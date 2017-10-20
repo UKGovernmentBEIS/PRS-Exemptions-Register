@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:ns="urn:ViewPdf"
+xmlns:ns1="urn:ViewPdfResponse"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl1="http://www.northgateps.com/ViewDocumentGDIPGDAR.wsdl"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ViewDocumentGDIPGDAR"
+targetNamespace="http://www.northgateps.com/ViewDocumentGDIPGDAR.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="urn:ViewPdf" schemaLocation="ViewDocumentGDIPGDAR.xsd"/>
+			<xsd:import namespace="urn:ViewPdfResponse" schemaLocation="ViewDocumentGDIPGDARResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="ViewPdfRequest">
+		<wsdl:part name="parameters" element="ns:ViewPdf" />
+	</wsdl:message>
+	<wsdl:message name="ViewPdfResponse">
+		<wsdl:part name="parameters" element="ns1:ViewPdfResponse" />
+	</wsdl:message>
+	<wsdl:portType name="ViewDocumentGDIPGDAR">
+		<wsdl:operation name="ViewPdf">
+			<wsdl:input message="wsdl1:ViewPdfRequest" />
+			<wsdl:output message="wsdl1:ViewPdfResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ViewDocumentGDIPGDARSOAP" type="wsdl1:ViewDocumentGDIPGDAR">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="ViewPdf">
+			<soap:operation
+				soapAction="http://machine:port/communication/rewrite" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="ViewDocumentGDIPGDAR">
+		<wsdl:port binding="wsdl1:ViewDocumentGDIPGDARSOAP" name="ViewDocumentGDIPGDARSOAP">
+			<soap:address location="http://machine:port/communication/ViewDocumentGDIPGDAR" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:b="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+    ">
+
+	<!-- Set up ehCache for the application in time for other configuration files to use it if needed. -->
+	<b:bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		p:config-location="classpath:ehcacheBeisUi.xml" />	
+		
+	<!-- 
+		Load these properties from our main properties file for use in this configuration 
+		cas.server.hostInternal - CAS server address for UI to CAS back-channel communication 
+		cas.service.logout.filter - Configures the requestSingleLogoutFilter
+		role.extract.regex - pattern for reading roles granted to a user
+		ndsdb... - Mongo Db connection details, used to back spring-session
+		app.session.maxInactiveIntervalInSeconds - UI session timeout
+		app.session.maxInactiveIntervalInSecondsForNonLoggedInUsers - UI session timeout for non-logged-in users
+	-->
+	<b:bean id="uiProperties" class="com.northgateps.nds.platform.ui.configuration.ConfigurationExtractor">
+		<b:constructor-arg>
+			<b:array value-type="java.lang.String">
+				<b:value>cas.server.hostInternal</b:value>
+				<b:value>cas.service.logout.filter</b:value>
+				<b:value>role.extract.regex</b:value>
+				<b:value>ndsdb.name</b:value>
+				<b:value>ndsdb.server</b:value>
+				<b:value>ndsdb.port</b:value>
+				<b:value>ndsdb.user</b:value>
+				<b:value>ndsdb.password</b:value>
+				<b:value>ndsdb.replicaset</b:value>
+				<b:value>ndsdb.max.connection</b:value>
+				<b:value>app.session.maxInactiveIntervalInSeconds</b:value>
+				<b:value>app.session.maxInactiveIntervalInSecondsForNonLoggedInUsers</b:value>
+			</b:array>
+		</b:constructor-arg>
+	</b:bean>
+	
+    <context:property-placeholder properties-ref="uiProperties" />
+	
+</b:beans>

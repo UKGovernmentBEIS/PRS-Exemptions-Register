@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/RegisterPRSExemptionRequest"
+xmlns:ns1="http://northgateps.com/BEIS/RegisterPRSExemptionResponse"
+xmlns:wsdl1="http://www.northgateps.com/RegisterPRSExemption.wsdl"
+targetNamespace="http://www.northgateps.com/RegisterPRSExemption.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/RegisterPRSExemptionRequest" schemaLocation="RegisterPRSExemptionRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/RegisterPRSExemptionResponse" schemaLocation="RegisterPRSExemptionResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="RegisterPRSExemptionRequest">
+		<wsdl:part name="parameters" element="ns:RegisterPRSExemptionRequest" />
+	</wsdl:message>
+	<wsdl:message name="RegisterPRSExemptionResponse">
+		<wsdl:part name="parameters" element="ns1:RegisterPRSExemptionResponse" />
+	</wsdl:message>
+	<wsdl:portType name="RegisterPRSExemptionWSDLPort">
+		<wsdl:operation name="RegisterPRSExemptionWSDL">
+			<wsdl:input message="wsdl1:RegisterPRSExemptionRequest" />
+			<wsdl:output message="wsdl1:RegisterPRSExemptionResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="RegisterPRSExemptionWSDLBinding" type="wsdl1:RegisterPRSExemptionWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="RegisterPRSExemptionWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/RegisterPRSExemptionRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="RegisterPRSExemptionWSDLService">
+		<wsdl:port binding="wsdl1:RegisterPRSExemptionWSDLBinding" name="RegisterPRSExemptionWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/RegisterPRSExemptionRequest" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

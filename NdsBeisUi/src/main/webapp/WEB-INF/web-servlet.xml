@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<import resource="classpath:nds-spring-jmx.xml" />
+	<context:component-scan base-package="com.northgateps.nds.platform.loggingsystem.jmx" />
+
+	<import resource="beis-sitemap.xml" />
+
+	<context:component-scan base-package="com.northgateps.nds.beis.ui.controller" />
+	<context:component-scan base-package="com.northgateps.nds.platform.ui.controller" />
+
+	<mvc:annotation-driven conversion-service="conversionService">
+		<mvc:async-support default-timeout="30000" task-executor="asyncTaskExecutor" />
+	</mvc:annotation-driven>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/assets/**" />
+			<bean class="com.northgateps.nds.platform.ui.interceptor.MandatoryVersionInfoInterceptor" />
+		</mvc:interceptor>
+		<bean class="com.northgateps.nds.platform.ui.controller.ViewNameInModelInterceptor" />
+		<bean class="com.northgateps.nds.platform.ui.controller.ContentSecurityPolicyInterceptor" />
+		<bean class="com.northgateps.nds.platform.ui.controller.IeXUaCompatiibleHeaderInterceptor" />
+	</mvc:interceptors>
+
+	<cache:annotation-driven />
+
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		p:cache-manager-ref="ehcache" />
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	</bean>
+
+	<mvc:resources mapping="/assets/**" location="/assets/, /generated-assets/ ">
+		<mvc:cache-control max-age="31536000" must-revalidate="true" />
+	</mvc:resources>
+
+	<bean name="handlerAdapter"
+		class="com.northgateps.nds.platform.ui.controller.NdsRequestMappingHandlerAdapter">
+		<property name="order" value="-1" />
+		<property name="dataBinderClass"
+			value="com.northgateps.nds.platform.ui.controller.RecaptchaResponseExtendedServletRequestDataBinder" />
+	</bean>
+
+	
+	<bean id="asyncTaskExecutor" name="asyncTaskExecutor"
+			class="com.northgateps.nds.platform.ui.controller.thread.NdsThreadPoolTaskExecutor">
+	        <property name="taskDecorator">
+	            <bean class="com.northgateps.nds.platform.ui.controller.thread.NdsTaskDecorator" />
+	        </property>
+	        <property name="threadNamePrefix" value="nds-web-async-" />
+		<property name="corePoolSize" value="8" />
+		<property name="maxPoolSize" value="64" />
+		<property name="queueCapacity" value="256" />
+	</bean>
+
+	<bean id="ScriptsLoader" class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+
+	<!-- Adds annotation-like rules defining validations, formatters etc that 
+		will be applied in the UI-tier only. Such UI-tier only rules can thus be 
+		applied to canonical data model (CDM) objects. In particular, a CDM object 
+		can have a validation dependency on the value of a UI-tier only level object. -->
+	<bean id="AnnotationAugmenter"
+		class="com.northgateps.nds.platform.application.api.metadata.AnnotationAugmenter">
+		<property name="augmentations">
+			<map>
+				<!-- <entry key="exemptionDetails.epc.files.resources"> <list> <bean 
+					class="com.northgateps.nds.platform.application.api.metadata.RequiredFieldMetadataImpl"> 
+					</bean> </list> </entry> -->
+			</map>
+		</property>
+	</bean>
+
+	<bean id="ModelAnnotationsProvider"
+		class="com.northgateps.nds.platform.api.model.metadata.ExpanderModelAnnotationsProvider">
+		<property name="chainedModelAnnotationsProvider">
+			<bean class="com.northgateps.nds.platform.api.model.metadata.IntrospectionModelAnnotationsProvider">
+				<property name="chainedModelAnnotationsProvider">
+					<bean class="com.northgateps.nds.platform.api.model.metadata.SpringModelAnnotationsProvider">
+						<property name="annotationAugmenter" ref="AnnotationAugmenter" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="uploadPropertiesLoader"
+		class="com.northgateps.nds.platform.ui.controller.UploadPropertiesLoader">
+		<property name="limitationsList">
+			<list>
+				<bean class="com.northgateps.nds.platform.ui.controller.ConfiguredUploadLimitations">
+					<constructor-arg type="java.lang.String" value="EpcResource" />
+				</bean>
+				<bean class="com.northgateps.nds.beis.ui.controller.ExemptionFileUploadLimitations">
+					<constructor-arg type="java.lang.String" value="Resource" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- The common configuration for all controllers -->
+	<bean id="controllerConfiguration"
+		class="com.northgateps.nds.platform.ui.controller.ControllerConfiguration">
+		<property name="entryPoints" value="#{getObject('entryPoints')}" />
+		<property name="pageFlowEngine">
+			<bean class="com.northgateps.nds.platform.ui.controller.NdsPageFlowEngine">
+				<property name="siteMap">
+					<ref bean="siteMap" />
+				</property>
+			</bean>
+		</property>
+		<property name="viewProfileLoader">
+			<bean class="com.northgateps.nds.platform.ui.view.JspViewProfileLoader" />
+		</property>
+		 <property name="graphSerializer">
+            <bean class="com.northgateps.nds.platform.ui.model.serialize.FstGraphSerializer" />
+        </property>
+		<property name="annotationAugmenter" ref="AnnotationAugmenter" />
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+		<property name="providedFieldsValidator">
+			<bean
+				class="com.northgateps.nds.platform.ui.model.validation.PlatformProvidedFieldsValidator">
+				<property name="scriptsLoader" ref="ScriptsLoader" />
+				<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+				<property name="annotationAugmenter" ref="AnnotationAugmenter" />
+			</bean>
+		</property>
+		<property name="providedFieldsFormatter">
+			<bean class="com.northgateps.nds.platform.ui.model.format.PlatformProvidedFieldsFormatter">
+				<property name="scriptsLoader" ref="ScriptsLoader" />
+				<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+				<property name="annotationAugmenter" ref="AnnotationAugmenter" />
+			</bean>
+		</property>
+		<property name="scriptsLoader">
+			<ref bean="ScriptsLoader" />
+		</property>
+		<property name="questionnaireLoader">
+			<bean class="com.northgateps.nds.platform.ui.controller.QuestionnaireLoader" />
+		</property>
+		<property name="urlAccessVerifier">
+			<bean class="com.northgateps.nds.platform.ui.controller.security.SpringSecurityUrlAccessVerifier">
+				<property name="accessDenier">
+					<bean class="com.northgateps.nds.platform.ui.controller.security.NamedViewAccessDenier">
+						<property name="view"
+							value="redirect:/index.htm?tenant=&lt;tenant&gt;&amp;force=&lt;force&gt;" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="viewNamePopulator">
+			<bean class="com.northgateps.nds.beis.ui.controller.ViewNamePopulator" />
+		</property>
+		<property name="esbServicesTimeLimit" value="25000" />
+		<property name="errorSanitizer">
+			<bean class="com.northgateps.nds.platform.ui.controller.DefaultErrorSanitizer" />
+		</property>
+		<property name="securityKeySourceFactory">
+			<bean class="com.northgateps.nds.platform.ui.security.CyclingSecurityKeySourceFactory">
+				<property name="sourceList">
+					<list>
+						<bean class="com.northgateps.nds.platform.ui.security.KeystoreSecurityKeySource">
+							<property name="name" value="encryption.1" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="fieldComponentFactory">
+			<bean class="com.northgateps.nds.platform.ui.component.CacheFieldComponentFactory">
+				<property name="cacheReferenceValueListProvider">
+					<bean class="com.northgateps.nds.platform.ui.component.CacheReferenceValueListProvider" />
+				</property>
+			</bean>
+		</property>
+		<property name="viewEventProfiles">
+			<map>
+				<entry key="{any}">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="changePassword">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ChangePasswordHandler" />
+								</entry>
+								<entry key="changeEmail">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ChangeEmailHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="register-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.RegistrationEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="account-details">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.AccountDetailEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>		
+				<entry key="select-landlord-type">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.SelectLandLordTypeHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-select-landlord-type-agent">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.SelectAgentTypeHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-select-exemption-type">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ReferenceNumberGenerationEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-account-summary">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.MyAccountDetailsHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-change-password">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ChangePasswordEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="account-activation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ConfirmRegistrationEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="account-activation-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ActivateRegistrationEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="forgotten-password-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.PasswordResetEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="password-reset-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ActivatePasswordResetEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="personalised-change-email-address">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisUpdateEmailEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="report-forgotten-username-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ReportForgottenUsernameEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-change-account-address">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.UpdateAccountAddressEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-change-account-details">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.UpdateAccountDetailsEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="account-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.CreateBeisRegisteredDetailsEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-exemption-requirements">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ExemptionRequirementsEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-exemption-declaration">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.RegisterPrsExemptionHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-exemption-confirmation">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.SubmitPrsExemptionHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-property-address">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ExemptionPostcodeValidationEventHandler" />
+								</entry>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.view.ViewEventHandlerSequence">
+										<property name="handlers">
+											<list>
+												<bean class="com.northgateps.nds.platform.ui.controller.handler.UploadLimitationsEventHandler">
+													<property name="uploadPropertiesLoader">
+														<ref bean="uploadPropertiesLoader" />
+													</property>
+												</bean>
+											</list>
+										</property>
+									</bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-epc-details">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.UploadLimitationsEventHandler">
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="AddResource">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+										<property name="kindName" value="epcresource" />
+										<property name="path" value="exemptionDetails.epc.files" />
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="DeleteResource:">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileDeleteEventHandler">
+										<property name="kindName" value="epcresource" />
+										<property name="path" value="exemptionDetails.epc.files" />
+									</bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-exemption-document-upload">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.UploadLimitationsEventHandler">
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="AddResource">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+										<property name="kindName" value="Resource" />
+										<property name="path" value="exemptionDetails.epcEvidenceFiles" />
+										<property name="multipartPath" value="uiData.multipartExemptionFile" />
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="DeleteResource:">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileDeleteEventHandler">
+										<property name="kindName" value="Resource" />
+										<property name="path" value="exemptionDetails.epcEvidenceFiles" />
+									</bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="personalised-exemption-text">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.UploadLimitationsEventHandler">
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="AddResource">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+										<property name="kindName" value="epcresource" />
+										<property name="path" value="exemptionDetails.exemptionTextFile" />
+										<property name="multipartPath" value="uiData.multipartExemptionTextFile" />
+										<property name="uploadPropertiesLoader">
+											<ref bean="uploadPropertiesLoader" />
+										</property>
+									</bean>
+								</entry>
+								<entry key="DeleteResource:">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileDeleteEventHandler">
+										<property name="kindName" value="epcresource" />
+										<property name="path" value="exemptionDetails.exemptionTextFile" />
+									</bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="register-search-exemptions">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="FindExemptions">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSExemptionSearchHandler" />
+								</entry>
+								<entry key="ChosenExemption:">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ChosenExemptionHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="register-search-penalties">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="FindPenalties">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSPenaltySearchHandler" />
+								</entry>
+								<entry key="ChosenPenalty:">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ChosenPenaltyHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>				
+				
+				<entry key="register-search-gdar-gdip">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="SearchGdarGdip">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.SearchGdarGdipHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+                
+				<entry key="personalised-dashboard">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.DashboardEventHandler" />
+								</entry>
+								<entry key="ChosenExemption:">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.EndExemptionEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="account-address">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile"> 
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.AccountAddressHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+				<entry key="personalised-end-exemption">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="SelectedExemption:">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.UpdateEndExemptionEventHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				
+				<entry key="expired-password">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.ChangeExpiredPasswordEventHandler" >
+								         <property name="ndsServiceProperties" ref="ndsServiceProperties"/>
+								     </bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+
+			</map>
+		</property>
+		
+		<!-- If would be better if many of these could be called in from a platform 
+			list. Would need to define a DelegatedMessageReplacerList MessageReplacer 
+			that could take a bean as a property which had its own list of MessageReplacers -->
+		<property name="validationMessageMappers">
+			<list>
+				<bean class="com.northgateps.nds.platform.ui.view.BundleKeyMessageReplacer">
+					<property name="presentation" value="radio" />
+					<property name="match" value="Validation_Field_must_not_be_empty" />
+					<property name="messageKey" value="Validation_Field_must_be_selected" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.BundleKeyMessageReplacer">
+					<property name="presentation" value="numeric" />
+					<property name="match" value="Validation_Field_must_not_be_empty" />
+					<property name="messageKey" value="Validation_Field_must_be_specified_as_a_numeric_value" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="ValidationField_Username_Password_notsame" />
+					<property name="messageKey" value="ValidationField_Username_Password_notsame" />
+				</bean>
+				
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Unable to send e-mail to the given email address:(.*?)" />
+					<property name="messageKey" value="Paragraph_registrationEmailInvalid" />
+					<property name="groupNames">
+						<list>
+							<value>emailAddress</value>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Unable to send e-mail for exemption registration:(.*?)" />
+					<property name="messageKey" value="Paragraph_registrationExemptionEmailInvalid" />
+					<property name="groupNames">
+						<list>
+							<value>emailAddress</value>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Password reset activation code has expired" />
+					<property name="messageKey" value="Paragraph_passwordResetExpired" />
+				</bean>
+				<!-- BEIS-114 Activate reset password may enter a user a username not 
+					known to the system -->
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Unable to locate entry DN-" />
+					<property name="messageKey" value="Paragraph_passwordResetInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Incorrect password reset activation code provided" />
+					<property name="messageKey" value="Paragraph_passwordResetInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Password fails quality checking policy" />
+					<property name="messageKey" value="Paragraph_passwordInvalidSyntax" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="CONSTRAINT_VIOLATION" />
+					<property name="messageKey" value="Paragraph_passwordInvalidSyntax" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?The password does not pass quality check." />
+					<property name="messageKey" value="Paragraph_passwordInvalidSyntax" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?password based off of user entry" />
+					<property name="messageKey" value="Paragraph_passwordBaseOffUserEntry" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Old [Pp]assword is invalid.*" />
+					<property name="messageKey" value="Paragraph_oldPasswordInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?New [Pp]assword is invalid.*" />
+					<property name="messageKey" value="Paragraph_newPasswordInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="INVALID_CREDENTIALS" />
+					<property name="messageKey" value="Paragraph_passwordInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?New email address can not be similar to registered email address.*" />
+					<property name="messageKey" value="Paragraph_emailAddressInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Username already exists, please try a different one.*" />
+					<property name="messageKey" value="Paragraph_usernameExistsRetry" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Username already exists.*" />
+					<property name="messageKey" value="Paragraph_usernameExists" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Password reset activation code was not provided " />
+					<property name="messageKey" value="Paragraph_resetCodeAbsent" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Password reset activation code was malformed" />
+					<property name="messageKey" value="Paragraph_resetCodeMalformed" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Password reset activation code has expired" />
+					<property name="messageKey" value="Paragraph_resetCodeExpired" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Incorrect password reset activation code provided" />
+					<property name="messageKey" value="Paragraph_resetCodeIncorrect" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Registration activation code was not provided" />
+					<property name="messageKey" value="Paragraph_activationCodeAbsent" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Registration activation code has expired" />
+					<property name="messageKey" value="Paragraph_activationCodeExpired" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Registration activation code was malformed" />
+					<property name="messageKey" value="Paragraph_activationCodeMalformed" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="Code has already been activated" />
+					<property name="messageKey" value="Paragraph_activationCodeReused" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value="New email address can not be similar to registered email address." />
+					<property name="messageKey" value="Paragraph_emailAddressTooSimilar" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
+					<property name="match" value=".*?Username or activation code is invalid.*" />
+					<property name="messageKey" value="Paragraph_passwordResetInvalid" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr"/>
+					<property name="match" value=".*LDAP: error code 53.*"/>
+					<property name="messageKey" value="Paragraph_ldapServerInReadOnlyMode"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="conversionService"
+		class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="com.northgateps.nds.platform.ui.converter.StringToDateTimeAsDate" />
+				<bean class="com.northgateps.nds.platform.ui.converter.DateTimeAsDateToString" />
+				<bean class="com.northgateps.nds.platform.ui.converter.StringToDateTimeAsTime" />
+				<bean class="com.northgateps.nds.platform.ui.converter.DateTimeAsTimeToString" />
+				<bean class="com.northgateps.nds.platform.ui.converter.StringToDateTimeAsDateTime" />
+				<bean class="com.northgateps.nds.platform.ui.converter.DateTimeAsDateTimeToString" />
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.FlowUnitsToFlowConverter" />
+				<bean class="com.northgateps.nds.beis.ui.converter.DateTimeHolderToString" />
+			</set>
+		</property>
+	</bean>
+
+</beans>

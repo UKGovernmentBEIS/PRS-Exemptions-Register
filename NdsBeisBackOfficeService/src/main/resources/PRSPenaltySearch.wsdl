@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/PRSPenaltySearchRequest"
+xmlns:ns1="http://northgateps.com/BEIS/PRSPenaltySearchResponse"
+xmlns:wsdl1="http://www.northgateps.com/PRSPenaltySearch.wsdl"
+targetNamespace="http://www.northgateps.com/PRSPenaltySearch.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/PRSPenaltySearchRequest" schemaLocation="PRSPenaltySearchRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/PRSPenaltySearchResponse" schemaLocation="PRSPenaltySearchResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="PRSPenaltySearchRequest">
+		<wsdl:part name="parameters" element="ns:PRSPenaltySearchRequest" />
+	</wsdl:message>
+	<wsdl:message name="PRSPenaltySearchResponse">
+		<wsdl:part name="parameters" element="ns1:PRSPenaltySearchResponse" />
+	</wsdl:message>
+	<wsdl:portType name="PRSPenaltySearchWSDLPort">
+		<wsdl:operation name="PRSPenaltySearchWSDL">
+			<wsdl:input message="wsdl1:PRSPenaltySearchRequest" />
+			<wsdl:output message="wsdl1:PRSPenaltySearchResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PRSPenaltySearchWSDLBinding" type="wsdl1:PRSPenaltySearchWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="PRSPenaltySearchWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/GetPRSPenaltySearch" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PRSPenaltySearchWSDLService">
+		<wsdl:port binding="wsdl1:PRSPenaltySearchWSDLBinding" name="PRSPenaltySearchWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/GetPRSPenaltySearch" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

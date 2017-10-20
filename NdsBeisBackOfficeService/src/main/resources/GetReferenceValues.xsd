@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Brendan Nellis (SX3 PUBLIC SECTOR) -->
+<xs:schema xmlns="http://www.northgate-is.com/FL/GetReferenceValues" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:flc="http://northgate-is.com/FL/Core" targetNamespace="http://www.northgate-is.com/FL/GetReferenceValues" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xs:element name="GetReferenceValues">
+		<xs:annotation><xs:documentation>This API allows you to get the lists of values from the system. These may apply across the whole system or to a particular service and workplace combination. Where a list exists at the workplace or service level then this overrides the list at the system level</xs:documentation></xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DomainCode" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>The domain or type of the list of values e.g. Titles</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="ServiceCode" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Where the system has multiple services the service to which this list belongs, those for the 'SYS' service [common codes] are always returned</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="10"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="WorkplaceCode" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Where the system has multiple tenants (workplaces) the service to which this list belongs.  The details for the system workplace (workplace 1) are always returned</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="10"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Code" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Allows you to restrict the return to an individual code</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="10"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

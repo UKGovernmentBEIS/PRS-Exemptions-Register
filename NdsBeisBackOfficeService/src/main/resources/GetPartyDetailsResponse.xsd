@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/GetPartyDetailsResponse"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:core="http://northgate-is.com/FL/Core"
+targetNamespace="http://northgateps.com/BEIS/GetPartyDetailsResponse" elementFormDefault="qualified"
+attributeFormDefault="unqualified" xmlns:beisc="http://northgateps.com/BEISCommonTypes">
+<xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+<xsd:import namespace="http://northgateps.com/BEISCommonTypes" schemaLocation="BEISCommonTypes.xsd"/> 
+	<xsd:element name="GetPartyDetailsResponse">
+		<xsd:annotation>
+			<xsd:documentation>Message request containing user details such as
+				register user or update user details</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardResponseStructure">
+					<xsd:sequence>
+					    <xsd:element name="UserType" minOccurs="1">
+                           <xsd:simpleType>
+                           <xsd:restriction base="xsd:string">
+                           <xsd:enumeration value="Landlord"/>
+		                   <xsd:enumeration value="Agent" />
+                           </xsd:restriction>
+                           </xsd:simpleType>
+                           </xsd:element>
+						<xsd:element name="FirstName"
+							type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The users first name if supplied
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="LastName"
+							type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The users last name if supplied
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element> 
+						<xsd:element name="OrganisationName"
+							type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The users organisation name if
+									supplied
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="EmailAddress"
+							type="xsd:string" maxOccurs="1" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>
+									The users email address
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PhoneNumber"
+						type="beisc:PhoneNumberType">
+						<xsd:annotation>
+							<xsd:documentation>
+								The users phone number
+							</xsd:documentation>
+						</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Address" type="beisc:AddressType">
+							<xsd:annotation>
+								<xsd:documentation>
+									The users address.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis</groupId>
+	<artifactId>beis-shared-model</artifactId>
+	<version>0.0.0</version>
+	<packaging>jar</packaging>
+	<url>${homepage.url}beis-shared-model/</url>
+
+	<name>NDS Beis Shared Model</name>
+	<description>
+		Northgate Public Services Digital Service Beis POM (Shared Model)
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds/beis</id>
+			<url>${distro.url}beis-shared-model/</url>
+		</site>
+	</distributionManagement>
+
+	<parent>
+		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<artifactId>sharedpoms</artifactId>
+		<version>(,1.0.0]</version>
+		<relativePath>../NdsSharedPoms/</relativePath>
+	</parent>
+
+	<properties>
+		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
+		<nds.bbis.externalApiPath>com/northgateps/nds/beis/api/</nds.bbis.externalApiPath>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.northgateps.nds.platform</groupId>
+			<artifactId>platform-shared</artifactId>
+			<version>${nds.platform.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>			
+			<!-- this generates a WADL file based on the classResourceName defined below -->
+			<!-- TODO: Modify this to point to the correct package -->
+			<!-- 
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-java2wadl-plugin</artifactId>
+				<version>${cxf.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.sun</groupId>
+						<artifactId>tools</artifactId>
+						<version>1.7.0</version>
+						<scope>system</scope>
+						<systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+                        <id>parsejavadoc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>parsejavadoc</goal>
+                        </goals>
+                    </execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>java2wadl</goal>
+						</goals>
+						<configuration>
+							<classResourceNames>
+								<classResourceName>com.northgateps.nds.bbis.api.SubmitBlueBadgeApplicationServiceInterface</classResourceName>
+							</classResourceNames>
+							<docProvider>org.apache.cxf.maven_plugin.javatowadl.ResourceMapJavaDocProvider</docProvider>
+							<attachWadl>true</attachWadl>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		    -->
+			
+			<!-- generate human readable documentation from the WADL -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>process-wadl</id>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<transformationSets>
+						<transformationSet>
+							<dir>target/generated/wadl</dir>
+							<stylesheet>transformations/wadl-documentation.xsl</stylesheet>
+							<outputDir>target/site</outputDir>
+							<fileMappers>
+								<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<targetExtension>.html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+							<parameters>
+								<!-- provides a mapping from the namespace uri (which typically points to nothing) to were our documentation actually lives -->
+								<!-- note: #ref# get's replaced in the XSL with class name -->
+								<!-- note: yes we do need to update this here if the path to the classes changes within the application -->
+								<parameter>
+									<name>docTargetMapping</name>
+									<value>apidocs/index.html?${nds.beis.externalApiPath}#ref#.html</value>
+								</parameter>
+							</parameters>
+						</transformationSet>
+					</transformationSets>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.saxon</groupId>
+						<artifactId>saxon</artifactId>
+						<version>8.7</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+	<!--This plugin's configuration is used to store Eclipse m2e settings 
+		only. It has no influence on the Maven build itself. -->
+		<profile>
+			<id>only-eclipse</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.cxf
+										</groupId>
+										<artifactId>
+											cxf-java2wadl-plugin
+										</artifactId>
+										<versionRange>
+											[3.0.4,)
+										</versionRange>
+										<goals>
+											<goal>java2wadl</goal>
+											<goal>parsejavadoc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		</build>
+		</profile>
+	</profiles>
+
+</project>

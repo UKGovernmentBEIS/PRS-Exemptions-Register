@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="urn:ViewPdfResponse" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core" targetNamespace="urn:ViewPdfResponse" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+	<xsd:element name="ViewPdfResponse">
+		<xsd:annotation>
+			<xsd:documentation>Message response containing a document and related details</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardResponseStructure">
+					<xsd:sequence>
+      <xsd:choice>
+       <xsd:element name="Document">
+        <xsd:complexType>
+         <xsd:sequence>
+          <xsd:element name="DocumentCode" type="xsd:string">
+           <xsd:annotation>
+            <xsd:documentation>
+             The code the document is known by, e.g. GDIPGDARPDF
+            </xsd:documentation>
+           </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="DocumentDescription">
+           <xsd:annotation>
+            <xsd:documentation>
+             Description of the type of document e.g. Green Deal Improvement
+             Plan / Green Deal Advice Report
+            </xsd:documentation>
+           </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="DocumentName" type="xsd:string"/>
+          <xsd:element name="DocumentFileType" type="xsd:string">
+           <xsd:annotation>
+            <xsd:documentation>
+             E.g. PDF
+            </xsd:documentation>
+           </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="DocumentReference" type="xsd:string"/>
+          <xsd:element name="BinaryData" type="xsd:base64Binary"/>
+         </xsd:sequence>
+        </xsd:complexType>
+       </xsd:element>
+      </xsd:choice>
+      <xsd:element name="DocumentExists" type="xsd:boolean"/>
+     </xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<emailTemplate>
+	<template type="RegistrationEmailTemplate" language="English">
+		<from>noreply@beis.gov.uk</from>
+		<to>dummy@northgateps.com</to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Account activation</subject>
+		<body>Thank-you for creating an account for the PRS exemptions register.<![CDATA[<br/><br/>]]> Your account has been created and your username is <![CDATA[<b>]]>{name}<![CDATA[</b>]]> <![CDATA[<br/><br/>]]> You now need to complete your registration and activate your account. <![CDATA[<br/><br/>]]>{registrationActivation}<![CDATA[<br/><br/>]]>If the link does not work, copy the text below and paste it into the address bar of your web browser.This will take you to the account activation page.<![CDATA[<br/><br/>]]>{activationText}<![CDATA[<br/><br/>]]>Next, copy the reference below and paste it into the box on the account activation page.<![CDATA[<br/><br/>]]>{activationCode}<![CDATA[<br><br>]]>This email is only valid for 24 hours from the time that you first registered.  If you don&apos;t activate your account in that time you can <![CDATA[<a href="{registration.forgottenPasswordUrl}?tenant={tenant}">get a new activation email</a>]]> using the &apos;Forgotten password&apos; option. <![CDATA[<br/><br/>]]>Please note that <![CDATA[<a href="{registration.termsConditionsUrl}?tenant={tenant}">terms and conditions</a>]]> apply to your account.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
+	</template>
+    
+    <template type="PasswordResetEmailTemplate" language="English">
+        <from>noreply@beis.gov.uk</from>
+        <to>dummy@northgateps.com</to>
+        <cc></cc>
+        <bcc></bcc>
+        <subject>Password reset</subject>
+       <body><![CDATA[<br/><br/>]]>You asked for your PRS exemptions account password to be reset. You now need to set a new password.<![CDATA[<br/><br/>]]><![CDATA[<a href="{webAddress}?tenant={tenant}&amp;activatePasswordResetDetails.resetCode={activationCode}&amp;activatePasswordResetDetails.username={username}">Set a new password</a>]]><![CDATA[<br/><br/>]]>If the link does not work, copy the text below and paste it into the address bar of your web browser.  This will take you to the account activation page.<![CDATA[<br/><br/>]]> {webAddress}<![CDATA[<br/><br/>]]>Next, copy the reference below and paste it into the box on the account activation page.<![CDATA[<br/><br/>]]>{activationCode}<![CDATA[<br/><br/>]]>This email is only valid for 24 hours.  If you don&apos;t activate your account in that time you can <![CDATA[<a href="{webAddress}?tenant={tenant}">get a new activation email</a>]]> using the &apos;Forgotten password&apos; option.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
+    </template>
+	    
+	<template type="UpdateEmailTemplate" language="English">
+		<from>noreply@beis.gov.uk</from>
+		<to></to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Email address changed</subject>
+		<body>Thank-you for updating your PRS exemptions register account details.<![CDATA[<br/><br/>]]>The email address for your account has been changed to {updatedEmail}.<![CDATA[<br/><br/>]]>This email was sent from the {url}. </body>
+	</template>
+	
+	<template type="ReceivedIncidentTemplate" language="English">
+		<from>noreply@beis.gov.uk</from>
+		<to></to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>New update on the incident reference {referenceId}</subject>
+		<body>Dear {firstName}&#032;{surname},&#xA;&#xA;You have received a new message for incident reference {referenceId}. To view the message, please login to your account on {link}. &#xA; </body>
+		<signature>&#xA;&#xA;Thanks, &#xA; {firstName}&#032;{surname},</signature>
+	</template>
+	
+	<template type="ReportIncidentEmailConfirmationTemplate" language="English">
+        <from>noreply@beis.gov.uk</from>
+        <to></to>
+        <cc></cc>
+        <bcc></bcc>
+        <subject>Your Incident Report Has Been Submitted Successfully</subject>
+        <body>Dear {name}&#xA;&#xA;Your incident report has been submitted. Your incident report reference number is {referenceId}. &#xA; &#xA;Your report has been sent to the police. They will assess the information that you have given and take the action that they decide is needed. &#xA; &#xA;If you would like to be sent updates about the incident then please use the link below to register for an online reporting account &#xA; &#xA;Register For Updates {link} </body>
+    </template>
+
+	<template type="ForgottenUsernameEmailTemplate" language="English">
+		<from>noreply@beis.gov.uk</from>
+		<to>dummy@northgateps.com</to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Username reminder</subject>
+		<body>You asked for a reminder of your PRS exemptions register username.<![CDATA[<br/><br/>]]> The username linked to this email address is <![CDATA[<b>]]>{usernames}<![CDATA[</b>]]><![CDATA[<br/><br/>]]>You can <![CDATA[<a href="{signin.url}?tenant={tenant}">log in to your account here</a>]]>.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
+	</template>
+	<template type="RegisterExemptionEmailTemplate" language="English">
+		<from>noreply@northgateps.com</from>
+		<to></to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Exemption registration</subject>
+		<body>Your exemption has been registered successfully.<![CDATA[<br/><br/>]]>{propertyAddress}<![CDATA[<br/><br/>]]>{exemptionType}<![CDATA[<br/><br/>]]>The exemption reference is {exemptionReference}.<![CDATA[<br/><br/>]]>This email was sent from the {url}</body>
+	</template>
+	<template type="RegisterAgentExemptionEmailTemplate" language="English">
+		<from>noreply@northgateps.com</from>
+		<to></to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Exemption registration</subject>
+		<body>You are the landlord of {propertyAddress}<![CDATA[<br/><br/>]]>An exemption has been registered for this property on {url}<![CDATA[<br/><br/>]]> The reason for the exemption is:<![CDATA[<br/><br/>]]>{exemptionType}<![CDATA[<br/><br/>]]>The exemption reference is {exemptionReference}.<![CDATA[<br/><br/>]]>The exemption was registered on your behalf by {agentName}, {agentAddress}<![CDATA[<br/><br/>]]>As the landlord, it is your responsibility to make sure that the exemption is correct. You can be fined up to {maxValueForExemptionType} if the information is false or misleading.<![CDATA[<br/><br/>]]>You should contact {agentName} if you have any queries.<![CDATA[<br/><br/>]]>This email was sent from the {url}</body>
+	</template>
+</emailTemplate>
+
+<!-- 	NOTE:ensure email is dummy@northgateps.com when pushing code -->

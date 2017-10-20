@@ -1,0 +1,7 @@
+/build/
+/target/
+/.gradle/
+/.settings/
+/bin/
+/eclipse_classes/
+/classes/

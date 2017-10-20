@@ -1,0 +1,289 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+        
+	<groupId>com.northgateps.beis.sharedpoms</groupId>
+	<artifactId>sharedpoms-cas</artifactId>
+	<version>0.0.1503</version>
+	<packaging>pom</packaging>
+
+	<!-- Used for CI project management.  Do not add dependencies to this pom as they may upset the CAS projects dependencies. -->
+
+	<name>NDS base POM for CAS CI Management</name>
+	<description>
+		Northgate Public Services Digital Service CAS Root POM for CI management
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
+			</properties>
+		</profile>
+		
+	
+		<!--This plugin's configuration is used to store Eclipse m2e settings 
+		only. It has no influence on the Maven build itself. -->
+		<profile>
+			<id>only-eclipse</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
+							<configuration>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<!-- 
+											Tells Eclipse to run the AspectJ weaving as part of its builds so the logging system 
+											will still work in Tomcat after a Maven Update (Alt+F5 in Eclipse) 
+										-->
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.codehaus.mojo</groupId>
+												<artifactId>aspectj-maven-plugin</artifactId>
+												<versionRange>[${aspectj.maven.plugin.version},)</versionRange>
+												<goals>
+													<goal>compile</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<execute>
+													<!-- 
+														If this plugin is causing performance issues on Eclipse, set this to false.
+														However you may then need to run the plugin manually (
+														eg build from the command line) to ensure the logging 
+														system is weaved in. 
+													  -->
+													<runOnIncremental>true</runOnIncremental>
+													<runOnConfiguration>true</runOnConfiguration>
+												</execute>
+											</action>
+										</pluginExecution>
+										
+										<!-- Tell Eclipse to ignore this plugin -->
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>com.northgateps.nds.plugins</groupId>
+												<artifactId>plugins-checkweaving</artifactId>
+												<versionRange>[${nds.checkweaving.version},)</versionRange>
+												<goals>
+													<goal>checkAspectWeaving</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore/>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	
+	</profiles>
+	
+	<properties>
+		<cas.version>5.1.1</cas.version>
+	
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<java.source.version>1.8</java.source.version>
+		<java.target.version>1.8</java.target.version>
+
+		<maven.plugin.compiler.version>3.3</maven.plugin.compiler.version>
+		<maven.plugin.site.version>3.4</maven.plugin.site.version>
+		<maven.plugin.surefire.version>2.18.1</maven.plugin.surefire.version>
+		<maven.plugin.javadoc.version>2.10.3</maven.plugin.javadoc.version>
+		<maven.plugin.source.version>2.4</maven.plugin.source.version>
+		<maven.plugin.scm.version>1.8.1</maven.plugin.scm.version>
+		<maven.plugin.versions.version>2.2</maven.plugin.versions.version>		
+
+		<!-- override the following on command line -->
+		<!-- these are used *only* in the JavaDoc production and deployment -->
+		<!-- ensure both URLs have a trailing / -->
+		<homepage.url></homepage.url>
+		<distro.url></distro.url>
+		
+	</properties>
+
+	<!--<scm>
+		<connection>scm:git@gitServer:/opt/git/nds/NDS.git</connection>
+	</scm>-->
+	
+	<!-- required to ensure that javadocs site has the correct links back to the aggregate project-->
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds</id>
+			<url>${distro.url}</url>
+		</site>
+	    <repository>
+			<id>internal</id>
+			<url>http://mavenRepo/repository/internal/</url>
+		</repository>
+	    <snapshotRepository>
+			<id>snapshots</id>
+			<url>http://mavenRepo/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+			
+	<!-- Only put dependencies needed for plugins controlled by this pom in here 
+		to avoid interfering with child projects' dependencies. -->
+	<dependencies>
+	</dependencies>
+	
+	<build>
+		<outputDirectory>classes</outputDirectory>
+
+		<plugins>
+			<!-- This generates the javadocs in a jar file, and builds it as part of the normal build -->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.plugin.javadoc.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<show>private</show>
+							<nohelp>true</nohelp>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> -->
+			<!-- This generates a source jar file, so we can drop that into the local maven repo -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.plugin.source.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<!-- Sets the compiler/java version -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.plugin.compiler.version}</version>
+					<configuration>
+						<source>${java.source.version}</source>
+						<target>${java.target.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<!-- ensure we have the deloyAtEnd option -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				<!-- enable scp:// file copying... -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven.plugin.site.version}</version>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<!-- surefile plugin version -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven.plugin.surefire.version}</version>
+				</plugin>
+				<!-- Maven version number plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${maven.plugin.versions.version}</version>
+				</plugin>
+				<!-- Maven source control plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-scm-plugin</artifactId>
+					<version>${maven.plugin.scm.version}</version>
+					<configuration>
+						<tag>${project.artifactId}-${project.version}</tag>
+					</configuration>
+				</plugin>
+				<!-- turn off DocLint for now with Java 8 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9.1</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<configuration>
+								<additionalparam>${javadoc.opts}</additionalparam>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<!-- generate public JavaDoc -->
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.plugin.javadoc.version}</version>
+				<configuration>
+					<show>public</show>
+					<encoding>UTF8</encoding>
+					<additionalparam>${javadoc.opts}</additionalparam>
+				</configuration>
+			</plugin>
+		</plugins>
+  	</reporting>
+	
+</project>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://northgateps.com/BEIS/PRSExemptionSearchResponse"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:core="http://northgate-is.com/FL/Core"
+	targetNamespace="http://northgateps.com/BEIS/PRSExemptionSearchResponse"
+	xmlns:beisc="http://northgateps.com/BEISCommonTypes"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://northgate-is.com/FL/Core"
+		schemaLocation="FLCore.xsd" />
+	<xsd:import namespace="http://northgateps.com/BEISCommonTypes"
+		schemaLocation="BEISCommonTypes.xsd" />
+	<xsd:element name="PRSExemptionSearchResponse">
+		<xsd:annotation>
+			<xsd:documentation>Exemption Search Response</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="core:StandardResponseStructure">
+					<xsd:sequence>
+						<xsd:element name="Exemptions"
+							minOccurs="0" maxOccurs="1">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Exemption" maxOccurs="unbounded">
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="ExemptionRefNo" type="xsd:integer" />
+												<xsd:element name="Service">
+													<xsd:simpleType>
+														<xsd:restriction base="xsd:string">
+															<xsd:enumeration value="PRSD" />
+															<xsd:enumeration value="PRSN" />
+														</xsd:restriction>
+													</xsd:simpleType>
+												</xsd:element>
+												<xsd:element name="ExemptionReasonCode" type="xsd:string" />
+												<xsd:element name="PWSDescription" type="xsd:string"/>
+												<xsd:element name="RegisteredDate" type="xsd:date" />
+												<xsd:element name="LandlordName" type="xsd:string" minOccurs="0" />
+												<xsd:element name="Address" type="xsd:string" >
+													<xsd:annotation>
+													<xsd:documentation>
+														The address as a single string
+													</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+												<xsd:element name="EPCBand" type="xsd:string" minOccurs="0"  />
+												<xsd:element name="EPCRating" type="xsd:string" minOccurs="0" />
+												<xsd:element name ="EPCExists" type="xsd:boolean"/>
+												<xsd:element name="MIMEtype" type="xsd:string" minOccurs="0">
+												<xsd:annotation>
+													<xsd:documentation>
+														The EPC document type
+                                                      </xsd:documentation>
+													</xsd:annotation>
+												</xsd:element> 
+												<xsd:element name="EPCObject" type="xsd:base64Binary" minOccurs="0">
+												<xsd:annotation>
+													<xsd:documentation>
+														The EPC document 
+                                                        I.e. the document for the exemption with document type of EPC
+                                                         will only be returned if EPCRequired = Y 
+                                                      </xsd:documentation>
+													</xsd:annotation>
+												</xsd:element> 
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+							</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

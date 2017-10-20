@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/GetPRSExemptionReferenceDataRequest"
+xmlns:ns1="http://northgateps.com/BEIS/GetPRSExemptionReferenceDataResponse"
+xmlns:wsdl1="http://www.northgateps.com/GetPRSExemptionReferenceData.wsdl"
+name="GetPRSExemptionReferenceData"
+targetNamespace="http://www.northgateps.com/GetPRSExemptionReferenceData.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSExemptionReferenceDataRequest" schemaLocation="GetPRSExemptionReferenceDataRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/GetPRSExemptionReferenceDataResponse" schemaLocation="GetPRSExemptionReferenceDataResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="GetPRSExemptionReferenceDataRequest">
+		<wsdl:part name="parameters" element="ns:GetPRSExemptionReferenceDataRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetPRSExemptionReferenceDataResponse">
+		<wsdl:part name="parameters" element="ns1:GetPRSExemptionReferenceDataResponse" />
+	</wsdl:message>
+	<wsdl:portType name="GetPRSExemptionReferenceDataWSDLPort">
+		<wsdl:operation name="GetPRSExemptionReferenceDataWSDL">
+			<wsdl:input message="wsdl1:GetPRSExemptionReferenceDataRequest" />
+			<wsdl:output message="wsdl1:GetPRSExemptionReferenceDataResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetPRSExemptionReferenceDataWSDLBinding" type="wsdl1:GetPRSExemptionReferenceDataWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="GetPRSExemptionReferenceDataWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/GetPRSExemptionReferenceData" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetPRSExemptionReferenceDataWSDLService">
+		<wsdl:port binding="wsdl1:GetPRSExemptionReferenceDataWSDLBinding" name="GetPRSExemptionReferenceDataWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/GetPRSExemptionReferenceData" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

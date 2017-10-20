@@ -1,0 +1,340 @@
+.address > div div > * {
+	display:table-cell;
+	padding:5px;
+	width:60%;
+}
+.address > div div > label {
+	width:40%;
+}
+
+.address > div div {
+	display:table-row;
+}
+.address > div {
+	display:table;
+	table-layout:fixed;
+}
+.geographicAddress .summary {
+    margin-top:1em;
+}
+
+.disclosure {
+    margin-top: 1em;
+}
+
+.disclosure.inactive a {
+    padding-left: 0px;
+}
+
+.disclosure .summary {
+    padding-bottom:1em;
+}
+
+.disclosure .content {
+    display:block;
+}
+
+.js-enabled .disclosure .content {
+    display:none;
+}
+
+.js-enabled .disclosure.open .content, .js-enabled .disclosure.forceOpen .content {
+    display:block;
+}
+
+.disclosure p.summary {
+    margin-bottom : 0;
+    display:none;   
+}
+
+.js-enabled .disclosure p.summary {
+    display:block;   
+}
+
+section h1 {
+	font-size:27px;
+}
+#wrapper {
+	margin-bottom:30px;
+}
+
+section.page {
+	display:none;
+	margin-top:30px;
+	margin-bottom:30px;
+	clear:both;
+}
+section.page.current {
+	display:block;
+}
+section.fault div {
+    border: 3px solid #C00000;
+    padding: 6px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+section.fault ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+section.fault p {
+    margin: 0;
+}
+section.submit {
+    clear:both;
+}
+button[role=link] {
+	color: #005ea5;
+	border-style: none;
+	background-color:transparent;
+	text-decoration: underline;
+	cursor:pointer;
+	font-size:inherit;
+	padding:0;
+	margin-left:-3px;
+}
+button[role=link]:hover {
+    color: #2e8aca;
+}
+
+.invalid {
+	color: #C00000;
+	clear:both;
+}
+.invalid p {
+    margin: 0;
+}
+
+.violation {
+    border-left: 5px solid #c00000;
+    padding-left: 10px;
+}
+
+/*.invalid:before {
+	content:'\A0';
+}*/
+html[lang=en] [lang=en], html[lang=cy] [lang=cy] {
+	display:none;
+}
+.languageButton, .addMoreButton {
+    background-color: transparent;
+    border: 0 none;
+    padding: 0;
+    color: #454a4c;
+    cursor: pointer;
+    font-size:16px;
+    text-decoration: underline;
+}
+.languageButton:focus, .addMoreButton:focus {
+	background-color: #ffbf47;
+	outline: 3px solid #ffbf47;
+}
+select {
+	font-size:inherit;
+	font-weight:inherit;
+	font-family:inherit;
+}
+.hidden-if-no-js {
+	display:none;
+}
+.js-enabled .hidden-if-no-js {
+    display:block;
+}
+.pageField div.block-label {
+    background: none;
+    border: 0px solid #fff;
+    clear: none;
+    cursor: inherit;
+    float: none;
+    margin: 0;
+    padding: 0;
+    position: static;
+}
+.mandatory {
+    color: #C00000;
+}
+input[type=text] {
+	margin-left:0;
+}
+
+.js-enabled a.caption,button.caption span:before {
+    content: '';
+    padding-left: 20px;
+    background: url(../images/summary-arrow-sprite-up.gif) 0 5px no-repeat;
+    color: #005ea5;
+    cursor: pointer;
+}
+
+.js-enabled a.open,button.caption.open span:before {
+    background-position: -1000px 5px;
+    color: #2e8aca;
+}
+
+a.caption {
+    padding-left: 20px;
+    background: url(../images/summary-arrow-sprite-up.gif) 0 5px no-repeat;
+    background-position: -1000px 5px;
+    color: #2e8aca;
+}
+
+.hidden, [hidden] {
+    display: none!important;
+}
+
+[data-table] td {
+    vertical-align: baseline;
+}
+
+[data-table] td fieldset.radiogroup {
+	display:inline;
+	white-space:nowrap;
+}
+
+[data-table] td fieldset.radiogroup label {
+	display:inline-block;
+	float:none;
+	margin:0;
+	padding:2px 5px;
+	white-space:nowrap;
+}
+
+[data-table] td fieldset.radiogroup label input {
+    position: static;
+}
+
+.datefield {
+    white-space: nowrap;
+}
+
+.datefield > div {
+    display: inline-block;
+    padding-right: 9px;
+}
+
+.datefield > .invalid {
+    display: block;
+}
+
+.form-control-1-25 {
+    width: 4%;
+}
+
+.form-control-1-16 {
+    width: 6.25%;
+}
+
+input.small,input.year {
+    width: 4.25em;
+}
+
+input.day,input.month {
+    width: 2.75em;
+}
+
+.inline-fields input.text {
+    margin-right: 1em;
+}
+
+.inline-fields .field-wrapper {
+    display: inline-block;
+}
+
+main,
+main .visible, 
+.alt-content, 
+label, 
+textarea, 
+.search, 
+.next, 
+.js-enabled .optional-section-open, 
+.js-enabled .help-content-open {
+    display: block;
+}
+
+input[type=checkbox] + label {
+    display : inline;
+}
+
+table textarea {
+    resize: vertical;
+}
+
+.validation-consolidated {
+    display:none;
+}
+
+
+.debug.info {
+	padding:20px;
+	font-size:smaller;
+	color:silver; 
+}
+
+button[value^='FindAddress:'], button[value^='GetAddress:'] {
+    margin-right:0px;  /* so that the spinner can be placed as close to the right side of the control as required */
+}
+
+.advice b { 
+    font-weight:bolder; 
+}
+
+.advice.disclosure .summary:before {
+    content: '\25B6';
+    color: #005EA5;
+    margin-right:10px;
+}
+.advice.disclosure.open .summary:before {
+    content: '\25BC';
+}
+
+.pagination-control-placeholder, .js-enabled .pagination-control {
+    display:inline;
+}
+
+.js-enabled .pagination-control-placeholder, .pagination-control {
+    display:none;
+}
+
+.pagination {
+    font-size: 16px;
+}
+
+.pagination.stepper {
+    text-align:center;
+}
+
+.pagination.direct input {
+    text-align:center;
+}
+
+.pagination-control {
+    width: 43px;
+}
+
+.pagination.stepper .options button {
+    color: #005ea5;
+    border-style: none;
+    background-color:transparent;
+    text-decoration: underline;
+    cursor:pointer;
+    font-size:inherit;
+    padding:0;
+    margin-left:-3px;
+}
+.pagination.stepper .options button.selected {
+    text-decoration: none;
+    cursor:default;
+}
+
+.error-summary-list li>span {
+	display: block;
+}
+
+.transientServiceUnavailable, .hide-unless {
+    display:none;
+}
+
+.hide-unless.transientServiceUnavailable {
+    display:block;
+}
+

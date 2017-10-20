@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FlexibleQuestionsDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FlexibleQuestions.xsd">
+    <!-- See https://docs.google.com/document/d/1vE2_0Cn_b9nbPksQqPpQ3e7Q5Zmt_ntjbEXVu954wZA for some advice on maintaining these questions -->
+	<Name>Additional information</Name>
+    <!-- The name of the associated resource bundle -->
+	<BundleName>IC_FieldsBundle</BundleName>
+	<Model>
+        <!-- 
+            For the avoidance of confusion, the question order in the Model section is completely arbitrary. Neither alphabetic nor 
+            numeric ordering is used, except by coincidence. The order that the questions are presented to the user, if at all, 
+            is determined for each web page by the question groups in the View section, and between the web pages by the PageFlow section.
+         -->
+		<Question id="Q-Free-Text-Describe">
+            <!-- If multiple revisions are here, the revision used is the one whose releaseDate is most recent but not in the future, and does not have passed withdrawalDate  -->
+			<Revision releaseDate="2016-06-03T00:00:00">
+                <!-- the key to a string in the associated resource bundle, used as a label to the question -->
+				<PhraseCode>Describe_the_incident_in_detail</PhraseCode>
+			</Revision>
+			<DataType>
+                <!-- The name of the data type of the field -->
+				<Name>textarea</Name>
+                <Revision releaseDate="2016-06-03T00:00:00">
+                    <Constraints>
+                        <Required/>
+                        <Length maxLength="2000" minLength="1"/>
+                    </Constraints>
+                </Revision>
+			</DataType>
+		</Question>
+	</Model>
+	<View>
+		<QuestionGroup id="G-Additional-Questions">
+			<Revision releaseDate="2016-06-03T00:00:00">
+				<PhraseCode>Additional_questions</PhraseCode>
+				<QuestionId>Q-Free-Text-Describe</QuestionId>
+			</Revision>
+		</QuestionGroup>
+	</View>
+	<PageFlow>
+		<Revision releaseDate="2016-06-03T00:00:00">
+			<QuestionGroupId id="P-Additional-Page1">G-Additional-Questions</QuestionGroupId>
+		</Revision>
+	</PageFlow>
+</FlexibleQuestionsDefinition>

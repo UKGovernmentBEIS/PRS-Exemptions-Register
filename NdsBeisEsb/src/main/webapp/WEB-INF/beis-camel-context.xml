@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:cxfcore="http://cxf.apache.org/core"
+	xmlns:ndsext="http://www.northgateps.com/schema/spring/nds-camel-extensions"
+	xmlns:http="http://cxf.apache.org/transports/http/configuration"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-2.19.1.xsd
+		 http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+
+		 http://cxf.apache.org/core  http://cxf.apache.org/schemas/core.xsd
+		 http://www.northgateps.com/schema/spring/nds-camel-extensions http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd
+		 http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+		 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<import resource="classpath:addressSearch-routeContext.xml" />
+	<import resource="classpath:directory-routeContext.xml" />
+	<import resource="classpath:generateReference-routeContext.xml" />
+
+	<!-- setup JMX -->
+	<import resource="classpath:nds-spring-jmx.xml" />
+	<context:component-scan
+		base-package="com.northgateps.nds.platform.loggingsystem.jmx" />
+
+	<bean id="prepareSecurity"
+		class="com.northgateps.nds.platform.esb.util.security.NdsPrepareSecurityAuthenticationHeader" />
+
+	<!-- Loaded JAXBContext on startup for better performance of object to xml conversion -->
+	<bean id="ndsJaxbContext"
+		class="com.northgateps.nds.platform.esb.util.xml.NdsJaxbContext"
+		init-method="preLoadContext">
+		<property name="classList">
+			<list>
+				<value>com.northgateps.nds.platform.api.specificaddresssearch.SpecificAddressSearchNdsResponse
+				</value>
+				<value>com.northgateps.nds.platform.api.addressSearch.AddressSearchNdsResponse
+				</value>
+				<value>com.northgateps.nds.platform.api.fileresourceoperation.FileAddNdsRequest
+				</value>
+				<value>com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsRequest</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="ModelAnnotationsProvider"
+		class="com.northgateps.nds.platform.api.model.metadata.ExpanderModelAnnotationsProvider">
+		<property name="chainedModelAnnotationsProvider">
+			<bean
+				class="com.northgateps.nds.platform.api.model.metadata.IntrospectionModelAnnotationsProvider" />
+		</property>
+	</bean>
+
+	<bean id="ndsDefaultCacheKeyGenerator"
+		class="com.northgateps.nds.platform.esb.camel.NdsDefaultCacheKeyGenerator" />
+
+	<!-- define some properties that define our configuration environment. -->
+	<bean id="properties"
+		class="com.northgateps.nds.platform.esb.util.configuration.NdsPropertiesComponent" />
+
+	<!-- bridge spring property placeholder with Camel -->
+	<!-- you must NOT use the <context:property-placeholder at the same time, 
+		only this bridge bean -->
+	<bean id="bridgePropertyPlaceholder"
+		class="com.northgateps.nds.platform.esb.util.configuration.NdsBridgePropertyPlaceholderConfigurer" />
+
+	<bean class="org.apache.cxf.workqueue.AutomaticWorkQueueImpl">
+		<property name="name" value="default" />
+		<property name="highWaterMark" value="1" />
+		<property name="lowWaterMark" value="1" />
+	</bean>
+
+	<bean id="abstractLoggingInterceptor" abstract="true">
+		<property name="prettyLogging" value="true" />
+	</bean>
+	<bean id="loggingInInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor"
+		parent="abstractLoggingInterceptor" />
+	<bean id="loggingOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"
+		parent="abstractLoggingInterceptor" />
+
+
+	<cxfcore:bus>
+		<cxfcore:inInterceptors>
+			<ref bean="loggingInInterceptor" />
+		</cxfcore:inInterceptors>
+		<cxfcore:outInterceptors>
+			<ref bean="loggingOutInterceptor" />
+		</cxfcore:outInterceptors>
+		<cxfcore:outFaultInterceptors>
+			<ref bean="loggingOutInterceptor" />
+		</cxfcore:outFaultInterceptors>
+		<cxfcore:inFaultInterceptors>
+			<ref bean="loggingInInterceptor" />
+		</cxfcore:inFaultInterceptors>
+	</cxfcore:bus>
+
+	<cxf:rsServer id="getPartiallyRegisteredDetailsService"
+		address="/getPartiallyRegisteredDetailsService"
+		serviceClass="com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="dashboardService" address="/dashboardService"
+		serviceClass="com.northgateps.nds.beis.api.dashboard.DashboardServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="retrieveRegisteredDetailsService"
+		address="/retrieveRegisteredDetailsService"
+		serviceClass="com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="saveRegisteredAccountDetailsService"
+		address="/saveRegisteredAccountDetailsService"
+		serviceClass="com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="prsExemptionSearchService" address="/prsExemptionSearchService"
+		serviceClass="com.northgateps.nds.beis.api.PRSExemptionSearchInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="prsPenaltySearchService" address="/prsPenaltySearchService"
+		serviceClass="com.northgateps.nds.beis.api.PRSPenaltySearchInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="prsExemptionUpdateService" address="/prsExemptionUpdateService"
+		serviceClass="com.northgateps.nds.beis.api.updateexemptiondetails.UpdateExemptionDetailsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="viewDocumentGdarGdipService" address="/viewDocumentGdarGdipService"
+		serviceClass="com.northgateps.nds.beis.api.viewdocument.ViewPdfServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<bean id="prsExemptionSearchAdapter"
+		class="com.northgateps.nds.beis.esb.adapter.PRSExemptionSearchAdapter" />
+	<bean id="prsPenaltySearchAdapter"
+		class="com.northgateps.nds.beis.esb.adapter.PRSPenaltySearchAdapter" />
+
+	<bean id="prsExemptionUpdateAdapter"
+		class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateAdapter" />
+
+
+	<bean id="infrastructureErrorProcessor"
+		class="com.northgateps.nds.platform.esb.exception.InfrastructureErrorProcessor" />
+	<bean id="applicationDefaultErrorProcessor"
+		class="com.northgateps.nds.platform.esb.exception.ApplicationDefaultErrorProcessor" />
+	<bean id="smtpErrorRecoveryProcessor"
+		class="com.northgateps.nds.platform.esb.exception.SmtpErrorRecoveryProcessor">
+	</bean>
+
+	<bean id="validateGetPartiallyRegisteredDetails"
+		class="com.northgateps.nds.beis.esb.process.ValidateGetPartiallyRegisteredDetailsNdsRequest" />
+	<bean id="getPartiallyRegisteredDetailsLdapAdapter"
+		class="com.northgateps.nds.beis.esb.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsLdapAdapter" />
+
+	<bean id="getPrsAccountExemptionsAdapter"
+		class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsAdapter" />
+	<bean id="getPrsAccountExemptionsLookupIdAdapter"
+		class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsLookupIdAdapter" />
+	<bean id="validateGetPrsAccountExemptionsRequest"
+		class="com.northgateps.nds.beis.esb.process.ValidateGetPRSAccountExemptionsNdsRequest">
+	</bean>
+	<bean id="validateRegisterPrsExemptionNdsRequest"
+		class="com.northgateps.nds.beis.esb.process.ValidateRegisterPrsExemptionNdsRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+	
+	<bean id="validatePRSExemptionSearchNdsRequest"
+		class="com.northgateps.nds.beis.esb.process.ValidatePRSExemptionSearchNdsRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+	
+	<bean id="validatePRSPenaltySearchNdsRequest"
+		class="com.northgateps.nds.beis.esb.process.ValidatePRSPenaltySearchNdsRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+
+	<bean id="beisRegistrationLdapAdapter"
+		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationLdapAdapter" />
+	<bean id="purgeDocumentsAdapter"
+		class="com.northgateps.nds.beis.esb.purgedocuments.PurgeDocumentsAdapter" />
+
+	<bean id="retrieveRegisteredDetailsAdapter"
+		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsAdapter" />
+
+	<bean id="retrieveRegisteredDetailsSoapAdapter"
+		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsSoapAdapter" />
+	<bean id="registerPrsExemptionAdapter"
+		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionAdapter" />
+
+
+	<bean id="validateRetrieveRegisteredUserDetails"
+		class="com.northgateps.nds.beis.esb.process.ValidateRetrieveRegisteredUserDetails">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+	</bean>
+
+	<bean id="validateBeisRegistration"
+		class="com.northgateps.nds.beis.esb.process.ValidateBeisRegistration">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+	<bean id="beisregistrationEmailAdapter"
+		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationEmailAdapter">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+	</bean>
+
+	<bean id="wsSecurity-passwordCallback"
+		class="com.northgateps.nds.platform.esb.security.PasswordCallbackForWsSecurity">
+		<constructor-arg value="${beis.secret}" />
+	</bean>
+
+	<bean id="ws-security-client"
+		class="com.northgateps.nds.platform.esb.security.SecurityOutInterceptorForWsSecurity">
+		<constructor-arg value="${beis.userId}" />
+		<constructor-arg ref="wsSecurity-passwordCallback" />
+	</bean>
+	<bean id="beisRegistrationSoapAdapter"
+		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationSoapAdapter" />
+
+	<bean id="beisRegistrationUpdateAccountIdLdapAdapter"
+		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapAdapter" />
+
+	<bean id="saveRegisteredAccountDetailsSoapAdapter"
+		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsSoapAdapter" />
+
+	<bean id="saveRegisteredAccountDetailsAccountIdLdapAdapter"
+		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsAccountIdLdapAdapter" />
+
+	<bean id="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter"
+		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter" />
+
+	<bean id="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter"
+		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" />
+
+	<bean id="getConstrainedValuesAdapter"
+		class="com.northgateps.nds.beis.esb.getconstrainedvalues.GetConstrainedValuesAdapter" />
+
+	<bean id="validateSaveRegisteredAccountDetails"
+		class="com.northgateps.nds.beis.esb.process.ValidateSaveRegisteredAccountDetails">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+
+	<bean id="validatePrsExemptionUpdateRequest"
+		class="com.northgateps.nds.beis.esb.process.ValidatePrsExemptionUpdateRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+
+	<bean id="prsExemptionUpdateLookupIdAdapter"
+		class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateLookupIdAdapter" />
+
+	<bean id="saveRegisteredAccountDetailsAdapter"
+		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsAdapter" />
+	<!-- NoSQLDB operation required following -->
+	<bean id="ndsDbService" class="com.northgateps.nds.platform.esb.db.NdsDbService" />
+
+	<bean id="ndsExchangeUtilities"
+		class="com.northgateps.nds.platform.esb.adapter.NdsExchangeUtilities" />
+
+	<!-- File upload specific -start -->
+	<bean id="fileAddAdapter"
+		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileAddAdapter" />
+
+	<bean id="fileDeleteAdapter"
+		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileDeleteAdapter" />
+
+	<bean id="fileReadAdapter"
+		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileReadAdapter" />
+	<bean id="getPrsExemptionRefDataAdapter"
+		class="com.northgateps.nds.beis.esb.getprsexemptionrefdata.GetPrsExemptionRefDataAdapter" />
+    <bean id="getPrsPenaltyRefDataAdapter"
+		class="com.northgateps.nds.beis.esb.getprspenaltyrefdata.GetPrsPenaltyRefDataAdapter" />
+	<bean id="viewDocumentAdapter"
+		class="com.northgateps.nds.beis.esb.viewdocument.ViewDocumentAdapter" />
+	<bean id="getReferenceValuesAdapter"
+		class="com.northgateps.nds.beis.esb.getreferencevalues.GetReferenceValuesAdapter" />
+	<bean id="registerExemptionLookupIdAdapter"
+		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionLookupIdAdapter" />
+	<bean id="registerPrsExemptionEmailNotifier"
+		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailNotifier">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+	</bean>
+	<bean id="registerPrsExemptionEmailAgentNotifier"
+		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailAgentNotifier">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+	</bean>
+
+	<bean id="printExemptionDetailsAdapter"
+		class="com.northgateps.nds.beis.esb.adapter.PrintExemptionDetailsAdapter" />
+
+	<bean id="updateEmailInLdapAndBackOfficeAdapter"
+		class="com.northgateps.nds.beis.esb.updateemail.UpdateEmailInLdapAndBackOfficeAdapter" />
+
+	<bean id="validateViewDocument"
+		class="com.northgateps.nds.beis.esb.process.ValidateViewPdfDocumentRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+	
+	<bean id="getUserTypePartyDetailsAdapter"
+		class="com.northgateps.nds.beis.esb.dashboard.GetUserTypePartyDetailsAdapter" />
+
+	<cxf:rsServer id="fileAddService" address="/fileAddService"
+		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileAddServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="fileReadService" address="/fileReadService"
+		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileReadServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="fileDeleteService" address="/fileDeleteService"
+		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileDeleteServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="getConstrainedValuesService" address="/getConstrainedValuesService"
+		serviceClass="com.northgateps.nds.beis.api.getconstrainedvalues.GetConstrainedValuesServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="getExemptionTypeTextService" address="/getExemptionTypeTextService"
+		serviceClass="com.northgateps.nds.beis.api.getexemptiontypetext.GetExemptionTypeTextServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="20">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="beisregistrationService" address="/beisregistrationService"
+		serviceClass="com.northgateps.nds.beis.api.beisregistration.BeisRegistrationServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:rsServer id="printExemptionDetailsService" address="/printExemptionDetailsService"
+		serviceClass="com.northgateps.nds.beis.api.printexemptiondetails.PrintExemptionDetailsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:cxfEndpoint id="beisGetPrsAccountExemptionsService"
+		address="{{beis.getPrsAccountExemptionsApiUrl}}"
+		xmlns:beisGetPrsAccountExemptions="http://www.northgateps.com/GetPRSAccountExemptions.wsdl"
+		serviceName="beisGetPrsAccountExemptions:MaintainPartyDetailsWSDLPort"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsWSDLPort"
+		endpointName="beisGetPrsAccountExemptions:GetPRSAccountExemptionsWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:cxfEndpoint id="beisMaintainPartyDetailsService"
+		address="{{beis.maintainPartyDetailsApiUrl}}"
+		xmlns:beisMaintainPartyDetails="http://www.northgateps.com/MaintainPartyDetails.wsdl"
+		serviceName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsWSDLPort"
+		endpointName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:cxfEndpoint id="beisGetPartyDetailsService"
+		address="{{beis.getPartyDetailsApiUrl}}" xmlns:beisGetPartyDetails="http://www.northgateps.com/GetPartyDetails.wsdl"
+		serviceName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsWSDLPort"
+		endpointName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:rsServer id="registerPrsExemptionService" address="/registerPrsExemptionService"
+		serviceClass="com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:cxfEndpoint id="prsExemptionSearchServiceEndPoint"
+		address="{{beis.prsExemptionSearchServiceApiUrl}}"
+		xmlns:prsExemptionSearch="http://www.northgateps.com/PRSExemptionSearch.wsdl"
+		serviceName="prsExemptionSearch:PRSExemptionSearchWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.prsexemptionsearch.PRSExemptionSearchWSDLPort"
+		endpointName="prsExemptionSearch:PRSExemptionSearchWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:cxfEndpoint id="prsPenaltySearchServiceEndPoint"
+		address="{{beis.prsPenaltySearchServiceApiUrl}}"
+		xmlns:prsPenaltySearch="http://www.northgateps.com/PRSPenaltySearch.wsdl"
+		serviceName="prsPenaltySearch:PRSPenaltySearchWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.prspenaltysearch.PRSPenaltySearchWSDLPort"
+		endpointName="prsPenaltySearch:PRSPenaltySearchWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:cxfEndpoint id="prsExemptionUpdateServiceEndPoint"
+		address="{{beis.prsExemptionUpdateServiceApiUrl}}"
+		xmlns:prsExemptionUpdate="http://www.northgateps.com/UpdatePRSExemption.wsdl"
+		serviceName="prsExemptionUpdate:UpdatePRSExemptionWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.updateprsexemption.UpdatePRSExemptionWSDLPort"
+		endpointName="prsExemptionUpdate:UpdatePRSExemptionWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:cxfEndpoint id="viewDocumentGDIPGDARServiceEndPoint"
+		address="{{beis.viewDocumentGDIPGDARServiceApiUrl}}"
+		xmlns:viewDocumentGDIPGDAR="http://www.northgateps.com/ViewDocumentGDIPGDAR.wsdl"
+		serviceName="viewDocumentGDIPGDAR:ViewDocumentGDIPGDAR"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.viewdocumentgdipgdar.ViewDocumentGDIPGDAR"
+		endpointName="viewDocumentGDIPGDAR:ViewDocumentGDIPGDARSOAP"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+
+	<cxf:cxfEndpoint id="exemptionRegistrationService"
+		address="{{beis.registerPrsExemptionApiUrl}}"
+		xmlns:registerPrsExemption="http://www.northgateps.com/RegisterPRSExemption.wsdl"
+		serviceName="registerPrsExemption:RegisterPRSExemptionWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.registerprsexemption.RegisterPRSExemptionWSDLPort"
+		endpointName="registerPrsExemption:RegisterPRSExemptionWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+	<cxf:rsServer id="getPrsExemptionRefDataService" address="/getPrsExemptionRefDataService"
+		serviceClass="com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDataServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="20">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:cxfEndpoint id="getPrsExemptionRefDataEndPoint"
+		address="{{beis.getPrsExemptionRefDataApiUrl}}"
+		xmlns:getPrsExemptionRefData="http://www.northgateps.com/GetPRSExemptionReferenceData.wsdl"
+		serviceName="getPrsExemptionRefData:RegisterPRSExemptionWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataWSDLPort"
+		endpointName="getPrsExemptionRefData:RegisterPRSExemptionWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+	
+	<cxf:rsServer id="getPrsPenaltyRefDataService" address="/getPrsPenaltyRefDataService"
+		serviceClass="com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="20">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+	
+	<cxf:cxfEndpoint id="getPrsPenaltyRefDataEndPoint"
+		address="{{beis.getPrsPenaltyRefDataApiUrl}}"
+		xmlns:getPrsPenaltyRefData="http://www.northgateps.com/GetPRSPenaltyReferenceData.wsdl"
+		serviceName="getPrsPenaltyRefData:GetPRSPenaltyReferenceDataWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata.GetPRSPenaltyReferenceDataWSDLPort"
+		endpointName="getPrsPenaltyRefData:GetPRSPenaltyReferenceDataWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+	
+
+	<cxf:rsServer id="getReferenceValuesService" address="/getReferenceValuesService"
+		serviceClass="com.northgateps.nds.beis.api.getreferencevalues.GetReferenceValuesNdsServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="20">
+		<cxf:providers>
+			<bean
+				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<cxf:cxfEndpoint id="beisGetReferenceValuesService"
+		address="{{beis.getReferenceValuesApiUrl}}" xmlns:getReferenceValues="northgate-is.com/GetReferenceValues.wsdl"
+		serviceName="getReferenceValues:GetReferenceValuesWSDLService"
+		serviceClass="com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferenceValuesWSDLPort"
+		endpointName="getReferenceValues:GetReferenceValuesWSDLPort"
+		loggingFeatureEnabled="true">
+		<cxf:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</cxf:properties>
+		<cxf:outInterceptors>
+			<ref bean="ws-security-client" />
+		</cxf:outInterceptors>
+	</cxf:cxfEndpoint>
+
+
+
+
+	<!-- registry settings for secure email sending -->
+	<camel:sslContextParameters id="smtpSslContext">
+		<camel:serverParameters clientAuthentication="WANT" />
+	</camel:sslContextParameters>
+
+
+	<!-- The camel route context -->
+	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring"
+		errorHandlerRef="defaultEH" handleFault="true" allowUseOriginalMessage="true">
+
+		<ndsext:ndsStandardExceptionHandlers />
+
+		<properties>
+			<property key="CamelLogDebugBodyMaxChars" value="10000" />
+		</properties>
+
+		<errorHandler id="defaultEH" useOriginalMessage="true">
+			<redeliveryPolicy maximumRedeliveries="2"
+				redeliveryDelay="1000" retryAttemptedLogLevel="WARN" />
+		</errorHandler>
+
+		<!-- Import routes here -->
+		<routeContextRef ref="addressSearchRoutes" />
+		<routeContextRef ref="directoryRoutes" />
+		<routeContextRef ref="generateReferenceRoutes" />
+
+		<camel:endpoint id="pedefaultCache"
+			uri="cache:pedefaultCache?diskExpiryThreadIntervalSeconds=120
+		&amp;diskPersistent=false&amp;eternal=false&amp;key=requestHash&amp;maxElementsInMemory=1000
+		&amp;memoryStoreEvictionPolicy=MemoryStoreEvictionPolicy.LFU&amp;objectCache=false&amp;overflowToDisk=true
+		&amp;timeToIdleSeconds=300&amp;timeToLiveSeconds=300" />
+
+		<camel:endpoint id="generateReferenceCache"
+			uri="cache:{{generate.reference.cache}}?diskExpiryThreadIntervalSeconds=120
+		&amp;diskPersistent=false&amp;eternal=false&amp;key=requestHash&amp;maxElementsInMemory=1000
+		&amp;memoryStoreEvictionPolicy=MemoryStoreEvictionPolicy.LFU&amp;objectCache=false&amp;overflowToDisk=true
+		&amp;timeToIdleSeconds=0&amp;timeToLiveSeconds=0" />
+
+		<dataFormats>
+			<jaxb id="jaxb-registerPrsExemptionResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.registerprsexemption" />
+			<bindy id="csvBindyConstrainedValueRecord" type="Csv"
+				classType="com.northgateps.nds.beis.esb.getconstrainedvalues.CsvConstrainedValueRecord" />
+			<jaxb id="jaxb-getPrsAccountExemptionsResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions" />
+			<jaxb id="jaxb-prsExemptionSearchResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.prsexemptionsearch" />
+			<jaxb id="jaxb-prsPenaltySearchResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.prspenaltysearch" />
+			<jaxb id="jaxb-maintainPartyDetailsResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.maintainpartydetails" />
+			<jaxb id="jaxb-getPartyDetailsResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.getpartydetails" />
+			<jaxb id="jaxb-prsExemptionUpdateResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.updateprsexemption" />
+			<jaxb id="jaxb-getPrsExemptionRefDataResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata" />
+			<jaxb id="jaxb-getPrsPenaltyRefDataResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata" />
+			<jaxb id="jaxb-viewPdfResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.viewdocumentgdipgdar" />
+			<jaxb id="jaxb-getReferenceValuesResponse"
+				contextPath="com.northgateps.nds.beis.backoffice.service.getreferencevalues" />
+		</dataFormats>
+
+		<onException>
+			<exception>com.northgateps.nds.platform.esb.exception.InvalidDirectoryException
+			</exception>
+			<handled>
+				<constant>true</constant>
+			</handled>
+			<process ref="ndsDirectoryErrorRecoveryProcessor" />
+		</onException>
+
+		<route id="getPartiallyRegisteredDetailsServiceRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiGetPartiallyRegisteredDetailsEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="validateGetPartiallyRegisteredDetails" method="validate" />
+				<bean ref="getPartiallyRegisteredDetailsLdapAdapter" method="processRequest" />
+				<bean ref="getPartiallyRegisteredDetailsLdapAdapter" method="processResponse" />
+			</policy>
+		</route>
+		
+		<route id="getPrsAccountExemptionsServiceRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiDashboardEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="validateGetPrsAccountExemptionsRequest" method="validate" />
+				<bean ref="getPrsAccountExemptionsLookupIdAdapter" method="processRequest" />
+				<bean ref="getUserTypePartyDetailsAdapter" method="createPartyDetailsRequest" />
+				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				<to uri="direct:getPartyDetails" />
+				<bean ref="getUserTypePartyDetailsAdapter" method="getUserType" /> 
+				<bean ref="getPrsAccountExemptionsAdapter" method="processRequest" />
+				<to uri="cxf:bean:beisGetPrsAccountExemptionsService" />
+				<unmarshal ref="jaxb-getPrsAccountExemptionsResponse" />
+				<bean ref="getPrsAccountExemptionsAdapter" method="processResponse" />
+			</policy>
+		</route>
+
+		<!-- route to retrieve party reference from foundation layer -->
+		<route id="retrieveRegisteredDetailsServiceRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiRetrieveRegisteredDetailsEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="validateRetrieveRegisteredUserDetails" method="validate" />
+				<bean ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter"
+					method="processRequest" />
+				<to uri="direct:getPartyDetails" />
+			</policy>
+		</route>
+
+		<!-- route to retrieve details from back office -->
+		<route id="getPartyDetails_SubRouteForRetrievingRegistrationDetails">
+			<from uri="direct:getPartyDetails" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processRequest" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+							processRequest ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<to uri="cxf:bean:beisGetPartyDetailsService" />
+				<unmarshal ref="jaxb-getPartyDetailsResponse" />
+				<log
+					message="${threadName} 
+							&gt;&gt;&gt; After service, before adapter ${body} !!"
+					loggingLevel="WARN" />
+				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processResponse" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+							processResponse ${body} !!"
+					loggingLevel="WARN" />
+			</policy>
+		</route>
+
+		<route id="getConstrainedValuesRoute">
+			<from uri="{{apiGetConstrainedValuesService}}" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				<!-- read the constrained values from file -->
+				<ndsext:toWithCache uri="pedefaultCache"
+					otherwiseuri="singleFileReader:{{beis.csvConstraintsFilePath}}" />
+				<!-- bind to a java class ie. CsvConstrainedValueRecord -->
+				<unmarshal ref="csvBindyConstrainedValueRecord" />
+				<bean ref="getConstrainedValuesAdapter" method="processResponse" />
+				<bean ref="getConstrainedValuesAdapter" method="processFilterResponse" />
+			</policy>
+		</route>
+
+		<route id="beisRegistrationServiceRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiBeisRegistrationEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="validateBeisRegistration" method="validate" />
+				<bean ref="beisRegistrationLdapAdapter" method="checkUsername" />
+				<!-- Write the user details first to LDAP so we have use details even 
+					if the later call to the back office fails. -->
+				<bean ref="beisRegistrationLdapAdapter" method="processRequest" />
+				<!-- Send an email with an activation url for the account -->
+				<bean ref="beisregistrationEmailAdapter" method="processRequest" />
+				<to uri="smtp://{{smtp.host.server}}" />
+				<bean ref="beisRegistrationLdapAdapter" method="processResponse" />
+				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<!-- Add the user details to the back office and get an accountId -->
+				<to uri="direct:maintainPartyDetails" />
+				<choice>
+					<when>
+						<!-- Only try and update ldap if the previous call has successfully 
+							setup the account id to be written -->
+						<simple>${exchangeProperty.accountId} != null</simple>
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="beisRegistrationUpdateAccountIdLdapAdapter"
+							method="processRequest" />
+						<bean ref="beisRegistrationUpdateAccountIdLdapAdapter"
+							method="processResponse" />
+					</when>
+				</choice>
+			</policy>
+		</route>
+
+		<!-- route to be shared by register and save registered account details -->
+		<route id="maintainPartyDetails_SubRouteForRegistration">
+			<from uri="direct:maintainPartyDetails" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="beisRegistrationSoapAdapter" method="processRequest" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+							processRequest ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<to uri="cxf:bean:beisMaintainPartyDetailsService" />
+				<unmarshal ref="jaxb-maintainPartyDetailsResponse" />
+				<log
+					message="${threadName} 
+							&gt;&gt;&gt; After service, before adapter ${body} !!"
+					loggingLevel="WARN" />
+				<bean ref="beisRegistrationSoapAdapter" method="processResponse" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+							processResponse ${body} !!"
+					loggingLevel="WARN" />
+			</policy>
+		</route>
+
+		<route id="saveRegisteredAccountDetailsServiceRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiSaveRegisteredAccountDetailsEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="prepareSecurity" method="setAuthenticationHeader" />
+				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				<bean ref="validateSaveRegisteredAccountDetails" method="validate" />
+
+				<!-- Update send the notification email to the new address if we're updating 
+					it -->
+				<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="checkForUpdateEmail" />
+				<choice>
+					<when>
+						<simple>${exchangeProperty.updateEmail} == true</simple>
+						<log message="### Send email to new address ###" loggingLevel="DEBUG" />
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processRequest" />
+
+						<bean ref="updateEmailLdapAdapter" method="fetchEntryFromLdap" />
+						<to uri="direct:sendEmailToNewAddressSubRoute" />
+
+						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processResponse" />
+					</when>
+				</choice>
+
+				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<!-- Update LDAP -->
+				<bean ref="saveRegisteredAccountDetailsAdapter" method="processRequest" />
+
+				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<log
+					message="Partially Registered exchange property is : ${exchangeProperty.partiallyRegistered}"
+					loggingLevel="WARN" />
+
+				<!-- Put the account id into the request if we are not dealing with a 
+					partial registration -->
+				<choice>
+					<when>
+						<simple>${exchangeProperty.partiallyRegistered} == false</simple>
+						<bean ref="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter"
+							method="processRequest" />
+					</when>
+				</choice>
+
+				<!-- Send the account details changes to the back-office -->
+				<bean ref="saveRegisteredAccountDetailsSoapAdapter" method="processRequest" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+							processRequest ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<to uri="cxf:bean:beisMaintainPartyDetailsService" />
+				<unmarshal ref="jaxb-maintainPartyDetailsResponse" />
+				<log
+					message="${threadName} 
+							&gt;&gt;&gt; After service, before adapter ${body} !!"
+					loggingLevel="WARN" />
+				<bean ref="saveRegisteredAccountDetailsSoapAdapter" method="processResponse" />
+
+				<choice>
+					<when>
+						<!-- Only try and update ldap if the previous call has successfully 
+							setup the account id to be written -->
+						<simple>${exchangeProperty.accountId} != null</simple>
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="saveRegisteredAccountDetailsAccountIdLdapAdapter"
+							method="processRequest" />
+						<bean ref="saveRegisteredAccountDetailsAccountIdLdapAdapter"
+							method="processResponse" />
+					</when>
+				</choice>
+
+				<!-- Send the notification email to the new address if we're updating 
+					it -->
+				<choice>
+					<when>
+						<simple>${exchangeProperty.updateEmail} == true</simple>
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<log message="### Send email to old address ###" loggingLevel="DEBUG" />
+						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processRequest" />
+
+						<to uri="direct:sendEmailToOldAddressSubRoute" />
+
+						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processResponse" />
+					</when>
+				</choice>
+			</policy>
+		</route>
+
+		<route id="printExemptionDetailsRoute">
+			<from uri="{{apiPrintExemptionDetailsEndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+				<to
+					uri="xslt:exemption-details.xslt?transformerFactoryClass=org.apache.xalan.processor.TransformerFactoryImpl" />
+				<convertBodyTo type="org.w3c.dom.Document" />
+				<bean ref="printExemptionDetailsAdapter" method="unescapeHtml" />
+				<convertBodyTo type="java.lang.String" />
+				<to uri="fop:application/pdf" />
+				<bean ref="printExemptionDetailsAdapter" method="processResponse" />
+			</policy>
+		</route>
+
+
+		<route id="fileAddRoute" trace="true" streamCache="true"
+			handleFault="true">
+			<from uri="{{apiFileAddService}}" />
+			<policy ref="generalSecurityPolicy">				
+				<log message="${threadName} &gt;&gt;&gt;  Start of route:"
+					loggingLevel="INFO" />
+				<bean ref="fileAddAdapter" method="processRequest" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+				<bean ref="fileAddAdapter" method="storeFile" />
+				<bean ref="fileAddAdapter" method="processResponse" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+			</policy>
+		</route>
+
+		<route id="fileReadRoute" trace="true" streamCache="true"
+			handleFault="true">
+			<from uri="{{apiFileReadService}}" />
+			<policy ref="generalSecurityPolicy">
+				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
+					loggingLevel="INFO" />
+				<bean ref="fileReadAdapter" method="processRequest" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+				<bean ref="fileReadAdapter" method="processResponse" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+			</policy>
+		</route>
+
+		<route id="fileDeleteRoute" trace="true" streamCache="true"
+			handleFault="true">
+			<from uri="{{apiFileDeleteService}}" />
+			<policy ref="generalSecurityPolicy">
+				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
+					loggingLevel="INFO" />
+				<bean ref="fileDeleteAdapter" method="processRequest" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+				<bean ref="fileDeleteAdapter" method="processResponse" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
+					loggingLevel="INFO" />
+			</policy>
+		</route>
+
+		<route id="prsExemptionSearchRoute">
+			<from uri="{{apiPRSExemptionSearchEndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+			    <bean ref="validatePRSExemptionSearchNdsRequest" method="validate" />
+				<bean ref="prsExemptionSearchAdapter" method="processRequest" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+                            processRequest ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<to uri="cxf:bean:prsExemptionSearchServiceEndPoint" />
+				
+				<unmarshal ref="jaxb-prsExemptionSearchResponse" />
+				<log
+					message="${threadName} 
+                            &gt;&gt;&gt; After service, before adapter ${body} !!"
+					loggingLevel="WARN" />
+				<bean ref="prsExemptionSearchAdapter" method="processResponse" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+                            processResponse ${body} !!"
+					loggingLevel="WARN" />
+			</policy>
+		</route>
+
+		<route id="prsPenaltySearchRoute">
+			<from uri="{{apiPRSPenaltySearchEndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+			 <bean ref="validatePRSPenaltySearchNdsRequest" method="validate" />
+			 <bean ref="prsPenaltySearchAdapter" method="processRequest" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+                            processRequest ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<to uri="cxf:bean:prsPenaltySearchServiceEndPoint" />
+				<unmarshal ref="jaxb-prsPenaltySearchResponse" />
+				<log
+					message="${threadName} 
+                            &gt;&gt;&gt; After service, before adapter ${body} !!"
+					loggingLevel="WARN" />
+				<bean ref="prsPenaltySearchAdapter" method="processResponse" />
+				<log
+					message="${threadName} &gt;&gt;&gt; processed 
+                            processResponse ${body} !!"
+					loggingLevel="WARN" />
+			</policy>
+		</route>
+
+
+		<route id="GetPrsExemptionRefDataRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiGetPrsExemptionRefData}}" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="getPrsExemptionRefDataAdapter" method="processRequest" />
+				<ndsext:toWithCache uri="pedefaultCache"
+					otherwiseuri="cxf:bean:getPrsExemptionRefDataEndPoint" />
+				<unmarshal ref="jaxb-getPrsExemptionRefDataResponse" />
+				<bean ref="getPrsExemptionRefDataAdapter" method="processResponse" />
+			</policy>
+		</route>
+		
+		<route id="GetPrsPenaltyRefDataRoute" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiGetPrsPenaltyRefData}}" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="getPrsPenaltyRefDataAdapter" method="processRequest" />
+				<ndsext:toWithCache uri="pedefaultCache"
+					otherwiseuri="cxf:bean:getPrsPenaltyRefDataEndPoint" />
+				<unmarshal ref="jaxb-getPrsPenaltyRefDataResponse" />
+				<bean ref="getPrsPenaltyRefDataAdapter" method="processResponse" />
+			</policy>
+		</route>
+		
+
+
+		<route id="Register_PRS_Exemption_Route" trace="true"
+			streamCache="true" handleFault="true">
+			<from uri="{{apiRegisterPrsExemptionEndpoint}}" />
+			<policy ref="generalSecurityPolicy">				
+				<bean ref="validateRegisterPrsExemptionNdsRequest" method="validate" />				
+				<bean ref="registerExemptionLookupIdAdapter" method="processRequest" />				
+				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />				
+				<bean ref="registerPrsExemptionAdapter" method="processRequest" />				
+				<to uri="cxf:bean:exemptionRegistrationService" />				
+				<unmarshal ref="jaxb-registerPrsExemptionResponse" />				
+				<bean ref="registerPrsExemptionAdapter" method="processResponse" />				
+				<choice>
+					<when>
+						<!-- Checks if email notification is true to trigger email -->
+						<simple>${exchangeProperty.exemptionRegisteredSuccessfully} == true</simple>
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="registerPrsExemptionEmailNotifier" method="processRequest" />
+						<!-- exception processor will handle any smtp exceptions and break 
+							out of route -->
+						<to uri="smtp://{{smtp.host.server}}" />
+						<bean ref="registerPrsExemptionEmailNotifier" method="processResponse" />
+						<choice>
+							<when>
+								<!-- Checks if user is agent to trigger email -->
+								<simple>${exchangeProperty.isUserAgent} == true</simple>
+								<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage"/>
+								<bean ref="registerPrsExemptionEmailAgentNotifier" method="processRequest" />					
+								<to uri="smtp://{{smtp.host.server}}" />
+								<bean ref="registerPrsExemptionEmailAgentNotifier" method="processResponse" />
+							</when>
+						</choice>
+					</when>
+				</choice>				
+			</policy>
+		</route>
+		
+		<route id="prsExemptionUpdateRoute">
+			<from uri="{{apiPRSExemptionUpdateEndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="validatePrsExemptionUpdateRequest" method="validate" />
+				<bean ref="prsExemptionUpdateLookupIdAdapter" method="processRequest" />
+				<bean ref="prsExemptionUpdateAdapter" method="processRequest" />
+				<to uri="cxf:bean:prsExemptionUpdateServiceEndPoint" />
+				<unmarshal ref="jaxb-prsExemptionUpdateResponse" />
+				<bean ref="prsExemptionUpdateAdapter" method="processResponse" />
+			</policy>
+		</route>
+
+		<route id="viewDocumentGdipgdarRoute">
+			<from uri="{{apiViewDocumentGDIPGDAREndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+				<bean ref="validateViewDocument" method="validate" />
+				<bean ref="viewDocumentAdapter" method="processRequest" />
+				<to uri="cxf:bean:viewDocumentGDIPGDARServiceEndPoint" />
+				<unmarshal ref="jaxb-viewPdfResponse" />
+				<bean ref="viewDocumentAdapter" method="processResponse" />
+			</policy>
+		</route>
+
+		<route id="GetReferenceValuesRoute" streamCache="true"
+			handleFault="true">
+			<from uri="{{apiGetReferenceValuesEndpoint}}" />
+			<policy ref="generalSecurityPolicy">
+				<log
+					message="${threadName} &gt;&gt;&gt; we've got a BEIS request from ${body} headers are ${headers} !!"
+					loggingLevel="WARN" />
+				<bean ref="getReferenceValuesAdapter" method="processFilterRequest" />
+				<bean ref="getReferenceValuesAdapter" method="processRequest" />
+				<ndsext:toWithCache uri="pedefaultCache"
+					otherwiseuri="cxf:bean:beisGetReferenceValuesService" />
+				<unmarshal ref="jaxb-getReferenceValuesResponse" />
+				<bean ref="getReferenceValuesAdapter" method="processResponse" />
+				<bean ref="getReferenceValuesAdapter" method="processFilterResponse" />
+			</policy>
+		</route>
+
+		<route id="purgeDocumentRoute">
+			<from uri="direct:purgeDocumentRoute" />
+			<bean ref="purgeDocumentsAdapter" method="processRecords" />
+			<bean ref="purgeDocumentsAdapter" method="insertAuditRecord" />
+			<bean ref="purgeDocumentsAdapter" method="purgeAuditRecords" />
+		</route>
+
+		<route id="PurgeBatchJobRoute">
+			<from uri="timer://purgeRegistrationAndFilesBatchJob?period={{timerPeriod}}" />
+			<to uri="direct:purgeDocumentRoute" />
+		</route>
+	</camelContext>
+
+</beans>

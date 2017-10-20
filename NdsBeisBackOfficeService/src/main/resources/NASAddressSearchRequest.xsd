@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!--  Schema version Date:2014-12-15 (by Northgate Information Solutions)  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://northgate-is.com/NAS/AddressSearchRequest-v1.0"
+            xmlns:core="http://northgate-is.com/FL/Core"
+            targetNamespace="http://northgate-is.com/NAS/AddressSearchRequest-v1.0" elementFormDefault="qualified">
+    <xsd:import namespace="http://northgate-is.com/FL/Core" schemaLocation="FLCore.xsd"/>
+    <xsd:element name="AddressSearchRequest">
+        <xsd:annotation>
+            <xsd:documentation>Search NAS addresses request</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="RequestParameters" type="core:StandardRequestStructure"/>
+                <xsd:element name="SearchParameters">
+                    <xsd:annotation>
+                        <xsd:documentation>Return the addresses that match the supplied address line and postcode. If the postcode only is supplied then only addresses with the postcode are returned. If the postcode is not supplied then the value for the address line only is used. If both elements are empty no data will be returned.</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Postcode" type="PostCodeType" minOccurs="0"/>
+                            <xsd:element name="AddressLine" type="xsd:string" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>Any part of the address can be supplied in the address line element for matching.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="SelectionOptions">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="MaximumNumberOfRows" type="xsd:integer">
+                                <xsd:annotation>
+                                    <xsd:documentation>The maximum number of rows to return. If more than the maximum number of rows match, the returned address list will include MaximumNumberOfRows + 1 addresses so that the calling process knows there are more than MaximumNumberOfRows that match.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="IncludeNonGeographicAddresses" type="xsd:boolean" default="true" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>Include non geographic addresses in the result list.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="IncludeBFPOAddresses" type="xsd:boolean" default="false" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>Include BFPO addresses in the result list.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="IncludeMultiResidenceAddresses" type="xsd:boolean" default="true" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>Include Multiple residence addresses in the result list.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="IncludeNIAddresses" type="xsd:boolean" default="true" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>Include Northen Ireland addresses in the result list.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <!--  PostCode Definition -->
+    <xsd:simpleType name="PostCodeType">
+        <xsd:annotation>
+            <xsd:documentation>complex pattern for postcode, which matches definition, accepted by some parsers is: "(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})"</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

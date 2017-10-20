@@ -1,0 +1,258 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.beis.sharedpoms</groupId>
+	<artifactId>sharedpoms-esb</artifactId>
+	<version>0.0.1503</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<artifactId>sharedpoms</artifactId>
+		<version>0.0.1503</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<maven.plugin.install.version>2.4</maven.plugin.install.version>
+		<maven.plugin.deploy.version>2.8.2</maven.plugin.deploy.version>
+		<maven.plugin.jar.version>2.6</maven.plugin.jar.version>
+		<maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
+		<javax.servlet.api.version>3.1.0</javax.servlet.api.version>
+	    <camel.version>2.19.1</camel.version>
+		<generatetransformations.maven.plugin.version>0.0.0</generatetransformations.maven.plugin.version>
+	</properties>
+	
+	<name>NDS base POM for ESB type projects</name>
+	<description>
+		Northgate Public Services Digital Service base POM for ESB type projects
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<!-- required to ensure that javadocs site has the correct links back to the aggregate project-->
+	<distributionManagement>
+		<site>
+			<id>www.northgatepublicservices.co.uk/nds/beis</id>
+			<url>${distro.url}</url>
+		</site>
+	</distributionManagement>
+	
+	<dependencies>
+	    <dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Has dependency on spring-security-core 3, careful that's not used elsewhere. -->
+	    <dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-security</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	    <dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-test-spring</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-cxf</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>  
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-server</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-servlet</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-soap</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-xstream</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-cache</artifactId>
+			<version>${camel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet.api.version}</version>	
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.codemodel</groupId>
+			<artifactId>codemodel</artifactId>
+			<version>${codemodel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>${cxf.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<!-- Logging systems -->
+		<dependency>
+			<groupId>com.northgateps.nds.logging</groupId>
+			<artifactId>logging</artifactId>
+			<version>${nds.logging.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-csv</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-bindy</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-ldap</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-mail</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<!-- explicitly define this dependency to get the correct version -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${springframework.security.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${springframework.security.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${springframework.security.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- 
+				AOP Weaving.  
+				Looks for @Aspect in Java files which define where and what to add to the bytecode.
+				Cannot be in the parent pom since the NdsLoggingSystem project has the same root
+				pom and would fail to compile with the aspectLibrary definition below (since it
+				points to the NdsLoggingsystem).
+			 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>${aspectj.maven.plugin.version}</version>
+				<configuration>
+					<complianceLevel>${java.target.version}</complianceLevel>
+					<verbose>true</verbose>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>com.northgateps.nds.logging</groupId>
+							<artifactId>logging</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectjtools.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+				
+			<!-- Plugin to check the aspectj-maven-plugin actually did what we want it to do. -->
+			<plugin>
+				<groupId>com.northgateps.nds.plugins</groupId>
+				<artifactId>plugins-checkweaving</artifactId>
+				<version>${nds.checkweaving.version}</version>
+				<configuration>
+					<skipProject>
+						<param>com.northgateps.beis.sharedpoms:sharedpoms-esb</param>
+					</skipProject>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>checkAspectWeaving</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>${maven.plugin.install.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>${maven.plugin.deploy.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven.plugin.jar.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+</project>

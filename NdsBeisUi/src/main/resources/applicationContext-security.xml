@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:b="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+    ">
+
+	<!-- no need for security on this directory -->
+	<http pattern="/assets/**" security="none" />
+	
+	<!-- 
+		Configure security
+		We use spring-session for security session tracking (see applicationContext.xml-session)
+		so below we set create-session="never" because everything else is stateless.
+		If this is not set then Spring will save and inject old session data when the session times 
+		out & user logs in again (see RequestCache).
+	 -->
+ 	<http entry-point-ref="casEntryPoint" create-session="never">
+ 		<!-- "personalised" resources can only be accessed by an authenticated user  -->
+		<intercept-url pattern="/personalised-*" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/cas/" access="permitAll" />
+		<intercept-url pattern="/**" access="permitAll" />
+		
+		<!-- What to do when the session expires -->
+		<session-management invalid-session-url="/SessionExpired" />
+
+		<!-- Protects against session bleed bug/attack must be before="SECURITY_CONTEXT_FILTER" to work -->
+        <custom-filter ref="sessionBleedFilter" before="SECURITY_CONTEXT_FILTER" />
+				
+		<!-- Calls the CAS server to do SLO -->
+		<custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER" />
+		
+		<!-- Receives messages from CAS server to do SLO -->
+		<custom-filter ref="singleLogoutFilter" before="CAS_FILTER" />
+		
+		<!-- Checks security with CAS -->
+		<custom-filter ref="casFilter" position="CAS_FILTER" />
+
+		<!-- Enables local logout at /logout but not used due to above logout filters -->
+		<logout logout-success-url="/cas-logout.jsp" />
+
+		<!-- We're a stateless application so standard csrf protection won't work -->
+		<csrf disabled="true"/>
+	</http>
+		
+	<authentication-manager alias="authManager">
+		<authentication-provider ref="casAuthProvider" />
+	</authentication-manager>
+		
+	<!-- This filter handles a back-channel Single Logout Request FROM the CAS Server -->
+	<b:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter" />
+	
+    <!-- 
+        Protects against session bleed by ensuring new logins from CAS (ie anything that has a "ticket" attribute)
+        create a new session ID (which is then stored in the viewstate for checking on each request so discrepancies
+        mean session bleed attack/bug is happening). 
+     -->
+    <b:bean id="sessionBleedFilter" class="com.northgateps.nds.platform.ui.security.cas.SessionBleedFilter" />
+
+	<!-- 
+		On successful local logout, this bean manages redirects the browser to CAS to do SLO INCLUDING 
+		the query string from the request that the CAS logout page will use to construct a suitable
+		link for logging back in (eg including tenant details).
+	 -->
+	<b:bean id="logoutSuccessHandler" class="com.northgateps.nds.platform.ui.security.cas.CasServiceUrlLogoutSuccessHandler">
+		<b:constructor-arg ref="ndsServiceProperties" />
+	</b:bean>
+	
+	<!-- Manages logout of the UI -->	
+	<b:bean id="requestSingleLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter"
+		p:filterProcessesUrl="/${cas.service.logout.filter}">
+		<b:constructor-arg ref="logoutSuccessHandler" />
+		<b:constructor-arg>
+			<b:bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+		</b:constructor-arg>
+	</b:bean>
+		
+	<!-- 
+		ServiceProperties and the NDS version which replaces it.  Both are needed though the Spring
+		one is only used for static methods, not for actually getting service details. 
+	-->
+	<b:bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties"
+		p:service="not_implemented" 
+		p:authenticateAllArtifacts="true" />
+	
+	<b:bean id="ndsServiceProperties" class="com.northgateps.nds.platform.ui.security.cas.NdsServiceProperties" />
+	
+	<!-- 
+		We configure a custom entry point so we can control the parameters programatically 
+		based on per-service json config files 
+	-->
+	<b:bean id="casEntryPoint" class="com.northgateps.nds.platform.ui.security.cas.ComeBackHereEntryPoint"
+		p:ndsServiceProperties-ref="ndsServiceProperties"
+	/>
+			
+	<b:bean id="casFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter"
+		p:authenticationManager-ref="authManager"
+		p:serviceProperties-ref="serviceProperties">
+		<b:property name="authenticationDetailsSource">
+			<b:bean class="com.northgateps.nds.platform.ui.security.cas.NdsServiceAuthenticationDetailsSource">
+				<b:constructor-arg ref="ndsServiceProperties" />
+			</b:bean>
+		</b:property>
+		<b:property name="authenticationFailureHandler">
+			<b:bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"
+				p:defaultFailureUrl="/views/casfailed.jsp" />
+		</b:property>
+	</b:bean>
+
+	<b:bean id="casAuthProvider" class="org.springframework.security.cas.authentication.CasAuthenticationProvider"
+		p:serviceProperties-ref="serviceProperties" p:key="casAuthProviderKey">
+		<b:property name="authenticationUserDetailsService" ref="userDetailsService" />
+		<b:property name="ticketValidator">
+			<!-- Using CAS 3 protocol so we can get attributes back -->
+			<b:bean class="org.jasig.cas.client.validation.Cas30ServiceTicketValidator"
+				p:uRLConnectionFactory-ref="casConnectionFactory">
+				<b:constructor-arg value="${cas.server.hostInternal}" />
+			</b:bean>
+		</b:property>
+	</b:bean>
+
+	<b:bean id="casConnectionFactory" class="com.northgateps.nds.platform.ui.security.cas.client.ssl.TruststoreConnectionFactory">
+		<b:property name="sslConfiguration">
+			<b:ref bean="uiProperties" />
+		</b:property> 
+	</b:bean>
+	
+	<!-- Assigns roles and converts attributes into a Spring Security UserDetails object -->
+	<b:bean id="userDetailsService" class="com.northgateps.nds.beis.ui.security.BeisUserDetailsService">
+		<b:property name="rolesAttribute" value="NDS_ROLE_DN" />
+		<b:property name="tenantAttribute" value="NDS_TENANT" />
+		<b:property name="extractRolePattern" value="${role.extract.regex}" />
+	</b:bean>
+	
+</b:beans>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+xmlns:ns="http://northgateps.com/BEIS/PRSExemptionSearch"
+xmlns:ns1="http://northgateps.com/BEIS/PRSExemptionSearchResponse" 
+xmlns:wsdl1="http://www.northgateps.com/PRSExemptionSearch.wsdl"
+targetNamespace="http://www.northgateps.com/PRSExemptionSearch.wsdl">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://northgateps.com/BEIS/PRSExemptionSearch" schemaLocation="PRSExemptionSearchRequest.xsd"/>
+			<xsd:import namespace="http://northgateps.com/BEIS/PRSExemptionSearchResponse" schemaLocation="PRSExemptionSearchResponse.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="PRSExemptionSearchRequest">
+		<wsdl:part name="parameters" element="ns:PRSExemptionSearchRequest" />
+	</wsdl:message>
+	<wsdl:message name="PRSExemptionSearchResponse">
+		<wsdl:part name="parameters" element="ns1:PRSExemptionSearchResponse" />
+	</wsdl:message>
+	<wsdl:portType name="PRSExemptionSearchWSDLPort">
+		<wsdl:operation name="PRSExemptionSearchWSDL">
+			<wsdl:input message="wsdl1:PRSExemptionSearchRequest" />
+			<wsdl:output message="wsdl1:PRSExemptionSearchResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PRSExemptionSearchWSDLBinding" type="wsdl1:PRSExemptionSearchWSDLPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="PRSExemptionSearchWSDL">
+			<soap:operation
+				soapAction="https://server/DATABASE/communication/PRSExemptionSearch" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="PRSExemptionSearchWSDLService">
+		<wsdl:port binding="wsdl1:PRSExemptionSearchWSDLBinding" name="PRSExemptionSearchWSDLPort">
+			<soap:address location="https://server/DATABASE/communication/PRSExemptionSearch" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
