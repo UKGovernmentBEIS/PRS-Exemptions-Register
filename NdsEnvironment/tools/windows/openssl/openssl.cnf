@@ -111,7 +111,7 @@ subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid,issuer:always
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
-subjectAltName = IP:152.114.33.24,IP:192.168.1.77,IP:127.0.0.1
+subjectAltName = IP:127.0.0.1
  
 #######################################################################################################
 [ usr_cert ]
