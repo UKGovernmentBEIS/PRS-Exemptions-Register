@@ -3,14 +3,13 @@ package com.northgateps.nds.beis.esb.registration;
 import java.util.HashMap;
 
 import com.northgateps.nds.beis.api.BeisPartyRequest;
-import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapAdapter;
+import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapComponent;
 import com.northgateps.nds.platform.api.NdsRequest;
 import com.northgateps.nds.platform.api.NdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryUnwillingToPerformOperationException;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
@@ -25,16 +24,16 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
  * This class specifies the request must implement BeisPartyRequest and 
  * NdsRequest classes. This is so that the username and tenant can be retrieved.
  */
-public abstract class SaveAccountIdLdapAdapter<TRequest extends BeisPartyRequest & NdsRequest, TResponse extends NdsResponse> extends NdsDirectoryAdapter<TRequest, TResponse>{
+public abstract class SaveAccountIdLdapComponent<TRequest extends BeisPartyRequest & NdsRequest, TResponse extends NdsResponse> extends NdsDirectoryComponent<TRequest, TResponse>{
     //This is to be reused where required
     public static final String EXCHANGE_PROPERTY_ACCOUNT_ID = "accountId";  
     
-    private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationUpdateAccountIdLdapAdapter.class);
+    private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationUpdateAccountIdLdapComponent.class);
     
-    @Override
-    protected void doRequestProcess(TRequest request, DirectoryConnection directoryConnection,
-            NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
-            throws NdsApplicationException, NdsBusinessException {
+    @Override  
+    protected void doProcess(TRequest request, DirectoryAccessConnection directoryConnection,
+                NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
+                        throws NdsApplicationException, NdsBusinessException, DirectoryException {
         
         //Read property for account id
         if( ndsExchange.getAnExchangeProperty(EXCHANGE_PROPERTY_ACCOUNT_ID) != null){
@@ -58,7 +57,7 @@ public abstract class SaveAccountIdLdapAdapter<TRequest extends BeisPartyRequest
             changes.put(ldapAttributeServiceUid, accountId);   
             
             try{                
-                UserServices.setAttributesOnEntry(directoryConnection, servicednForTheUser, changes);
+                getUserManager().setAttributesOnEntry(directoryConnection, servicednForTheUser, changes);
             } catch (DirectoryUnwillingToPerformOperationException e) {
                 throw new NdsBusinessException(e.getMessage());
             } catch (DirectoryException e) {

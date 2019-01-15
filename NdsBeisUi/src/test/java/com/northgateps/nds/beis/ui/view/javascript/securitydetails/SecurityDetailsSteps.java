@@ -3,7 +3,6 @@ package com.northgateps.nds.beis.ui.view.javascript.securitydetails;
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.AccountAddressPageHelper;
@@ -95,21 +94,17 @@ public class SecurityDetailsSteps {
 
     @Given("^I have not entered any data$")
     public void i_have_not_entered_any_data() throws Throwable {
-
+        
     }
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
         pageObject.clickNext();        
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());
     }
 
     @Then("^I will receive the message \"(.*?)\"$")
-    public void i_will_receive_the_message(String validationMessage) throws Throwable {
-    	pageHelper.waitUntilElementFound(By.className("fault"));
-    	pageObject = pageHelper.getNewPageObject();
-        assertEquals("Check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
-
+    public void i_will_receive_the_message(String validationMessage) throws Throwable {    
+        pageHelper.waitUntilValidationMessageSeen(validationMessage);
     }
 
     @Then("^I will remain on the security-details page$")
@@ -138,6 +133,14 @@ public class SecurityDetailsSteps {
         pageObject.setTextNdsInputUsername("randomusername");
         pageHelper.fillInSamePasswordAsUsername();
     }
+    
+
+    @Then("^I will receive the validation message \"(.*?)\"$")
+    public void i_will_receive_the_validation_message(String validationMessage) throws Throwable {
+        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());
+        assertEquals("checking message",validationMessage, pageHelper.getFirstSummaryFaultMessage());
+    }
+
 
     @Given("^I have supplied a password$")
     public void i_have_supplied_a_password() throws Throwable {
@@ -181,24 +184,28 @@ public class SecurityDetailsSteps {
     @When("^I select the terms and conditions link$")
     public void i_select_the_C_link() throws Throwable {
         parentHandle = webDriver.getWindowHandle();
-
         pageObject.clickAnchorLink();
+        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver()); 
+     }
+
+    @Then("^I will be taken to the terms-and-conditions page$")
+    public void i_will_be_taken_to_the_terms_and_conditions_page() throws Throwable {
         for (String winHandle : webDriver.getWindowHandles()) {
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)
         }
-
-    }
-
-    @Then("^I will be taken to the terms-and-conditions page$")
-    public void i_will_be_taken_to_the_terms_and_conditions_page() throws Throwable {
-        TermsAndConditionsPageHelper termsAndConditionsPageHelper = new TermsAndConditionsPageHelper(
-                testHelper.getScenarioWebDriver());
+        TermsAndConditionsPageHelper termsAndConditionsPageHelper = new TermsAndConditionsPageHelper(webDriver);
         BasePageHelper.waitUntilPageLoading(termsAndConditionsPageHelper.getPageObject().getDriver());    
         checkOnPage(termsAndConditionsPageHelper, "terms-and-conditions");
 
         webDriver.close(); // close newly opened window when done with it
         webDriver.switchTo().window(parentHandle);
 
+    }
+    
+    @Given("^I have supplied a username which is outside of length restrictions$")
+    public void i_have_supplied_a_username_which_is_outside_of_length_restrictions() throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
+        pageObject.setTextNdsInputUsername("a");
     }
 }

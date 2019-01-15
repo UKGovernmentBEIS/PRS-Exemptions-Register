@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="layout">
+	layout:decorate="layout" lang="en">
 
 <head>
 <title th:text="#{cas.login.pagetitle}"></title>
@@ -8,14 +8,23 @@
 
 <body id="cas" class="login">
 	<main layout:fragment="content">
-		
-	<div class="phase-banner-beta">
+	
+	<div class="phase-banner-beta"  th:if=${@extractPhaseAction.getPhase()=="TEST"}>
 		<p>
-			<strong class="phase-tag"
-				th:text="#{screen.welcome.applicationphase}"></strong> <span
-				th:text="#{screen.welcome.applicationphase.label}"></span>
+			<strong class="phase-tag" th:text="${@extractPhaseAction.getPhase()}"></strong> <span
+				th:text="#{'screen.welcome.applicationphase.' + ${@extractPhaseAction.getPhase()}}"></span>
 		</p>
 	</div>
+		
+	<div class="phase-banner-beta"  th:if=${@extractPhaseAction.isFeedbackMessageRequired()}>
+		<p>
+			<strong class="phase-tag" th:text="${@extractPhaseAction.getPhase()}"></strong> <span
+				th:text="#{'screen.welcome.applicationphase.' + ${@extractPhaseAction.getPhase()}}"></span>&nbsp;
+				<a id="link.navigation.phase.feedback"	th:href="@{'mailto:' + ${@extractPhaseAction.getFeedBackEmail()}}" th:text="#{screen.welcome.feedback}"/>&nbsp;
+				<span th:text="#{screen.welcome.feedback.end}"></span>
+		</p>
+	</div>
+	
 	<header>
 			<span th:utext="#{screen.pm.button.back}" />  
 	</header>

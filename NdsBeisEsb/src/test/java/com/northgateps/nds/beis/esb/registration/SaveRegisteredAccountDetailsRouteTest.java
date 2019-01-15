@@ -26,15 +26,19 @@ import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredA
 import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsRequest;
 import com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsResponse;
+import com.northgateps.nds.beis.esb.MockNdsDirectoryKernel;
 import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationCamelSpringTestSupport;
 import com.northgateps.nds.platform.api.ActivateRegistrationDetails;
 import com.northgateps.nds.platform.api.activateregistration.ActivateRegistrationNdsRequest;
 import com.northgateps.nds.platform.api.updateemail.UpdateEmailNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
+import com.northgateps.nds.platform.esb.directory.DirectoryManager;
 import com.northgateps.nds.platform.esb.directory.ServiceAccessDetails;
-import com.northgateps.nds.platform.esb.directory.UserServices;
+import com.northgateps.nds.platform.esb.directory.UserManager;
+import com.northgateps.nds.platform.esb.registration.ActivateRegistrationLdapComponent;
+import com.northgateps.nds.platform.esb.updateemail.UpdateEmailLdapComponent;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -44,14 +48,13 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamelSpringTestSupport {
 
     private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationCamelSpringTestSupport.class);
-    private static final String routeNameUnderTest = "saveRegisteredAccountDetailsServiceRoute";
+    public static final String routeNameUnderTest = "saveRegisteredAccountDetailsServiceRoute";
     private static final String TEST_START_NAME = "direct:startSaveRegisteredAccountDetailsServiceRoute";
     private static final String EXTERNAL_END_POINT_TO_MOCK = "cxf:bean:beisMaintainPartyDetailsService";
     private static final String MOCK_MAINTAIN_PARTY = "mock:maintain-party";
     private static final String MOCK_SEND_EMAIL_NEW_SERVICE_CHECK = "mock:send-email-new-service-check";
     private static final String MOCK_SEND_EMAIL_OLD_SERVICE_CHECK = "mock:send-email-old-service-check";
-    private static final String NEW_ACCOUNT_ID = "12345";
-    private static final String NEW_ACCOUNT_ID_AGENT = "10042";
+    private static final String NEW_ACCOUNT_ID = "1366";   
 
     @EndpointInject(uri = TEST_START_NAME)
     private ProducerTemplate apiEndpoint;
@@ -77,7 +80,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
     public void testBackOfficeFailureForSaveRegisteredDetailsForAgentPartialRegistration() throws Exception {
         logger.info("testSaveRegisteredDetailsForAgentPartialRegistration test started");
 
-        partyRefToUse = NEW_ACCOUNT_ID_AGENT;
+        partyRefToUse = NEW_ACCOUNT_ID;
         backofficeFailureForSaveRegisteredDetailsForAgentLandlordPartialRegistration(partyRefToUse, UserType.AGENT);
 
     }
@@ -94,7 +97,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
     public void testSaveRegisteredDetailsForAgentPartialRegistration() throws Exception {
         logger.info("testSaveRegisteredDetailsForPartialRegistration test started");
 
-        partyRefToUse = NEW_ACCOUNT_ID_AGENT;
+        partyRefToUse = NEW_ACCOUNT_ID;
         saveRegisteredDetailsForAgentLandlordPartialRegistration(partyRefToUse, UserType.AGENT);
 
     }
@@ -106,23 +109,29 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
      * @return - accountId (aka partyref) for the username provided
      * @throws Exception
      */
-    private String getAccountIdForUserName(String Username) throws Exception {
+    private String getAccountIdForUserName(String Username, MockNdsDirectoryKernel mockDirectoryKernel) throws Exception {
 
         String accountId = null;
 
         // Get the service name
         String serviceName = configurationManager.getString("service.foundationLayerPartyService.name");
 
-        String userDn = NdsDirectoryAdapter.getUserDn(configurationManager, Username, TENANT);
+        String userDn = NdsDirectoryComponent.getUserDn(configurationManager, Username, TENANT);
 
         // Get configuration
         DirectoryConnectionConfig directoryConnectionConfig = new DirectoryConnectionConfig(configurationManager);
-
-        // Create a connection and retrieve the service details for the user
-        try (DirectoryConnection directoryConnection = new DirectoryConnection(directoryConnectionConfig)) {
+               
+        //Create a connection and retrieve the service details for the user
+        try (DirectoryAccessConnection directoryConnection = mockDirectoryKernel.getDirectoryConnection(directoryConnectionConfig)) {
+            
             directoryConnection.open();
-
-            ServiceAccessDetails serviceAccessDetails = UserServices.serviceLookup(directoryConnection, userDn,
+            DirectoryManager directoryManager = new DirectoryManager();
+            directoryManager.setKernel(mockDirectoryKernel);
+            UserManager userManager = new UserManager();
+            userManager.setDirectoryManager(directoryManager);
+            
+            // lookup service details
+            ServiceAccessDetails serviceAccessDetails = userManager.serviceLookup(directoryConnection, userDn,
                     serviceName, true, true, false);
 
             accountId = serviceAccessDetails.getUserId();
@@ -153,14 +162,40 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
      * 
      * @throws Exception
      */
-    private void setupUpdateMockedRoute() throws Exception {
-
-        // setup the route
+    private void setupUpdateMockedRoute(MockNdsDirectoryKernel mockDirectoryKernel) throws Exception {
+     // setup the route
         context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
+                
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                SaveRegisteredAccountDetailsAccountIdLdapComponent ldapComponent = new SaveRegisteredAccountDetailsAccountIdLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);
+                SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent retrieveldapComponent = new SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent();
+                retrieveldapComponent.setDirectoryManager(directoryManager);
+                retrieveldapComponent.setUserManager(userManager);
+                SaveRegisteredAccountDetailsComponent accountDetailsComponent = new SaveRegisteredAccountDetailsComponent();
+                accountDetailsComponent.setDirectoryManager(directoryManager);
+                accountDetailsComponent.setUserManager(userManager);
+                UpdateEmailLdapComponent updateEmailLdapComponent = new UpdateEmailLdapComponent();
+                updateEmailLdapComponent.setDirectoryManager(directoryManager);
+                updateEmailLdapComponent.setUserManager(userManager);
+                
+                weaveById("saveRegisteredAccountDetailsAccountIdLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("saveRegisteredAccountDetailsAccountIdLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("saveRegisteredAccountDetailsRetrieveAccountIdLdapComponent.process").replace().bean(retrieveldapComponent, "process");
+                weaveById("saveRegisteredAccountDetailsLdapComponent.process").replace().bean(accountDetailsComponent, "process");
+                weaveById("beisUpdateEmailLdapComponent.fetchEntryFromLdap").replace().bean(updateEmailLdapComponent, "fetchEntryFromLdap");                
+                
 
                 interceptSendToEndpoint(EXTERNAL_END_POINT_TO_MOCK).skipSendToOriginalEndpoint().to(
                         MOCK_MAINTAIN_PARTY).process(exchange -> {
@@ -228,14 +263,16 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
     @Test
     public void testValidationFailure() throws Exception {
         logger.info("RetrieveRegisteredUserDetailsRoute test started");
-
+        
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
 
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockNdsDirectoryKernel);
 
         // setup the route
-        setupUpdateMockedRoute();
+        setupUpdateMockedRoute(mockNdsDirectoryKernel);
 
         // setup the update details
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
@@ -260,9 +297,11 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         logger.info("RetrieveRegisteredUserDetailsRoute test started");
 
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
 
         // setup the route
-        setupUpdateMockedRoute();
+        setupUpdateMockedRoute(mockNdsDirectoryKernel);
 
         // setup the update details
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
@@ -289,12 +328,14 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         assumeTrue(connection);
 
-        // setup the route
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
 
         // setup the route
-        setupUpdateMockedRoute();
+        setupUpdateMockedRoute(mockNdsDirectoryKernel);
+        
         // setup the update details
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
+        
         // set the account details
         updateDetails.setAccountDetails(getTestAccountDetailsForPerson(true, UserType.LANDLORD));
 
@@ -352,9 +393,9 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         return request;
     }
 
-    private BeisRegistrationDetails registerAndActivateNewUser() throws Exception {
+    private BeisRegistrationDetails registerAndActivateNewUser(MockNdsDirectoryKernel mockNdsDirectoryKernel) throws Exception {
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockNdsDirectoryKernel);
 
         // set up the activation route
         context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
@@ -363,6 +404,18 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
                     @Override
                     public void configure() throws Exception {
                         replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
+                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                        // a running LDAP server.
+                        DirectoryManager directoryManager = new DirectoryManager();
+                        directoryManager.setKernel(mockNdsDirectoryKernel);
+                        UserManager userManager = new UserManager();
+                        userManager.setDirectoryManager(directoryManager);
+                        ActivateRegistrationLdapComponent activateldapComponent = new ActivateRegistrationLdapComponent();
+                        activateldapComponent.setDirectoryManager(directoryManager);
+                        activateldapComponent.setUserManager(userManager);
+                        weaveById("activateRegistrationLdapComponent.process").replace().bean(activateldapComponent, "process");
+                        weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(activateldapComponent, "processResponse");
                     }
                 });
 
@@ -493,35 +546,16 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
             UserType userType) throws Exception {
         // We need LDAP
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
 
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
-
-        /* The issue is the SaveRegisteredAccountDetailsRouteTest calls common code to add a new user which uses the
-         * beisRegistrationServiceRoute. This test calls saveRegisteredAccountDetailsServiceRoute. Both routes mock out
-         * the end point cxf:bean:beisMaintainPartyDetailsService. it does not work because the first mock is taking
-         * precedence.
-         * This means the same response and therefore party ref is returned and
-         * testSaveRegisteredDetailsForPartialRegistration
-         * requires different values to in test testSaveRegisteredDetailsForPartialRegistration.
-         * A partial registration writes the new party ref to LDAP.
-         * Set this protected class member in BeisRegistrationCamelSpringTestSupport after invoking registerNewUser to
-         * change the
-         * party ref returned in the mock response. */
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockDirectoryKernel);  
 
         returnSuccess = false;
-
-        // setup the route
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith(TEST_START_NAME);
-                // No need to mock cxf:bean:beisMaintainPartyDetailsService because it is already mocked as a result of
-                // registerNewUser
-            }
-        });
-
+        
+        setupUpdateMockedRoute(mockDirectoryKernel);
+        
         // setup the update details - No need to do much here because we are not hitting the actual back office.
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
 
@@ -542,9 +576,11 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
             throws Exception {
         // We need LDAP
         assumeTrue(connection);
-
+        
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
+        
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockDirectoryKernel);
 
         /* The issue is the SaveRegisteredAccountDetailsRouteTest calls common code to add a new user which uses the
          * beisRegistrationServiceRoute. This test calls saveRegisteredAccountDetailsServiceRoute. Both routes mock out
@@ -566,8 +602,37 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
                 replaceFromWith(TEST_START_NAME);
                 // No need to mock cxf:bean:beisMaintainPartyDetailsService because it is already mocked as a result of
                 // registerNewUser
+                
+                
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                SaveRegisteredAccountDetailsAccountIdLdapComponent ldapComponent = new SaveRegisteredAccountDetailsAccountIdLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);
+                SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent retrieveldapComponent = new SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent();
+                retrieveldapComponent.setDirectoryManager(directoryManager);
+                retrieveldapComponent.setUserManager(userManager);
+                SaveRegisteredAccountDetailsComponent accountDetailsComponent = new SaveRegisteredAccountDetailsComponent();
+                accountDetailsComponent.setDirectoryManager(directoryManager);
+                accountDetailsComponent.setUserManager(userManager);
+                UpdateEmailLdapComponent updateEmailLdapComponent = new UpdateEmailLdapComponent();
+                updateEmailLdapComponent.setDirectoryManager(directoryManager);
+                updateEmailLdapComponent.setUserManager(userManager);
+                
+                weaveById("saveRegisteredAccountDetailsAccountIdLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("saveRegisteredAccountDetailsAccountIdLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("saveRegisteredAccountDetailsRetrieveAccountIdLdapComponent.process").replace().bean(retrieveldapComponent, "process");
+                weaveById("saveRegisteredAccountDetailsLdapComponent.process").replace().bean(accountDetailsComponent, "process");
+                weaveById("beisUpdateEmailLdapComponent.fetchEntryFromLdap").replace().bean(updateEmailLdapComponent, "fetchEntryFromLdap");
             }
         });
+        
+        
 
         // setup the update details - No need to do much here because we are not hitting the actual back office.
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
@@ -584,13 +649,13 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         // retrieve the details to ensure the updates worked
         RetrieveRegisteredDetailsNdsResponse retrieveResponse = retrieveRegistrationDetails(TENANT,
-                registeredUser.getUserDetails().getUsername());
+                registeredUser.getUserDetails().getUsername(),mockDirectoryKernel);
 
         assertTrue(retrieveResponse.isSuccess());
         assertNotNull(retrieveResponse.getBeisRegistrationDetails());
 
         // Get the LDAP user and check the party ref has been updated to 12345
-        String accountId = getAccountIdForUserName(registeredUser.getUserDetails().getUsername());
+        String accountId = getAccountIdForUserName(registeredUser.getUserDetails().getUsername(),mockDirectoryKernel);
 
         assertEquals("Check the accountId is set correctly in LDAP", partyRefToUse, accountId);
 
@@ -599,12 +664,14 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
     private void saveAddressDetailsForAgentLandlord(UserType userType) throws Exception {
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
 
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockDirectoryKernel);
 
         // setup the route
-        setupUpdateMockedRoute();
+        setupUpdateMockedRoute(mockDirectoryKernel);
 
         // setup the update details
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
@@ -620,7 +687,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         // retrieve the details to ensure the updates worked
         RetrieveRegisteredDetailsNdsResponse retrieveResponse = retrieveRegistrationDetails(TENANT,
-                registeredUser.getUserDetails().getUsername());
+                registeredUser.getUserDetails().getUsername(),mockDirectoryKernel);
 
         assertTrue(retrieveResponse.isSuccess());
         assertNotNull(retrieveResponse.getBeisRegistrationDetails());
@@ -628,20 +695,21 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         assertMockEndpointsSatisfied();
     }
 
-    private void saveAccountDetailsForAgentLandlord(UserType userType) throws Exception {
+    private void saveAccountDetailsForAgentLandlord(UserType userType) throws Exception {        
         assumeTrue(connection);
-
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
+        
         // register a brand new user for the purposes of this test
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
-
+        final BeisRegistrationDetails registeredUser = registerNewUser(null, mockDirectoryKernel);
+       
         // setup the route
-        setupUpdateMockedRoute();
-
+        setupUpdateMockedRoute(mockDirectoryKernel);
+        
         // setup the update details
         UpdateBeisRegistrationDetails updateDetails = new UpdateBeisRegistrationDetails();
 
         // set the account details
-        updateDetails.setAccountDetails(getTestAccountDetailsForPerson(true, userType));
+        updateDetails.setAccountDetails(getTestAccountDetailsForPerson(true, userType)); 
 
         context.start();
         SaveRegisteredAccountDetailsNdsResponse response = (SaveRegisteredAccountDetailsNdsResponse) apiEndpoint.requestBody(
@@ -652,7 +720,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         // retrieve the details to ensure the updates worked
         RetrieveRegisteredDetailsNdsResponse retrieveResponse = retrieveRegistrationDetails(TENANT,
-                registeredUser.getUserDetails().getUsername());
+                registeredUser.getUserDetails().getUsername(),mockDirectoryKernel);
 
         assertTrue(retrieveResponse.isSuccess());
         assertNotNull(retrieveResponse.getBeisRegistrationDetails());
@@ -661,11 +729,15 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
     }
 
     private void updateEmailForAgentLandlord(UserType userType) throws Exception {
-        assumeTrue(connection);
-        final BeisRegistrationDetails registeredUser = registerAndActivateNewUser();
+        
+        assumeTrue(connection);        
+        
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
+        
+        final BeisRegistrationDetails registeredUser = registerAndActivateNewUser(mockDirectoryKernel);
 
         // set up the save registered account details route
-        setupUpdateMockedRoute();
+        setupUpdateMockedRoute(mockDirectoryKernel);
         sendEmailToNewAddressService.expectedMessageCount(1);
         sendEmailToOldAddressService.expectedMessageCount(1);
 
@@ -681,12 +753,12 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         // retrieve the details to ensure the updates worked
         RetrieveRegisteredDetailsNdsResponse retrieveResponse = retrieveRegistrationDetails(TENANT,
-                registeredUser.getUserDetails().getUsername());
+                registeredUser.getUserDetails().getUsername(), mockDirectoryKernel);
 
         assertTrue(retrieveResponse.isSuccess());
         assertNotNull(retrieveResponse.getBeisRegistrationDetails());
 
         assertMockEndpointsSatisfied();
     }
-
+     
 }

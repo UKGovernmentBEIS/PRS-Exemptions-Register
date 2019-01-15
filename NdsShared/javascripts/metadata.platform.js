@@ -70,6 +70,9 @@ document.characterFilters = {
         return this.space(c) || this.hyphen(c) || this.quot(c) || this.cat("Ll", c) || this.cat("Lm", c) || this.cat("Lo", c) || this.cat("Lt", c) || 
                this.cat("Lu", c) || this.cat("Mc", c);
     },
+    'ConnectVrn' : function(c) {
+        return this.hyphen(c) || (c === '&') || ((c >= 'A') && (c <= 'Z')) || ((c >= '0') && (c <= '9'));
+    },
     'Xml' : function(c) {
         var code = c.charCodeAt(0);
         var xml_char = function(code) { return (code === 0x9) || (code === 0xA) || (code === 0xD) || ((code >= 0x20) && (code <= 0xD7FF)) 
@@ -87,6 +90,9 @@ document.characterFilters = {
     },
     'Printable' : function(c) {
         return this.Xml(c) && (! this.c0(c)) && (! this.c1(c));
+    },
+    'TextAreaPrintable' : function(c) {
+        return (this.Xml(c) && (! this.c0(c)) && (! this.c1(c))) || (c.charCodeAt(0) == 0xA);
     }
 };
 
@@ -97,27 +103,36 @@ document.regularExpressions = {
             return /^([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)?$/;
         },
         'NinoFieldValidator': function() {
-            return /^((?!BG|GB|NK|TN|ZZ)[A-Z]{2}[0-9]{6}[A-D]{0,1})?$/; 
+        	return /^((?!BG|GB|NK|KN|TN|NT|ZZ)[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z](?:\s*\d{2}){3}\s*[A-D\s]?|\s?)?$/;
         },
         'PhoneNumberFieldValidator': function() {
-            return /^(((\(?0\d{4}\)?\s?\d{3}\s?\d{3})|(\(?0\d{3}\)?\s?\d{3}\s?\d{4})|(\(?0\d{2}\)?\s?\d{4}\s?\d{4}))(\s?(#|[xX]|[eE][xX][tT])(\d{4}|\d{3}))?)?$/;
+            return /^(((\(?0\d{4}\)?\s?\d{3}\s?\d{3})|(\(?0\d{4}\)?\s?\d{5})|(\(?0\d{3}\)?\s?\d{3}\s?\d{4})|(\(?0\d{2}\)?\s?\d{4}\s?\d{4}))(\s?(#|[xX]|[eE][xX][tT])(\d{4}|\d{3}))?)?$/;
         },
         'PostcodeFieldValidator': function() {
-            return /^(([gG][iI][rR] 0[aA][aA])|((([a-zA-Z][0-9]{1,2})|(([a-zA-Z][a-hA-Hj-yJ-Y][0-9]{1,2})|(([a=zA-Z][0-9][a-zA-Z])|([a-zA-Z][a-hA-Hj-yJ-Y][0-9]?[a-zA-Z])))) ?[0-9][a-zA-Z]{2}))?$/;
+        	
+        	return/^(([Gg][Ii][Rr] 0[Aa][Aa])|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z])))) ?[0-9][A-Za-z]{2}))?$/;
+            
         },
         'UkMobileNumberFieldValidator': function() {
-            return /^((\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3})?$/;
+            return /^(((07([12345789]\d{2}|624))|(\+44\s?7([12345789]\d{2}|624))|(\(07([12345789]\d{2}|624)\)))\s?\d{3}\s?\d{3})?$/;
         },
+        'InternationalPhoneNumberFieldValidator': function() {        	
+            return /^(\+?[\d\s*]+)?$/;
+        },        
         // regex has taken from http://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
         'CalendarDateTypeFieldValidator' : function(){
         	return /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
         },
         'UserNameFieldValidator' : function(){
         	return /^[a-zA-Z][a-zA-Z0-9\-\.']*$/;
-        }        
+        }
 };
 
 document.validationFunctions = {
+        'CalendarDateTypeFieldValidator': function() {
+            if ((this.value + '').trim() === '') return true;
+             return document.regularExpressions['CalendarDateTypeFieldValidator']().test((this.value + '').trim() + '');
+         },
         'DateTypeFieldValidator': function() { 
             var fmt = function (num, len) { 
                 var str = num + ''; 
@@ -152,10 +167,10 @@ document.validationFunctions = {
         },
         'EmailFieldValidator': function() { 
             return document.regularExpressions['EmailFieldValidator']().test((this.value + '').trim() + '');
-        },
-        'NinoFieldValidator': function() {
-            return document.regularExpressions['NinoFieldValidator']().test(this.value.trim()+''); 
         },        
+        'NinoFieldValidator': function() {
+            return document.regularExpressions['NinoFieldValidator']().test(this.value.length==8?this.value+' ':this.value+''); 
+        },
         'NumericRangeFieldValidator': function() { 
             var numerified = (this.value+'') - 0;
             var maxComparator = function() {
@@ -173,15 +188,14 @@ document.validationFunctions = {
         'NumericTypeFieldValidator': function() { 
             return (this.value+'' === '') || !isNaN(this.value+'');
         },
+        'PastDateTimeFieldValidator': function() {
+            return true;
+        },
         'PhoneNumberFieldValidator': function() {
             return document.regularExpressions['PhoneNumberFieldValidator']().test((this.value + '').trim() + '');
         },
         'PostcodeFieldValidator': function() {
             return document.regularExpressions['PostcodeFieldValidator']().test((this.value + '').trim() + '');
-        },
-        'CalendarDateTypeFieldValidator': function() {
-           if ((this.value + '').trim() === '') return true;
-            return document.regularExpressions['CalendarDateTypeFieldValidator']().test((this.value + '').trim() + '');
         },
         'UserNameFieldValidator': function() {
            if ((this.value + '').trim() === '') return true;
@@ -212,6 +226,7 @@ document.validationFunctions = {
                 }
                 var anchorValue = new Date(isodate.substring(0, 4), (isodate.substring(5, 7) - 1), isodate.substring(8, 10));
                 var dateified = new Date(this.value.substring(0, 4), (this.value.substring(5, 7) - 1), this.value.substring(8, 10));
+                dateified.setFullYear(this.value.substring(0, 4));
                 var direction = this.dataProperties['direction'];
                 if ("future" === direction) {
                     return dateified >= anchorValue;
@@ -234,6 +249,9 @@ document.validationFunctions = {
         },
         'UkMobileNumberFieldValidator': function() {
             return document.regularExpressions['UkMobileNumberFieldValidator']().test((this.value + '').trim()+'');
+        },
+        'InternationalPhoneNumberFieldValidator': function() {
+            return document.regularExpressions['InternationalPhoneNumberFieldValidator']().test((this.value + '').trim() + '');
         },
         'ViolationFieldValidator': function() {
             return false;
@@ -272,6 +290,9 @@ document.validationFunctions = {
         },
         'PersonNameCharacterFieldValidator': function() {
             return document.validationFunctions.CharacterFilterValidator.call(this, document.characterFilters.PersonName)
+        },
+        'ConnectVrnCharacterFieldValidator': function() {
+            return document.validationFunctions.CharacterFilterValidator.call(this, document.characterFilters.ConnectVrn)
         },
         'PrintableCharacterFieldValidator': function() {
             return document.validationFunctions.CharacterFilterValidator.call(this, document.characterFilters.Printable)
@@ -316,12 +337,15 @@ document.formatFunctions = {
         'PrintableCharacterFieldFormatter': function() {
             return document.formatFunctions.CharacterFilterFormatter.call(this, document.characterFilters.Printable)
         },
+        'TextAreaPrintableCharacterFieldFormatter': function() {
+            return document.formatFunctions.CharacterFilterFormatter.call(this, document.characterFilters.TextAreaPrintable)
+        },
         'XmlValidCharacterFieldFormatter': function() {
             return document.formatFunctions.CharacterFilterFormatter.call(this, document.characterFilters.Xml)
         },
         'UpperCaseFieldFormatter':function(){
-        	  this.value = this.value.toUpperCase()   
-             	return this.value;
+            this.value = this.value.toUpperCase()
+            return this.value;
         }
         
         

@@ -1801,7 +1801,19 @@
     <body-content>empty</body-content>
     <dynamic-attributes>false</dynamic-attributes>
   </tag>
-  
+  <tag>
+    <description>Renders a button.</description>
+    <name>button</name>
+    <tag-class>com.northgateps.nds.platform.ui.tags.form.ButtonTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>either "true" or "false" if omitted, then false</description>
+      <name>showSpinner</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
   <tag>
     <description>Renders tracing information.</description>
     <name>trace</name>
@@ -1844,7 +1856,13 @@
       <name>hints</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-    </attribute>  
+    </attribute>
+    <attribute>
+      <description>Flag to set hints simple text instead from bundle</description>
+      <name>isHintInBundle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>   
 	<attribute>
       <description>list of items to display</description>
       <name>items</name>
@@ -1854,6 +1872,12 @@
    <attribute>
       <description>display inline</description>
       <name>inline</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1880,6 +1904,12 @@
     <attribute>
       <description>Whether to have immediately open (true)</description>
       <name>open</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1921,6 +1951,24 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>HTML5 validation attribute</description>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>HTML Optional Attribute. Setting the value of this attribute to 'true' (without the quotes) will apply a placeholder to the HTML element.</description>
+      <name>placeholder</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
@@ -1959,6 +2007,18 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description>whether the label in the items needs looking up in the bundle</description>
+      <name>resolveLabels</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>true</dynamic-attributes>
   </tag>  
   
@@ -1967,6 +2027,12 @@
   	<name>dateelement</name>    
     <tag-class>com.northgateps.nds.platform.ui.tags.form.DateElementTag</tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>Show or hide the label</description>
+      <name>showLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <attribute>
       <description>Path to property for data binding</description>
       <name>path</name>
@@ -1991,6 +2057,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
@@ -2009,6 +2081,12 @@
       <description>The value</description>
       <name>value</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>    
     <dynamic-attributes>true</dynamic-attributes>
@@ -2067,6 +2145,18 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+     <attribute>
+      <description>hints to help the user complete a field</description>
+      <name>hints</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
     <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
@@ -2111,6 +2201,12 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute> 
+    <attribute>
+      <description>Equivalent to "class" - HTML Optional Attribute</description>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <dynamic-attributes>true</dynamic-attributes>
   </tag>
   

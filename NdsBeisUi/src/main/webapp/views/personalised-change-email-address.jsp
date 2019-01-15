@@ -56,10 +56,13 @@
 						<nds:field path="updateEmailDetails.confirmEmail">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"	autofocus="false" />
+							<nds:input class="form-control" placeholder="false" autofocus="false" />
 						</nds:field>
 					</section>
-	
+					
+					<!-- below hidden field is added to prevent the username from being autofilled in confirm email-address field -->
+					<input type="text" class="hiddenField" name="dummyUsername"/>
+					
 					<section class="page current">
 						<nds:field path="updateEmailDetails.password">
 							<nds:label />

@@ -23,14 +23,16 @@ Scenario: View exemption
 
 #View current exemptions
 	Given no exemptions are displayed
-	When I select 'Current exemptions'
+	When I select 'View exemptions'
+	And I select 'Current exemptions'
 	Then I will see a list of my current exemptions
 	And I will have an option to end each exemption
 	And I will remain on the 'personalised-dashboard' page
 
 #View expired exemptions 
 	Given no exemptions are displayed
-	When I select 'Expired exemptions'
+	When I select 'View exemptions'
+	And I select 'Expired exemptions'
 	Then I will see a list of my expired exemptions
 	And I will remain on the 'personalised-dashboard' page
 

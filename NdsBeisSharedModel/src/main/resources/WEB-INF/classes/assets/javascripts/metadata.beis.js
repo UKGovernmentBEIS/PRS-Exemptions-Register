@@ -46,3 +46,9 @@ document.formatFunctions['EPCReferenceNumberFieldFormatter'] =
 		}
 		return this.value;
     };
+   document.validationFunctions['StartDateValidator'] = 
+        function() {
+   		
+   		return true;
+       };
+       

@@ -20,6 +20,9 @@
           	<a id="link.navigation.phase.feedback" href="mailto:${feedbackEmail}">Feedback</a>
           </li>
           <li>
+          	<a id="link.navigation.phase.termsandconditions" href="${contextUi}/terms-and-conditions" target="_blank">Terms and conditions</a>
+          </li>
+          <li>
             Built by the 
             	<a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank">
             		Department of Business, Energy and Industrial Strategy
@@ -78,7 +81,7 @@
         <script src="${contextUi}/assets/javascripts/govuk-template.platform.js?version=${version}" async="true"></script>
         <script src="${contextUi}/assets/javascripts/govuk-stageprompt.platform.js?version=${version}" async="true"></script>
         <script src="${contextUi}/assets/javascripts/js-loaded.platform.js?version=${version}" async="true"></script>    
-       	                              
+       	<script src="${contextUi}/assets/javascripts/geographic-address.platform.js?version=${version}" async="true"></script>                            
    </c:otherwise> 
    
 </c:choose>

@@ -30,7 +30,7 @@ public class BeisUserDetails extends AbstractValidatableModel {
 
 	@UserNameFieldMetadata
 	@RequiredFieldMetadata
-	@StringLengthFieldMetadata(maxLength = 100)
+	@StringLengthFieldMetadata(minLength = 3, maxLength = 100,invalidMessage="Validation_Username_must_not_outside_length_restrictions")
 	private String username;
 
 	@JsonIgnore

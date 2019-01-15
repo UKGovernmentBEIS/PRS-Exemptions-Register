@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
     
     $(".pagination-control").on("change", function() {

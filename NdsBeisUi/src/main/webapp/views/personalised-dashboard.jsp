@@ -50,16 +50,16 @@
 			<div class="column-full">
 				<section class="dashpanel cols2">
 					<h2 class="heading-2">
-						<a id="show-current-exemptions" href="#current-exemptions"><fmt:message
-								bundle="${FieldsBundle}" key="Link_CurrentExemptions" /></a>
+						<fmt:message
+								bundle="${FieldsBundle}" key="Link_CurrentExemptions" />
 					</h2>
 					<p id="current-exemption-count"
 						class="single-stat-headline impact-number">${command.dashboardDetails.currentExemptionCount}</p>
 				</section>
 				<section class="dashpanel cols2">
 					<h2 class="heading-2">
-						<a id="show-expired-exemptions" href="#expired-exemptions"><fmt:message
-								bundle="${FieldsBundle}" key="Link_ExpiredExemptions" /></a>
+						<fmt:message
+								bundle="${FieldsBundle}" key="Link_ExpiredExemptions" />
 					</h2>
 					<p id="expired-exemption-count"
 						class="single-stat-headline impact-number">${command.dashboardDetails.expiredExemptionCount}</p>
@@ -67,7 +67,7 @@
 
 
 				<section>
-					<details id="exemption-details">
+					<details id="exemption-details" open>
 						<summary id="exemption-details-link">
 							<span class="summary"> <fmt:message
 									bundle="${FieldsBundle}" key="Link_DashboardViewExemptions" />

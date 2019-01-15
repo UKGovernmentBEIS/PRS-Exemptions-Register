@@ -48,7 +48,7 @@ Scenario: Postcode validation when updating an account address manually
 	And I have selected Country as United Kingdom
 	And I have supplied Postcode not in UK format
 	When I select Submit address detail changes
-	Then I will receive the message "Postcode must be a valid post code"
+	Then I will receive the message "You must enter a valid postcode"
 	And I will remain on the 'personalised-change-account-address' page
 
 	#Postcode optional

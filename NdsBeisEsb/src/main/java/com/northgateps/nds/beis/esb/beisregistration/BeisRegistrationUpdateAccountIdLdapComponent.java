@@ -6,11 +6,10 @@ import com.northgateps.nds.beis.api.BeisRegistrationDetails;
 import com.northgateps.nds.beis.api.BeisUserDetails;
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsRequest;
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryUnwillingToPerformOperationException;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
@@ -24,23 +23,22 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
  * This adaptor relies on a previous setting of account Id in the exchange properties. This will set the uid for
  * the foundation layer party service for the user in LDAP.
  */
-public class BeisRegistrationUpdateAccountIdLdapAdapter extends NdsDirectoryAdapter<BeisRegistrationNdsRequest, BeisRegistrationNdsResponse> {
+public class BeisRegistrationUpdateAccountIdLdapComponent extends NdsDirectoryComponent<BeisRegistrationNdsRequest, BeisRegistrationNdsResponse> {
     
     //This is to be reused where required
     public static final String EXCHANGE_PROPERTY_ACCOUNT_ID = "accountId";  
     
-    private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationUpdateAccountIdLdapAdapter.class);
+    private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationUpdateAccountIdLdapComponent.class);
     
     /**
      * Read the exchange property and if exists, set the uid on the foundation layer party service for the user. 
      * @throws NdsBusinessException 
      */
     @Override
-    protected void doRequestProcess(BeisRegistrationNdsRequest request, DirectoryConnection directoryConnection,
+    protected void doProcess(BeisRegistrationNdsRequest request, DirectoryAccessConnection directoryConnection,
             NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
-            throws NdsApplicationException, NdsBusinessException {
-        
-        //Read property for account id
+                    throws NdsApplicationException, NdsBusinessException, DirectoryException {
+      //Read property for account id
         if( ndsExchange.getAnExchangeProperty(EXCHANGE_PROPERTY_ACCOUNT_ID) != null){
             
             String accountId = ndsExchange.getAnExchangeProperty(EXCHANGE_PROPERTY_ACCOUNT_ID).toString();   
@@ -65,7 +63,7 @@ public class BeisRegistrationUpdateAccountIdLdapAdapter extends NdsDirectoryAdap
             changes.put(ldapAttributeServiceUid, accountId);   
             
             try{                
-                UserServices.setAttributesOnEntry(directoryConnection, servicednForTheUser, changes);
+                getUserManager().setAttributesOnEntry(directoryConnection, servicednForTheUser, changes);
             } catch (DirectoryUnwillingToPerformOperationException e) {
                 throw new NdsBusinessException(e.getMessage());
             } catch (DirectoryException e) {
@@ -76,6 +74,7 @@ public class BeisRegistrationUpdateAccountIdLdapAdapter extends NdsDirectoryAdap
             // account Id should not be null - fail fast so it can be investigated
             throw new NdsApplicationException("Null accountId provided");
         }                
+        
     }
     
     /**
@@ -96,5 +95,4 @@ public class BeisRegistrationUpdateAccountIdLdapAdapter extends NdsDirectoryAdap
     protected String getRequestClassName() {
         return BeisRegistrationNdsRequest.class.getName();
     }
-
 }

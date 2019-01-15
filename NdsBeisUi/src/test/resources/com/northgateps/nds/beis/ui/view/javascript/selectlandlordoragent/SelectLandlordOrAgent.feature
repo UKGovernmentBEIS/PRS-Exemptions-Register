@@ -11,7 +11,7 @@ Scenario: Select landlord
 	Given I am on the select-landlord-or-agent page
 	And I have not selected landlord or agent
 	When I select Next
-	Then I will receive the message "You must select whether the account is for a landlord or an agent" 
+	Then I will receive the message "You must choose whether the account is for a landlord or agent" 
 	And I will remain on the 'select-landlord-or-agent' page
 	
 	#Happy path, landlord selected

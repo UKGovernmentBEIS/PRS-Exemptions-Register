@@ -3,6 +3,7 @@ package com.northgateps.nds.beis.ui.controller.handler;
 import com.northgateps.nds.beis.api.ExemptionDetail;
 import com.northgateps.nds.beis.api.ExemptionType;
 import com.northgateps.nds.beis.api.ExemptionTypeDetails;
+import com.northgateps.nds.beis.api.PropertyType;
 import com.northgateps.nds.beis.api.printexemptiondetails.PrintExemptionDetailsNdsRequest;
 import com.northgateps.nds.beis.api.printexemptiondetails.PrintExemptionDetailsNdsResponse;
 import com.northgateps.nds.beis.ui.model.BeisAllModel;
@@ -36,12 +37,35 @@ public class PrintExemptionDetailsUtility {
             String exemptionReason = uiData.getSelectedExemptionTypeLovText();
             if (exemptionReason != null && !exemptionReason.trim().isEmpty()) {
                 exemptionDetails.setExemptionReason(exemptionReason);
-            }            
+            }  
+            //set file type to display on print document
+            if(exemptionDetails != null &&  exemptionDetails.getEpc() != null && exemptionDetails.getEpc().getFiles()!= null && exemptionDetails.getEpc().getFiles().getResources()!= null){
+                for (FileDetails file : exemptionDetails.getEpc().getFiles().getResources()) {
+                    file.setFileType(" EPC: ");
+                }                
+            }
+            if(exemptionDetails != null &&  exemptionDetails.getEpcEvidenceFiles() != null && exemptionDetails.getEpcEvidenceFiles().getResources()!= null){
+                for (FileDetails file : exemptionDetails.getEpcEvidenceFiles().getResources()) {
+                    file.setFileType(" evidence: ");
+                }
+            }
+            if(exemptionDetails != null &&  exemptionDetails.getExemptionTextFile() != null && exemptionDetails.getExemptionTextFile()!= null && exemptionDetails.getExemptionTextFile().getResources()!= null){
+                for (FileDetails file : exemptionDetails.getExemptionTextFile().getResources()) {
+                    file.setFileType(" evidence: ");
+                }
+            }
+            
             exemptionDetails.getEpc().getPropertyAddress().setSingleLineAddressPostcode(exemptionDetails.getEpc().getPropertyAddress().getSingleLineAddressPostcode());
             PrintExemptionDetailsNdsRequest svcRequest = new PrintExemptionDetailsNdsRequest();
             svcRequest.setExemptionDetail(exemptionDetails);
             svcRequest.setExemptionType(populateExemptionType(beisModel.getExemptionType()));
+            if(exemptionDetails.getPropertyType() == PropertyType.PRSD){
+                svcRequest.setPropertyType("Domestic");
+            }else{
+                svcRequest.setPropertyType("Non-domestic");
+            }
             svcRequest.setTenant(tenant);
+            
 
             UiServiceClient svcClient = controllerState.getController().getUiSvcClientFactory().getInstance(
                     PrintExemptionDetailsNdsResponse.class);

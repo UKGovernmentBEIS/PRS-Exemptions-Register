@@ -79,7 +79,7 @@
 								</c:if>
 								<tr>
 									<td class="top"><fmt:message bundle="${FieldsBundle}"
-											key="ColumnLabel_myAccountDetails.beisRegistrationDetails.contactAddress" />
+											key="ColumnLabel_exemptionDetails.contactAddress" />
 									</td>
 									<td class="dgdata" id="addressLines">
 										${command.exemptionDetails.epc.propertyAddress.line[0]}, <c:if
@@ -99,7 +99,22 @@
 
 									</td>
 								</tr>
-
+								<tr>
+									<td class="top"><fmt:message bundle="${FieldsBundle}"
+											key="ColumnLabel_exemptionDetails.propertyType" /></td>
+									<td class="dgdata">
+										<c:choose>
+											<c:when test="${command.exemptionDetails.propertyType.name() == 'PRSD'}">
+		      									<fmt:message bundle="${FieldsBundle}"
+												key="Label_exemptionDetails.propertyType.domestic" />
+		   								    </c:when>
+											<c:otherwise>
+												<fmt:message bundle="${FieldsBundle}"
+												key="Label_exemptionDetails.propertyType.nondomestic" /></li>
+											</c:otherwise>
+										</c:choose>
+									</td>
+								</tr>
 								<tr>
 									<td class="top"><fmt:message bundle="${FieldsBundle}"
 											key="ColumnLabel_Epc_Uploaded" /></td>
@@ -112,8 +127,10 @@
 											<c:out value="${'<tr>'}" escapeXml="false" />
 										</c:if>
 
-										<td class="top"><fmt:message bundle="${FieldsBundle}"
-												key="UploadColumn_filename" />:
+										<td class="top"> 
+											<fmt:message bundle="${FieldsBundle}" key="UploadColumn_file">
+								                <fmt:param value="EPC" />
+										    </fmt:message> :
 											${command.exemptionDetails.epc.files.resources[res.index].fileName}
 											<br>
 											${command.exemptionDetails.epc.files.resources[res.index].description}
@@ -151,8 +168,10 @@
 												<c:out value="${'<tr>'}" escapeXml="false" />
 											</c:if>
 
-											<td class="top"><fmt:message bundle="${FieldsBundle}"
-													key="UploadColumn_filename" />:
+											<td class="top">
+												<fmt:message bundle="${FieldsBundle}" key="UploadColumn_file">
+								                	<fmt:param value="evidence" />
+										     	</fmt:message> :
 												${command.exemptionDetails.epcEvidenceFiles.resources[res.index].fileName}
 												<br>
 												${command.exemptionDetails.epcEvidenceFiles.resources[res.index].description}
@@ -185,8 +204,10 @@
 											<c:if test="${res.index > 0}">
 												<c:out value="${'<tr>'}" escapeXml="false" />
 											</c:if>
-											<td><fmt:message bundle="${FieldsBundle}"
-													key="UploadColumn_filename" />:
+											<td>
+												<fmt:message bundle="${FieldsBundle}" key="UploadColumn_file">
+								                	<fmt:param value="evidence" />
+										    	</fmt:message> :
 												${command.exemptionDetails.exemptionTextFile.resources[res.index].fileName}
 												<br>
 												${command.exemptionDetails.exemptionTextFile.resources[res.index].description}
@@ -286,11 +307,11 @@
 
 				<section class="submit">
 					<div>
-						<button type="submit" name="action" value="NEXT" id="button.next"
-							class="button next">
+						<nds:button type="submit" name="action" value="NEXT" id="button.next"
+							class="button next" showSpinner="true">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Button_RegisterExemption" />
-						</button>
+						</nds:button>
 					</div>
 				</section>
 			</div>

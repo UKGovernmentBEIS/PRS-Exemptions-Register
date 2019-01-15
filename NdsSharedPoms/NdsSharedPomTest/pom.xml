@@ -5,13 +5,13 @@
 
 	<groupId>com.northgateps.beis.sharedpoms</groupId>
 	<artifactId>sharedpoms-test</artifactId>
-	<version>0.0.1503</version>
+	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>com.northgateps.beis.sharedpoms</groupId>
 		<artifactId>sharedpoms</artifactId>
-		<version>0.0.1503</version>
+		<version>0.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

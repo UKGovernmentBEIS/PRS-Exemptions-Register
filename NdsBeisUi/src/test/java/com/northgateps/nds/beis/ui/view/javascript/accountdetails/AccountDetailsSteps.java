@@ -93,20 +93,17 @@ public class AccountDetailsSteps {
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String validationMessage) throws Throwable {  
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());
-        pageHelper.waitUntilElementFound(By.className("fault"));
-    	pageObject = pageHelper.getNewPageObject();
-        assertEquals("Check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
+        pageHelper.waitUntilValidationMessageSeen(validationMessage);
     }
 
     @Then("^I will remain on the account-details page$")
     public void i_will_remain_on_the_account_details_page() throws Throwable {
-        checkOnPage(pageHelper, "account-details");
-        pageObject = pageHelper.getPageObject();
+        checkOnPage(pageHelper, "account-details");       
     }
    
     @Given("^I have supplied an invalid email address as \"(.*?)\"$")
     public void i_have_supplied_an_invalid_email_address_as(String invalidEmail) throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
         pageObject.setTextNdsInputEmail(invalidEmail);
     }
     
@@ -122,6 +119,7 @@ public class AccountDetailsSteps {
 
     @When("^I have supplied an email address as \"(.*?)\"$")
     public void i_have_supplied_an_email_address_as(String email) throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
         pageObject.setTextNdsInputEmail(email);
     }
 
@@ -138,6 +136,12 @@ public class AccountDetailsSteps {
     @Then("^I will be taken to the account-address page$")
     public void i_will_be_taken_to_the_account_address_page() throws Throwable {
         checkOnPage(pageHelper, "account-address");        
+    }
+    
+    @When("^I click Next$")
+    public void i_click_Next() throws Throwable {
+        pageObject.clickNext(); 
+       
     }
 
     @Given("^I am on the account-details to enter Organisation name$")
@@ -235,6 +239,12 @@ public class AccountDetailsSteps {
     @Then("^heading will be 'Agent address'$")
     public void heading_will_be_Agent_address() throws Throwable {
         assertEquals("Checking heading",webDriver.findElement(By.xpath("//div[contains(@class, 'column-full')]/h2")).getText(),"Agent address");
+    }
+    
+    @When("^I submit Next$")
+    public void i_submit_Next() throws Throwable {
+        pageObject.clickNext(); 
+        
     }
 
 }

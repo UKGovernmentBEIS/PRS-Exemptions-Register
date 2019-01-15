@@ -1,13 +1,16 @@
 package com.northgateps.nds.beis.ui.controller.handler;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.web.multipart.MultipartFile;
+
 import com.northgateps.nds.platform.api.FileDetails;
 import com.northgateps.nds.platform.api.NdsResponse;
 import com.northgateps.nds.platform.api.Upload;
@@ -29,13 +32,15 @@ import com.northgateps.nds.platform.ui.controller.UploadPropertiesLoader;
 import com.northgateps.nds.platform.ui.model.AbstractNdsMvcModel;
 import com.northgateps.nds.platform.ui.model.NdsFormModel;
 import com.northgateps.nds.platform.ui.view.AbstractViewEventHandler;
+import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
 
 /**
  * Capture a file upload from the browser, and call the ESB to store it
  */
+@Deprecated
 public class BeisFileAddEventHandler extends AbstractViewEventHandler {
 
-    private String multipartPath = "uiData.multipartFile";
+    private String multipartPath = "uiData.multipartFile";  // sets default (overwritten by servlet.xml)
 
     private String path;
     private String kindName;
@@ -43,10 +48,15 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
     private UploadPropertiesLoader uploadPropertiesLoader;
     private String deliveredResourcesPath;
     private String targetSlice = null;
+    
+    private long uploadTimeOut = Long.parseLong(ConfigurationFactory.getConfiguration().getString("app.addFieUploadTimeout", "0")); //360000;
+
+    private static ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
+
+    private static int partSize = configurationManager.getInt("addFile.partSize", 0);
 
     protected final NdsLogger logger = NdsLogger.getLogger(getClass());
-    private static String fileUploadServiceEndPoint = ConfigurationFactory.getConfiguration().getString(
-            "esbEndpoint.addFile");
+    private static String fileUploadServiceEndPoint = configurationManager.getString("esbEndpoint.addFile");
 
     @Override
     public void onBeforeValidation(NdsFormModel allModel, ControllerState<?> controllerState) {
@@ -72,11 +82,13 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
             // uploaded. If the requested action is for the file type that this event handler is dealing with but there
             // is no uploaded data, then report an error. If the request was not meant to be for this upload file type
             // just return quietly.
-            validationMessage = "File_Select";           
+            validationMessage = "File_Select";
             controllerState.getBindingResult().reject("", validationMessage);
             model.setAction(NdsAction.NONE);
             return; 
+
         } else {
+
             FileDetails fileDetails = new FileDetails();
 
             fileDetails.setContentType(file.getContentType());
@@ -108,9 +120,10 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
                 validationMessageParameters.put("contentType", fileDetails.getContentType());
 
             } else if (file.getSize() > limitations.getMaxResourceSize(model)) {
-
+                double filesize = fileDetails.getFileSize();
+                DecimalFormat df = new DecimalFormat("###.##");
                 validationMessage = "File_SizeLimit";
-                validationMessageParameters.put("fileSize", fileDetails.getFileSize() / 1048576);
+                validationMessageParameters.put("fileSize", df.format(filesize / 1048576));
                 validationMessageParameters.put("maxResourceSizeMB", limitations.getMaxResourceSizeMB(model));
             } else {
 
@@ -118,7 +131,6 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
                 // payload data.
                 try {
                     fileDetails.setSource(file.getBytes());
-
                 } catch (IOException e) {
                     validationMessage = "File_UploadFailed";
                     validationMessageParameters.put("contentType", fileDetails.getContentType());
@@ -175,15 +187,33 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
 
         final UiServiceClient uiSvcClient = controllerState.getController().getUiSvcClientFactory().getInstance(
                 FileAddNdsResponse.class);
+        
+        // TODO CR BEIS-386 should this be a property?
+        uiSvcClient.setTimeLimit(uploadTimeOut); // 2 mins
+        
         if (targetSlice != null) {
             uiSvcClient.setTargetSlice(targetSlice);
         }
 
+        List<String> objectIds = new ArrayList<String>();
+
         FileAddNdsRequest fileAddNdsRequest = new FileAddNdsRequest();
         fileAddNdsRequest.setContentType(fileDetails.getContentType());
         fileAddNdsRequest.setFileName(fileDetails.getFileName());
-        fileAddNdsRequest.setSource(fileDetails.getSource());
-        fileAddNdsRequest.setFileSize(fileDetails.getFileSize());
+        int partOffset = objectIds.size() * partSize;
+      
+        if ((partSize > 0) && (fileDetails.getFileSize() > partOffset + partSize)) {
+            fileAddNdsRequest.setSource(Arrays.copyOfRange(fileDetails.getSource(), partOffset, partSize));
+            fileAddNdsRequest.setFileSize(partSize);
+            fileAddNdsRequest.setLast(false);
+        } else {
+            fileAddNdsRequest.setSource(Arrays.copyOfRange(fileDetails.getSource(), partOffset,
+                    (int) fileDetails.getFileSize() - partOffset));
+            fileAddNdsRequest.setFileSize(fileDetails.getFileSize() - partOffset);
+            fileAddNdsRequest.setLast(true);
+        }
+        
+        fileAddNdsRequest.setObjectIds(objectIds);
 
         // Request the ESB stores the uploaded file.
         if (!controllerState.isSyncController()) {
@@ -191,19 +221,104 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
         } else {
             uiSvcClient.postSync(fileUploadServiceEndPoint, fileAddNdsRequest);
         }
+        uiSvcClient.setResponseConsumer(
+                new FileAddResponseConsumer(fileDetails, fileAddNdsRequest, model, upload, controllerState));
 
-        uiSvcClient.setResponseConsumer(new NdsResponseConsumer() {
+        controllerState.registerUiServiceClient(uiSvcClient);
 
-            @Override
-            public boolean consume(NdsResponse response) {
+    }
 
-                if (!(response instanceof FileAddNdsResponse)) {
-                    model.setPostSubmitMessage(null);  // defer message construction back to controller
-                    return false;
-                }
-                FileAddNdsResponse fileAddNdsResponse = ((FileAddNdsResponse) (response));
-                if (fileAddNdsResponse.isSuccess()) {
+    /** 
+     * A full class because we need to call service clients recursively until the whole file has been sent to the ESB
+     * The recursion mean we need to use a different FileAddNdsRequest each time, so we need a constructor. 
+     */
+    class FileAddResponseConsumer implements NdsResponseConsumer {
 
+        FileDetails fileDetails;
+        FileAddNdsRequest fileAddNdsRequest;
+        AbstractNdsMvcModel model;
+        Upload upload;
+        ControllerState<?> controllerState;
+
+        public FileAddResponseConsumer(FileDetails fileDetails, FileAddNdsRequest fileAddNdsRequest,
+                AbstractNdsMvcModel model, Upload upload, ControllerState<?> controllerState) {
+            this.fileDetails = fileDetails;
+            this.fileAddNdsRequest = fileAddNdsRequest;
+            this.model = model;
+            this.upload = upload;
+            this.controllerState = controllerState;
+        }
+
+        /** TODO CR BEIS-386 Please comment how this works */
+        @Override
+        public boolean consume(NdsResponse response) {
+
+            if (!(response instanceof FileAddNdsResponse)) {
+                model.setPostSubmitMessage(null);  // defer message construction back to controller
+                return false;
+            }
+
+            FileAddNdsResponse fileAddNdsResponse = ((FileAddNdsResponse) (response));
+
+            if (fileAddNdsResponse.isSuccess()) {
+
+                if (!fileAddNdsRequest.isLast()) {
+                    fileAddNdsRequest.getObjectIds().add(fileAddNdsResponse.getObjectId());
+
+                    final UiServiceClient uiSvcClient = 
+                    		controllerState.getController().getUiSvcClientFactory().getInstance(FileAddNdsResponse.class);
+                    
+                    /* 
+                     * TODO CR BEIS-386 should this be a property?
+                     * Also, given the 2 minute timeout earlier in this file, what effect does it have?  Is it 8 minutes for this uiServiceClient
+                     * in which case, how useful is that?  Wouldn't we want a total timeout or is that what the earlier one gives us and this is
+                     * just a failsafe...  In all cases, please add a comment explaining the effect of this timeout.
+                     */
+                    uiSvcClient.setTimeLimit(480000); // 8 mins
+                    
+                    if (targetSlice != null) {
+                        uiSvcClient.setTargetSlice(targetSlice);
+                    }
+
+                    FileAddNdsRequest followingFileAddNdsRequest = new FileAddNdsRequest();
+                    followingFileAddNdsRequest.setContentType(fileDetails.getContentType());
+                    followingFileAddNdsRequest.setFileName(fileDetails.getFileName());
+                    List<String> objectIds = fileAddNdsRequest.getObjectIds();
+                    int partOffset = objectIds.size() * partSize;
+                    
+                    /* 
+                     * TODO CR BEIS-386 At this point I've realised it all looks like duplicated code from above (or very similar).
+                     * Extract the common code into a method to avoid duplication so that there's less code, so maintenance is easier etc.
+                     */
+                    logger.info("following partOffset = " + partOffset);
+                    
+                    if ((partSize > 0) && (fileDetails.getFileSize() > objectIds.size() * partSize + partSize)) {
+                        followingFileAddNdsRequest.setSource(
+                                Arrays.copyOfRange(fileDetails.getSource(), partOffset, partOffset + partSize));
+                        followingFileAddNdsRequest.setFileSize(partSize);
+                        followingFileAddNdsRequest.setLast(false);
+                    } else {
+                        followingFileAddNdsRequest.setSource(Arrays.copyOfRange(fileDetails.getSource(), partOffset,
+                                (int) fileDetails.getFileSize()));
+                        followingFileAddNdsRequest.setFileSize(fileDetails.getFileSize() - partOffset);
+                        followingFileAddNdsRequest.setLast(true);
+                    }
+                    
+                    followingFileAddNdsRequest.setObjectIds(objectIds);
+
+                    // Request the ESB stores the uploaded file.
+                    if (!controllerState.isSyncController()) {
+                        uiSvcClient.post(fileUploadServiceEndPoint, followingFileAddNdsRequest);
+                    } else {
+                        uiSvcClient.postSync(fileUploadServiceEndPoint, followingFileAddNdsRequest);
+                    }
+                    
+                    uiSvcClient.setResponseConsumer(new FileAddResponseConsumer(fileDetails, followingFileAddNdsRequest,
+                            model, upload, controllerState));
+
+                    controllerState.registerUiServiceClient(uiSvcClient);
+
+                } else {
                     fileDetails.setFileId(fileAddNdsResponse.getObjectId());
                     fileDetails.setSource(null);
 
@@ -218,16 +333,13 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
                         // and the fileDetails object is stored directly in the model
                         new ModelField().setPath(path).setValue(model, fileDetails);
                     }
-                    return true;
                 }
-                return false;
-
+                return true;
             }
-        });
+            return false;
 
-        controllerState.registerUiServiceClient(uiSvcClient);
-
-    }
+        }
+    };
 
     public String getKindName() {
         return kindName;
@@ -283,5 +395,13 @@ public class BeisFileAddEventHandler extends AbstractViewEventHandler {
 
     public void setTargetSlice(String targetSlice) {
         this.targetSlice = targetSlice;
+    }
+
+    public long getUploadTimeOut() {
+        return uploadTimeOut;
+    }
+
+    public void setUploadTimeOut(long uploadTimeOut) {
+        this.uploadTimeOut = uploadTimeOut;
     }
 }

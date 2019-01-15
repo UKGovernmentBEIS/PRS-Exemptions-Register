@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
     $('.disclosure.advice').each(function () {
         var disclosure = $(this);

@@ -9,11 +9,10 @@ import com.northgateps.nds.beis.api.BeisRegistrationDetails;
 import com.northgateps.nds.beis.api.BeisUserDetails;
 import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsRequest;
 import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryMissingAttributeValueException;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
@@ -26,11 +25,11 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
 /**
  * Adapter class that processes the retrieving of registered user details between native (REST) objects and LDAP objects
  */
-public class RetrieveRegisteredDetailsAdapter
-        extends NdsDirectoryAdapter<RetrieveRegisteredDetailsNdsRequest, RetrieveRegisteredDetailsNdsResponse> {
+public class RetrieveRegisteredDetailsLdapComponent
+        extends NdsDirectoryComponent<RetrieveRegisteredDetailsNdsRequest, RetrieveRegisteredDetailsNdsResponse> {
 
     @SuppressWarnings("unused")
-    private static final NdsLogger logger = NdsLogger.getLogger(RetrieveRegisteredDetailsAdapter.class);
+    private static final NdsLogger logger = NdsLogger.getLogger(RetrieveRegisteredDetailsLdapComponent.class);
 
     final ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
 
@@ -40,9 +39,9 @@ public class RetrieveRegisteredDetailsAdapter
      * @throws NdsBusinessException
      */
     @Override
-    protected void doRequestProcess(RetrieveRegisteredDetailsNdsRequest request,
-            DirectoryConnection directoryConnection, NdsSoapRequestAdapterExchangeProxy ndsExchange,
-            DirectoryConnectionConfig directoryConnectionConfig) throws NdsApplicationException, NdsBusinessException {
+    protected void doProcess(RetrieveRegisteredDetailsNdsRequest request, DirectoryAccessConnection directoryConnection,
+            NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
+                    throws NdsApplicationException, NdsBusinessException, DirectoryException {
 
         String ldapAttributeForename = configurationManager.getString("attribute.forename");
         String ldapAttributeSurname = configurationManager.getString("attribute.surname");
@@ -65,7 +64,7 @@ public class RetrieveRegisteredDetailsAdapter
         try {
             String userDn = getUserDn(configurationManager, request.getUsername(), request.getTenant());
 
-            Map<String, String> attributes = UserServices.userAttributes(directoryConnection, userDn);
+            Map<String, String> attributes = getUserManager().userAttributes(directoryConnection, userDn);
             beisRegistrationDetails.getAccountDetails().getOrganisationNameDetail().setOrgName(
                     attributes.get(ldapAttributeOrgname));
             beisRegistrationDetails.getAccountDetails().getPersonNameDetail().setFirstname(
@@ -135,5 +134,5 @@ public class RetrieveRegisteredDetailsAdapter
     protected String getRequestClassName() {
         return RetrieveRegisteredDetailsNdsRequest.class.getName();
     }
-
+    
 }

@@ -111,17 +111,8 @@
 			<version>${nds.beis.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-pool</artifactId>
-			<version>5.12.2</version>
-		</dependency>
-		<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-camel</artifactId>
-				<version>5.12.2</version>
-		</dependency>
-		 <!-- https://search.maven.org/#artifactdetails%7Ccom.googlecode.owasp-java-html-sanitizer%7Cowasp-java-html-sanitizer%7C20160924.1%7Cjar -->
+
+        <!-- https://search.maven.org/#artifactdetails%7Ccom.googlecode.owasp-java-html-sanitizer%7Cowasp-java-html-sanitizer%7C20160924.1%7Cjar -->
     	<dependency>
         	<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
         	<artifactId>owasp-java-html-sanitizer</artifactId>

@@ -21,7 +21,7 @@ Feature: Report forgotten username
 #    Given I am on the 'report-forgotten-username' page
     And   I have supplied the email address "not-an-email-address"
     When  I select 'Next'
-    Then  I will receive the message "Email address must be a valid email address"
+    Then  I will receive the message "You must enter a valid email address in Email address"
     And   I will remain on the 'report-forgotten-username' page
 
 #  Scenario: Process forgotten username with a valid email address

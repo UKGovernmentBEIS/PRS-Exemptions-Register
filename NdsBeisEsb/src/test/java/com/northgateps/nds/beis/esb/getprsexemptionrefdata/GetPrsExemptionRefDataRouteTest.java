@@ -26,8 +26,8 @@ import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.
 import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataResponse.ServiceDetails.ServiceDetail;
 import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataResponse.ServiceDetails.ServiceDetail.ExemptionTypes;
 import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataResponse.ServiceDetails.ServiceDetail.ExemptionTypes.ExemptionType;
-import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
-import com.northgateps.nds.platform.esb.security.MockAuthentication;
+import com.northgateps.nds.beis.esb.RouteTestUtils;
+
 import com.northgateps.nds.platform.esb.util.xml.JaxbXmlMarshaller;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
@@ -49,13 +49,7 @@ public class GetPrsExemptionRefDataRouteTest extends CamelSpringTestSupport {
 
     @Override
     protected AbstractApplicationContext createApplicationContext() {
-
-        // grant test role based security access
-        MockAuthentication.setMockAuthentication("ROLE_BEIS_UI");
-
-        return new NdsFileSystemXmlApplicationContext(
-                new String[] { "src/main/webapp/WEB-INF/applicationContext-security.xml",
-                        "src/main/webapp/WEB-INF/beis-camel-context.xml" });
+    	return RouteTestUtils.createApplicationContext(routeNameUnderTest);
     }
 
      @Test

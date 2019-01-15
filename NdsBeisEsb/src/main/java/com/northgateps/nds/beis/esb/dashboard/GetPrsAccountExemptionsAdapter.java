@@ -19,8 +19,6 @@ public class GetPrsAccountExemptionsAdapter extends
 
 	protected static final NdsLogger logger = NdsLogger.getLogger(GetPrsAccountExemptionsAdapter.class);
 	
-	public static String USER_TYPE = "userType";
-
 	/**
 	 * Called from the base-class to de-serialize the incoming request.
 	 * 

@@ -16,7 +16,6 @@ import com.google.common.base.Function;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchExemptionsPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchExemptionsPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
-import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;

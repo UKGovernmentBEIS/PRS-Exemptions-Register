@@ -5,7 +5,7 @@
 
 	<groupId>com.northgateps.beis.sharedpoms</groupId>
 	<artifactId>sharedpoms</artifactId>
-	<version>0.0.1503</version>
+	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
 	<profiles>

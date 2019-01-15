@@ -99,14 +99,21 @@ public class ContentSecuritySteps {
     	
     	if ("NEW".equals(code)) {
 	    	sb.append("_I got to know on 01-Jan-17 but it happened ~ 01/12/2016. I'm not sure what is meant by '(for the avoidance of doubt, a \\\"guarantor\\\" who exercises");
-	    	sb.append("this right under the 1995 Act is the guarantor of a former tenant)'Could someone explain?_");
+	    	sb.append("this right under the 1995 Act is the guarantor of a former tenant)'Could someone explain?_" + "\n");
+	    	sb.append("having spent some time I couldn't select the option I wanted from the top list to update" + "\n");
+	    	sb.append("it doesn't show a distinct limit anywhere in this case" + "\n");
+	    	sb.append("there was no room to insert where the union of nurses exists");
+	    	
 	
 	    	personalisedExemptionListOfValuesPageHelper.skipPage(sb.toString());
     	} else if ("ALLIMP".equals(code)) {
 	    	sb.append("_They installed a pipe that was 35cms [1' 2''] and another that was 70.5 cms {2' 4\\\"}. It cost £924.76 + £100.00 materials");
 	    	sb.append("My share was a half, £1,024.76/2 = £512.38 If its > 600 I get a 10% discount If its < 600 I pay in full The chap's email address");
 	    	sb.append("is bob@pipes.co.uk. Website is HTTP://WWW.BOBSPIPES.CO.UK Phone +44 (0)7879 697778 They also installed the following:");
-	    	sb.append("#1 Window 3.5 * 1.2 m's - in the rear wall #2 Insulation in roof & walls");
+	    	sb.append("#1 Window 3.5 * 1.2 m's - in the rear wall #2 Insulation in roof & walls" + "\n");
+	    	sb.append("having spent some time I couldn't select the option I wanted from the top list to update" + "\n");
+            sb.append("it doesn't show a distinct limit anywhere in this case" + "\n");
+            sb.append("there was no room to insert where the union of nurses exists");
 	    	
 	    	personalisedExemptionTextPageHelper.skipPage(sb.toString());
     	} else {

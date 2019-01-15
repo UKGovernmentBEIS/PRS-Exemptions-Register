@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
     $(".submitradiobutton").each(function() {
         var spinnerEl = window.document.createElement("div");
@@ -13,8 +15,8 @@ $(function () {
                 return false;
             }
             var selectedVal = submitradiobutton.closest("fieldset").find("input:checked").val();
+            submitradiobutton.find("input").prop('checked',true);
             if ((selectedVal === void 0) && submitradiobutton.hasClass("as-unselected")) {
-                submitradiobutton.find("input").prop('checked',true);
                 return false;
             } else {    
                 new Spinner({ 'top' : '13px', 'left' : '16px', 'scale' : 0.5 }).spin(spinnerEl);

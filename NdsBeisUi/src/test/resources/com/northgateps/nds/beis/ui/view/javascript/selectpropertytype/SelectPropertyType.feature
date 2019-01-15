@@ -15,7 +15,7 @@ Scenario: Select property type
 	
 	Given I have not entered any data
 	When I select Next
-	Then I will receive the message "What type of property are you registering must be selected"
+	Then I will receive the message "You must choose an option for What type of property are you registering"
 	And I will remain on the 'personalised-select-property-type' page
 	
 	Given I select 'More about property types'

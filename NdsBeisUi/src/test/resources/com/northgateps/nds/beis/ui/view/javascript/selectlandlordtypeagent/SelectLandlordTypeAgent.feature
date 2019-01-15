@@ -9,7 +9,7 @@ Scenario:Select person landlord type
 	Given I am on the 'personalised-select-landlord-type-agent' page	
 	And I have not entered any data
 	When I select Next
-	Then I will receive the message "The type of account must be selected"
+	Then I will receive the message "You must choose an option for The type of account"
 	And I will remain on the personalised-select-landlord-type-agent page
 	
 	Given I have selected person as landlord type

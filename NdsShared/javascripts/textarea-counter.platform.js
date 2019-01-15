@@ -1,3 +1,5 @@
+"use strict";
+
 $('textarea').each(function() {
     var textarea = $(this); 
     textarea.find('+ .charlimit').hide();

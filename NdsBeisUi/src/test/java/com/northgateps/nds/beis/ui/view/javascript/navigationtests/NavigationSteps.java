@@ -9,7 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.NavigationPageHelper;
@@ -255,6 +257,7 @@ public class NavigationSteps {
     @Given("^I have entered a valid date$")
     public void i_have_entered_a_valid_date() throws Throwable {
         exemptionStartDatePageHelper.fillInForm();
+        exemptionStartDatePageObject = exemptionStartDatePageHelper.getPageObject();
     }
 
     @When("^I select Next option$")
@@ -331,7 +334,16 @@ public class NavigationSteps {
                 documentUploadPageObject.getDriver().findElement(
                         By.className("filename")).getText());
     }
+    
+    @When("^I select Next button$")
+    public void i_select_Next_button() throws Throwable {
+        WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
+        documentUploadPageObject.clickNext();
+    }
 
-
-
+    @When("^I select Next on list of values page$")
+    public void i_select_Next_on_list_of_values_page() throws Throwable {
+        exemptionListOfValuesPageObject.clickNext();
+    }
 }

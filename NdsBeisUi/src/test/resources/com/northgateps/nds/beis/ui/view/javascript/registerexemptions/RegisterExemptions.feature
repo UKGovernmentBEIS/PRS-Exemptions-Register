@@ -1,4 +1,4 @@
-Feature: Search Exemptions - Result
+Feature: Register Exemptions (Search Exemptions)
 
 Scenario: View exemption using address link
 	Given I am on the register-search-exemptions page
@@ -25,7 +25,7 @@ Scenario: Move back to search results
     
 Scenario: Download EPC
 
-   Given I am on the register-exemptions page
+   Given I am on the register-exemptions page with EPC available
    
    #Download available 
    And the exemption has a suitable EPC

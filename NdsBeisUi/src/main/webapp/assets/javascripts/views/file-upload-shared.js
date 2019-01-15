@@ -23,7 +23,7 @@ $(function() {
 	                var fileinput = file.find("input[type='file']")[0];
 	                if (fileinput.files && fileinput.files.length > 0) {
 	                    var fileSize = fileinput.files[0].size;
-	    
+	                    $(".next").hide();
 	                    if (checkFileSize(fileSize, maxUploadSize, button.attr('field-path'), file.attr('data-maxsize-invalid-msg'))) {
 	                            new Spinner(opts).spin(file.find(".uploadspinner")[0]);
 	                    } else {
@@ -47,12 +47,19 @@ $(function() {
             });
     });
 	
+	if($('table[id="uploadedFiles"]').is(':visible')) {
+		$('html,body').animate({
+			scrollTop: $("#divTemp").offset().top},
+	         'slow');
+	}
+	
 	
 	function checkFileSize(fileSize, maxUploadSize, path, msg) {
         
 		clearErrorMessage(path, true);
 		
-        if (fileSize > maxUploadSize) {            
+        if (fileSize > maxUploadSize) { 
+        	$(".next").show();
             displayErrorMessage(path, msg, msg);            
             return false;
         } else {                       

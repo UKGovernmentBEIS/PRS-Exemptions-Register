@@ -1,7 +1,6 @@
 package com.northgateps.nds.beis.ui.view.javascript.landlorddetails;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -106,13 +105,12 @@ public class LandlordDetailsSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
-        pageObject.clickNext();
+        pageObject.clickNext();       
     }
 
     @Then("^I will receive the message \"(.*?)\"$")
-    public void i_will_receive_the_message(String validationMessage) throws Throwable {
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());    
-        assertEquals("Check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
+    public void i_will_receive_the_message(String validationMessage) throws Throwable {        
+       pageHelper.waitUntilValidationMessageSeen(validationMessage);
     }
 
     @Then("^I will remain on the personalised-landlord-details page$")
@@ -182,5 +180,11 @@ public class LandlordDetailsSteps {
             PageHelperFactory.unregisterFormFiller("login-form");
             PageHelperFactory.unregisterFormFiller("personalised-select-landlord-type-agent");
         }
+    }
+    
+    @When("^I click Next$")
+    public void i_click_Next() throws Throwable {
+        pageObject.clickNext();
+        pageObject = pageHelper.getNewPageObject();
     }
 }

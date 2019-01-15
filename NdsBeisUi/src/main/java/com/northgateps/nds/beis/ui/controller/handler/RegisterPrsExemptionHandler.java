@@ -58,6 +58,9 @@ public class RegisterPrsExemptionHandler extends AbstractViewEventHandler {
         GetPrsPenaltyRefDataNdsRequest submitRequest = new GetPrsPenaltyRefDataNdsRequest();
         final UiServiceClient uiSvcClient = controllerState.getController().getUiSvcClientFactory().getInstance(
                 GetPrsPenaltyRefDataNdsResponse.class);
+
+        // do not automatically retry on connection errors
+        uiSvcClient.setRetriesRemaining(0);
         
         if (!controllerState.isSyncController()) {
             uiSvcClient.post(serviceEndPoint, submitRequest);

@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
     var updatePanelsOpenness = function() {
         /* Refresh the "open-ness" of all the panels, as opening one panel should close 

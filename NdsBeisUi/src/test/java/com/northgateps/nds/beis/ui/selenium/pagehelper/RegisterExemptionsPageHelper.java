@@ -28,7 +28,4 @@ public class RegisterExemptionsPageHelper extends BasePageHelper<RegisterExempti
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
     }
-
-   
-
 }

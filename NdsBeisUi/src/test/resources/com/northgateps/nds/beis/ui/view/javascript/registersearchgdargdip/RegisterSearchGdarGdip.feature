@@ -11,7 +11,7 @@ Scenario: Search
 	#Invalid reference supplied
 		Given I have supplied an invalid reference
 		When I select 'Download'
-		Then I will receive the error "The reference number is invalid"
+		Then I will receive the error "You must enter a valid reference number"
 		And I will remain on the 'register-search-gdar-gdip' page
 		
 	#Valid reference supplied with no results

@@ -1,3 +1,12 @@
+"use strict";
+
+$(function () {
+	//Add spinner next to nds button  
+	$("<span class='waitSpinner' style='position:relative'></span>").appendTo(".waitSpinnerDiv");	
+});
+
+
+
 /**
  * Copyright (c) 2011-2014 Felix Gnass
  * Licensed under the MIT license

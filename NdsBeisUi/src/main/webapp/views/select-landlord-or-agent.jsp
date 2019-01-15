@@ -44,18 +44,12 @@
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_Select_Landlord_Or_Agent" />
 				</h1>
-				<div id="userDetails">
+				<div>
 					<p>
-					<fmt:message bundle="${FieldsBundle}"
+						<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_SelectLandlordOrAgentDetails1" />
-					</p>
-				
-					<div class="panel panel-border-narrow">
-						<p>
-							<fmt:message bundle="${FieldsBundle}"
-								key="Paragraph_SelectLandlordOrAgentDetails2" />
-						</p>
-					</div>
+					</p>			
+					
 				</div>
 			</div>
 		</div>
@@ -81,6 +75,12 @@
 						</fieldset>
 					</nds:field>
 				</div>
+				<div class="panel panel-border-narrow" id="userDetails">
+						<p>
+							<fmt:message bundle="${FieldsBundle}"
+								key="Paragraph_SelectLandlordOrAgentDetails2" />
+						</p>
+				</div>
 				<div class="form-group">
 					<section class="submit">
 						<div class="form-group">
@@ -95,6 +95,8 @@
 		</div>
 		</main>
 		<jsp:include page="close.jsp"></jsp:include>
+		<script
+			src="${contextUi}/assets/javascripts/views/select-landlord-or-agent${minify}.js?version=${version}"></script>
 	</nds:form>
 </body>
 </html>

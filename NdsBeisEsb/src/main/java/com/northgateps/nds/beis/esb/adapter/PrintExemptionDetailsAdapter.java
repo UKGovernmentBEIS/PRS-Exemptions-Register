@@ -46,19 +46,7 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 public class PrintExemptionDetailsAdapter {
 
     private static final NdsLogger logger = NdsLogger.getLogger(PrintExemptionDetailsAdapter.class);
-    private DocumentBuilder dBuilder;
-
-    public PrintExemptionDetailsAdapter() {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            logger.error(
-                    "Unable to create default XML Document builder, generating exemption details PDFs will not work",
-                    e);
-        }
-    }
-
+      
     /**
      * Replace escaped HTML markup in the request message with equivalent XSL:FO markup.
      *
@@ -141,15 +129,32 @@ public class PrintExemptionDetailsAdapter {
 
     private void replaceNodeContentWithText(Document body, Node n, String formattedPwsText)
             throws IOException, SAXException {
+       
         // Convert the re-formatted text into a document
         try (ByteArrayInputStream bais = new ByteArrayInputStream(formattedPwsText.getBytes(StandardCharsets.UTF_8))) {
-            Document pwsTextDoc = dBuilder.parse(bais);
+            Document pwsTextDoc = getXMLDocumentBuilder().parse(bais);
             // Import the new document into the source XML as a new node.
             Node replacementNode = body.importNode(pwsTextDoc.getDocumentElement(), true);
 
             // Replace the "fo:inline" element with the reformatted version.
             n.getParentNode().replaceChild(replacementNode, n);
         }
+    }
+    
+    /**
+     * Create default XML Document Builder using DocumentBuilderFactory    
+     */
+    private DocumentBuilder getXMLDocumentBuilder() {
+        DocumentBuilder dBuilder = null;
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dBuilder = dbFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            logger.error(
+                    "Unable to create default XML Document builder, generating exemption details PDFs will not work",
+                    e);
+        }
+        return dBuilder;       
     }
 
     private NodeList findInlineTextNodes(Document body) throws XPathExpressionException {

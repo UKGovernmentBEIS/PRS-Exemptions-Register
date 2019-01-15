@@ -26,7 +26,7 @@ Scenario: Process account details
 	#No data entered for organisation	
 		Given Organisation name is available for input
 		And I have not entered any data
-		When I select Submit
+		When I click Submit
 		Then I will receive the message "Organisation name must be entered"
 		And I will receive the message "Telephone number must be entered"
 		And I will remain on the personalised-change-account-details page

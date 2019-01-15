@@ -9,7 +9,7 @@ Feature: Navigation Tests
     
     #Go To Declaration
     Given I have loaded greater than or equal to Min Documents
-    When I select Next
+    When I select Next button
     Then I will be taken to the personalised-exemption-declaration page
     
     #Back to Upload
@@ -49,7 +49,7 @@ Scenario Outline: Upload Only for Domestic category
 	#Go To Declaration
 	
     Given I have loaded greater than or equal to Min Documents
-    When I select Next
+    When I select Next button
     Then I will be taken to the personalised-exemption-declaration page
     
     #Back to Upload
@@ -82,7 +82,7 @@ Scenario Outline: Document Upload and Text for domestic category
 	#Go To Text
 	
 	Given I have loaded greater than or equal to Min Documents
-	When I select Next
+	When I select Next button
 	Then I will be taken to the personalised-exemption-text page
 	
 	#Go To Declaration
@@ -127,7 +127,7 @@ Scenario Outline: Start Date and Select Option
 	
 	#Go To Declaration
 	Given I have selected an option
-	When I select Next
+	When I select Next on list of values page
 	Then I will be taken to personalised-exemption-declaration page
 	
 	

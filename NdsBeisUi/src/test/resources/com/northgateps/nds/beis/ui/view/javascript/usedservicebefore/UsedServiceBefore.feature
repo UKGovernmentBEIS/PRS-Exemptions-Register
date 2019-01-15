@@ -4,7 +4,7 @@ Scenario: No option selected
 	Given I am on the 'used service before' page
 	And I have not selected an option
 	When I select Next
-	Then I will receive the message "You must select whether you have used the service before"
+	Then I will receive the message "You must choose an option"
 	And I will remain on the 'used service before'
 
 Scenario: Navigate to select landlord type page

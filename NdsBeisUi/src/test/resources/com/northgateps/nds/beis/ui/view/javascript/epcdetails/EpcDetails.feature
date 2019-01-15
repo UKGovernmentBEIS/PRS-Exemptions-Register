@@ -12,18 +12,18 @@ Scenario: Process epc details
 	#No details uploaded
 	Given I have not uploaded any file
 	When I select Next
-	Then I must receive "Your Energy Performance Certificate must be uploaded" as validation message
+	Then I must receive "You must upload your Energy Performance Certificate" as validation message
 	And I will remain on the personalised-epc-details page
 	
 	#Select file of wrong type
     Given I select a file with an incorrect file type
-    Then I must receive the custom message "The file you are trying to upload is not an accepted format" as validation message
+    Then I must receive the custom message "You must upload a file that is one of the listed types" as validation message
     And the file will not be uploaded
     And I will remain on the personalised-epc-details page
     
     #Select file that is too large
     Given I select a file that is larger than the maximum size
-    Then I must receive the custom message "The file you are trying to upload exceeds the file size limit. Please try again" as validation message
+    Then I must receive the custom message "The file you are trying to upload exceeds the maximum size allowed" as validation message
     And the file will not be uploaded
     And I will remain on the personalised-epc-details page
     

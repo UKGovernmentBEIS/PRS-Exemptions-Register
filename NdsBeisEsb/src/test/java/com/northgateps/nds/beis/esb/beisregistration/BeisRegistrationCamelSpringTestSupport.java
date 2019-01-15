@@ -29,11 +29,19 @@ import com.northgateps.nds.beis.backoffice.service.core.MessageStructure;
 import com.northgateps.nds.beis.backoffice.service.core.MessagesStructure;
 import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsResponse;
 import com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsResponse;
+import com.northgateps.nds.beis.esb.MockEndpointInitializer;
+import com.northgateps.nds.beis.esb.MockNdsDirectoryKernel;
+import com.northgateps.nds.beis.esb.RouteTestUtils;
+import com.northgateps.nds.beis.esb.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsRouteTest;
+import com.northgateps.nds.beis.esb.passwordreset.BeisPasswordResetRouteTest;
+import com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent;
+import com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsRouteTest;
 import com.northgateps.nds.platform.application.api.utils.PlatformTokenFactory;
-import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
+
 import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.security.MockAuthentication;
+import com.northgateps.nds.platform.esb.directory.DirectoryManager;
+import com.northgateps.nds.platform.esb.directory.UserManager;
 import com.northgateps.nds.platform.esb.util.configuration.ConfigurationFactory;
 import com.northgateps.nds.platform.esb.util.xml.JaxbXmlMarshaller;
 import com.northgateps.nds.platform.logger.NdsLogger;
@@ -60,7 +68,7 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
     protected static final String RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST = "getPartyDetails_SubRouteForRetrievingRegistrationDetails";
     protected static final String INTEGRATION_TEST_USERNAME_PREFIX = "Beistest-";
 
-    protected static final String NEW_USER_PASSWORD = "qwertyuio123!";
+    protected static final String NEW_USER_PASSWORD = "Qwertyuio123!";
 
     private static final String REGISTRATION_TEST_START = "direct:start";
 
@@ -79,7 +87,7 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
     @EndpointInject(uri = REGISTRATION_TEST_START)
     private ProducerTemplate apiEndpoint;
 
-    private static final String retrieveRouteName = "retrieveRegisteredDetailsServiceRoute";
+    protected static final String retrieveRouteName = "retrieveRegisteredDetailsServiceRoute";
     private static final String restrieveStartName = "direct:startRetrieveRegisteredDetailsServiceRoute";
 
     /**
@@ -105,11 +113,11 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
 
     @Override
     protected AbstractApplicationContext createApplicationContext() {
-        MockAuthentication.setMockAuthentication("ROLE_BEIS_UI");
-
-        return new NdsFileSystemXmlApplicationContext(new String[] {
-                "src/main/webapp/WEB-INF/applicationContext-security.xml", "src/test/java/beis-camel-context-test.xml",
-                "src/main/webapp/WEB-INF/beis-camel-context.xml" });
+        return RouteTestUtils.createApplicationContext(REGISTRATION_ROUTE_NAME_UNDER_TEST,
+        		ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST, REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST, 
+        		RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST, SaveRegisteredAccountDetailsRouteTest.routeNameUnderTest,
+        		retrieveRouteName, GetPartiallyRegisteredDetailsRouteTest.routeNameUnderTest, 
+        		BeisPasswordResetRouteTest.routeNameUnderTest);
     }
 
     /**
@@ -129,105 +137,9 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
     }
 
     public BeisRegistrationDetails registerNewUser(String emailText) throws Exception {
-        assumeTrue(connection);
-
-        logger.debug("Starting to register new user");
-
-        // setup the request and record the username
-        final BeisRegistrationNdsRequest requestNewUser = createRegistrationNdsRequestWithNewUserName();
-        BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
-
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-
-                        // Mock out the email
-                        weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        // Mock out the call to foundation layer fro the sub route
-                        weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
-                                MOCK_REGISTRATION_REQUEST_CHECK).process(new Processor() {
-
-                            @Override
-                            public void process(Exchange exchange) throws Exception {
-                                // nothing to change
-                            }
-                        });
-
-                        // This sub route is invoked by registration and requires mocking
-                        context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                                new AdviceWithRouteBuilder() {
-
-                            @Override
-                            public void configure() throws Exception {
-
-                                interceptSendToEndpoint(
-                                        "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                                MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
-
-                                    @Override
-                                    public void process(Exchange exchange) throws Exception {
-                                        // Mock out a response
-                                        exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-
-        context.start();
-
-        // Ensure email request data is present and correct
-        MockEndpoint requestMock = getMockEndpoint(MOCK_REGISTRATION_REQUEST_CHECK);
-        requestMock.expectedMessageCount(1);
-        requestMock.expectedHeaderReceived("subject", "Account activation");
-        requestMock.expectedHeaderReceived("to", "a@beis.com");
-
-        requestMock.whenAnyExchangeReceived(new Processor() {
-
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                String body = exchange.getIn().getBody(String.class);
-
-                final String expectedUsername = userRegistration.getUserDetails().getUsername();
-                final String expectedActivationCode = userRegistration.getActivationCode();
-
-                assertNotNull(expectedUsername);
-                assertNotNull(expectedActivationCode);
-
-                assertTrue("Email doesn't contain correct username : " + expectedUsername + " but instead contains "
-                        + body, body.contains(expectedUsername));
-
-                if (emailText != null) {
-                    assertTrue("Email doesn't contain correct text : " + emailText + " but instead contains " + body,
-                            body.contains(emailText));
-                }
-
-                final String newUserActivationCode = extractActivationCodeFromBody(body, expectedUsername);
-                assertEquals("Email doesn't contain correct activation code : " + expectedActivationCode
-                        + ".  Text was " + body, expectedActivationCode, newUserActivationCode);
-            }
-        });
-
-        // setup expected ESB response
-        MockEndpoint registrationResponseMock = getMockEndpoint(MOCK_REGISTRATION_RESPONSE_CHECK);
-        registrationResponseMock.expectedMessageCount(1);
-        registrationResponseMock.expectedBodiesReceived(JaxbXmlMarshaller.convertToPrettyPrintXml(
-                createSuccessfullNdsRegistrationResponse(), BeisRegistrationNdsResponse.class));
-
-        apiEndpoint.sendBody(requestNewUser);
-
-        assertMockEndpointsSatisfied();
-
-        return userRegistration;
-    }
+        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();        
+        return registerNewUser(emailText, mockDirectoryKernel);
+    } 
 
     /**
      * Extract the activation code for use in other tests.
@@ -324,64 +236,6 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
         return request;
     }
 
-
-    /**
-     * Call the retrieve camel route to get the details out
-     * 
-     * @param username
-     * @return
-     * @throws Exception
-     */
-    public RetrieveRegisteredDetailsNdsResponse retrieveRegistrationDetails(String tenant, String username)
-            throws Exception {
-
-        assumeTrue(connection);
-
-        context.getRouteDefinition(retrieveRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
-
-            @Override
-            public void configure() throws Exception {
-                replaceFromWith(restrieveStartName);
-
-                // Mock out the call to foundation layer from the sub route
-                weaveAddLast().to(MOCK_RETRIEVE_FL_RESPONSE_CHECK);
-                replaceFromWith(restrieveStartName);
-
-                // This sub route is invoked by registration and requires mocking
-                context.getRouteDefinition(RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-
-                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                MOCK_RETRIEVE_FL_REQUEST_CHECK).process(new Processor() {
-
-                            @Override
-                            public void process(Exchange exchange) throws Exception {
-
-                                // Mock out a response
-                                exchange.getIn().setBody(createGetPartyDetailsResponse());
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        context.start();
-
-        // create and make the request
-        RetrieveRegisteredDetailsNdsRequest request = new RetrieveRegisteredDetailsNdsRequest();
-        request.setTenant(tenant);
-        request.setUsername(username);
-
-        RetrieveRegisteredDetailsNdsResponse response = (RetrieveRegisteredDetailsNdsResponse) apiRetrieveEndpoint.requestBody(
-                request);
-
-        return response;
-    }
-
     static GetPartyDetailsResponse createGetPartyDetailsResponse() {
 
         GetPartyDetailsResponse response = new GetPartyDetailsResponse();
@@ -445,4 +299,210 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
 
     }
 
+    public BeisRegistrationDetails registerNewUser(String emailText, MockNdsDirectoryKernel mockDirectoryKernel,
+            BeisRegistrationNdsRequest requestNewUser, MockEndpointInitializer mockEndpointInitializer) throws Exception {
+        assumeTrue(connection);
+        
+        logger.debug("Starting to register new user");
+        
+        
+        BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
+
+        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
+                new AdviceWithRouteBuilder() {
+
+                    @Override
+                    public void configure() throws Exception {
+
+                        // Mock out the email
+                        weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
+                        replaceFromWith(REGISTRATION_TEST_START);
+
+                        // Mock out the call to foundation layer fro the sub route
+                        weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
+                        replaceFromWith(REGISTRATION_TEST_START);
+
+                        interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
+                                MOCK_REGISTRATION_REQUEST_CHECK).process(new Processor() {
+
+                            @Override
+                            public void process(Exchange exchange) throws Exception {
+                                // nothing to change
+                            }
+                        });
+                        
+                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                        // a running LDAP server.
+                        DirectoryManager directoryManager = new DirectoryManager();
+                        directoryManager.setKernel(mockDirectoryKernel);
+                        UserManager userManager = new UserManager();
+                        userManager.setDirectoryManager(directoryManager);
+                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                        ldapComponent.setDirectoryManager(directoryManager);
+                        ldapComponent.setUserManager(userManager);                 
+                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                        accountIdComponent.setDirectoryManager(directoryManager);
+                        accountIdComponent.setUserManager(userManager);
+                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");                   
+
+
+                        // This sub route is invoked by registration and requires mocking
+                        context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
+                                new AdviceWithRouteBuilder() {
+
+                            @Override
+                            public void configure() throws Exception {
+
+                                interceptSendToEndpoint(
+                                        "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
+                                                MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
+
+                                    @Override
+                                    public void process(Exchange exchange) throws Exception {
+                                        // Mock out a response
+                                        exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+        context.start();
+
+        // Ensure email request data is present and correct
+        MockEndpoint requestMock = getMockEndpoint(MOCK_REGISTRATION_REQUEST_CHECK);
+        mockEndpointInitializer.request(requestMock);
+
+        // setup expected ESB response
+        MockEndpoint registrationResponseMock = getMockEndpoint(MOCK_REGISTRATION_RESPONSE_CHECK);
+        mockEndpointInitializer.response(registrationResponseMock);
+
+        apiEndpoint.sendBody(requestNewUser);
+
+        assertMockEndpointsSatisfied();
+
+        return userRegistration;
+    }
+    
+
+    public BeisRegistrationDetails registerNewUser(String emailText, MockNdsDirectoryKernel mockDirectoryKernel) throws Exception {
+        
+        logger.debug("Starting to register new user");
+
+        // setup the request and record the username
+        final BeisRegistrationNdsRequest requestNewUser = createRegistrationNdsRequestWithNewUserName();
+             
+        return registerNewUser(emailText, mockDirectoryKernel, requestNewUser, new MockEndpointInitializer() {
+
+            @Override
+            public void request(MockEndpoint requestMock) {
+                BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
+                requestMock.expectedMessageCount(1);
+                requestMock.expectedHeaderReceived("subject", "Account activation");
+                requestMock.expectedHeaderReceived("to", "a@beis.com");
+                requestMock.whenAnyExchangeReceived(new Processor() {
+
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        String body = exchange.getIn().getBody(String.class);
+
+                        final String expectedUsername = userRegistration.getUserDetails().getUsername();
+                        final String expectedActivationCode = userRegistration.getActivationCode();
+
+                        assertNotNull(expectedUsername);
+                        assertNotNull(expectedActivationCode);
+
+                        assertTrue("Email doesn't contain correct username : " + expectedUsername + " but instead contains "
+                                + body, body.contains(expectedUsername));
+
+                        if (emailText != null) {
+                            assertTrue("Email doesn't contain correct text : " + emailText + " but instead contains " + body,
+                                    body.contains(emailText));
+                        }
+
+                        final String newUserActivationCode = extractActivationCodeFromBody(body, expectedUsername);
+                        assertEquals("Email doesn't contain correct activation code : " + expectedActivationCode
+                                + ".  Text was " + body, expectedActivationCode, newUserActivationCode);
+                    }
+                });
+            }
+
+            @Override
+            public void response(MockEndpoint registrationResponseMock) throws ClassNotFoundException {
+               
+                registrationResponseMock.expectedMessageCount(1);
+                registrationResponseMock.expectedBodiesReceived(JaxbXmlMarshaller.convertToPrettyPrintXml(
+                        createSuccessfullNdsRegistrationResponse(), BeisRegistrationNdsResponse.class));
+            }
+            
+        });
+    }
+    
+    /**
+     * Call the retrieve camel route to get the details out    
+     */
+    public RetrieveRegisteredDetailsNdsResponse retrieveRegistrationDetails(String tenant, String username,MockNdsDirectoryKernel mockNdsDirectoryKernel)
+            throws Exception {
+
+        assumeTrue(connection);
+
+        context.getRouteDefinition(retrieveRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith(restrieveStartName);
+
+                // Mock out the call to foundation layer from the sub route
+                weaveAddLast().to(MOCK_RETRIEVE_FL_RESPONSE_CHECK);
+                replaceFromWith(restrieveStartName);
+
+                // This sub route is invoked by registration and requires mocking
+                context.getRouteDefinition(RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
+                        new AdviceWithRouteBuilder() {
+
+                    @Override
+                    public void configure() throws Exception {
+
+                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(
+                                MOCK_RETRIEVE_FL_REQUEST_CHECK).process(new Processor() {
+
+                            @Override
+                            public void process(Exchange exchange) throws Exception {
+
+                                // Mock out a response
+                                exchange.getIn().setBody(createGetPartyDetailsResponse());
+                            }
+                        });                        
+                    }
+                });
+                
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockNdsDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent retrieveLdapComponent = new RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent();
+                retrieveLdapComponent.setDirectoryManager(directoryManager);
+                retrieveLdapComponent.setUserManager(userManager);
+                weaveById("retrieveRegisteredDetailsRetrieveAccountIdLdapComponent.process").replace().bean(retrieveLdapComponent, "process");
+            }
+        });
+
+        context.start();
+
+        // create and make the request
+        RetrieveRegisteredDetailsNdsRequest request = new RetrieveRegisteredDetailsNdsRequest();
+        request.setTenant(tenant);
+        request.setUsername(username);
+
+        RetrieveRegisteredDetailsNdsResponse response = (RetrieveRegisteredDetailsNdsResponse) apiRetrieveEndpoint.requestBody(
+                request);
+
+        return response;
+    }
 }

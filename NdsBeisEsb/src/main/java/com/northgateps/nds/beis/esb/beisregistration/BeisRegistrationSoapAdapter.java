@@ -10,7 +10,7 @@ import com.northgateps.nds.platform.esb.adapter.NdsSoapAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
-import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapAdapter;
+import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapComponent;
 
 /**
  * This adapts the Nds request to a foundation layer BEIS request for MaintainPartyDetails and handles the response.
@@ -58,7 +58,7 @@ public class BeisRegistrationSoapAdapter extends NdsSoapAdapter <BeisRegistratio
         {
             success = true;
             //Set party reference on exchange property for an LDAP adapter to deal with
-            ndsExchange.setAnExchangeProperty(BeisRegistrationUpdateAccountIdLdapAdapter.EXCHANGE_PROPERTY_ACCOUNT_ID, externalResponse.getPartyRef());            
+            ndsExchange.setAnExchangeProperty(BeisRegistrationUpdateAccountIdLdapComponent.EXCHANGE_PROPERTY_ACCOUNT_ID, externalResponse.getPartyRef());            
         }
         
         BeisRegistrationNdsResponse ndsResponse = new BeisRegistrationNdsResponse();

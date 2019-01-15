@@ -16,7 +16,7 @@ $(function() {
 			.click(function() {
 				var fileinput = file.find("input[name='file']")[0];
 				var fileSize = (fileinput.size || fileinput.fileSize);
-
+				$(".next").hide();
 				if (checkFileSize(fileSize,	maxUploadSize)) {
 					new Spinner(opts).spin(file.find(".uploadspinner")[0]);
 				} else {
@@ -32,6 +32,7 @@ $(function() {
 
 	function checkFileSize(fileSize, maxUploadSize) {
 		if (fileSize > maxUploadSize) {
+			$(".next").show();
 			field.find('.invalid' + process.invalidClassQualifier).append(
 					'<p>' + file.attr('data-maxsize-invalid-msg') + '</p>');
 			return false;

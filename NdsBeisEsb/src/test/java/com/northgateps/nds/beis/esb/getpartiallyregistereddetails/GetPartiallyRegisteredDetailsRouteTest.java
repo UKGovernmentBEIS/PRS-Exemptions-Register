@@ -13,7 +13,10 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import com.northgateps.nds.beis.api.BeisRegistrationDetails;
 import com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsNdsRequest;
 import com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsNdsResponse;
+import com.northgateps.nds.beis.esb.MockNdsDirectoryKernel;
 import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationCamelSpringTestSupport;
+import com.northgateps.nds.platform.esb.directory.DirectoryManager;
+import com.northgateps.nds.platform.esb.directory.UserManager;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -24,7 +27,7 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCamelSpringTestSupport{
 
     private static final NdsLogger logger = NdsLogger.getLogger(GetPartiallyRegisteredDetailsRouteTest.class);
-    private static final String routeNameUnderTest = "getPartiallyRegisteredDetailsServiceRoute";
+    public static final String routeNameUnderTest = "getPartiallyRegisteredDetailsServiceRoute";
     private static final String TEST_START_NAME = "direct:getPartiallyRegisteredDetails";
 
     @EndpointInject(uri = TEST_START_NAME)
@@ -35,10 +38,12 @@ public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCame
        logger.info("testPassingInvalidDetailsUsernameFailsValidation route test started");
         
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
                
         Exception exception = null;   
         try{
-            GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails("BEIS", null);
+            GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails("BEIS", null, mockNdsDirectoryKernel);
         }
         catch (CamelExecutionException e) {
             exception = e.getExchange().getException();
@@ -55,12 +60,14 @@ public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCame
     @Test
     public void testPassingInvalidDetailsTenantFailsValidation() throws Exception{
        logger.info("testPassingInvalidDetailsTenantFailsValidation route test started");
-        
+               
         assumeTrue(connection);
+        
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
                
         Exception exception = null;   
         try{
-            GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails(null, "USERNAME");
+            GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails(null, "USERNAME", mockNdsDirectoryKernel);
         }
         catch (CamelExecutionException e) {
             exception = e.getExchange().getException();
@@ -85,10 +92,12 @@ public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCame
         
         assumeTrue(connection);
         
+        MockNdsDirectoryKernel mockNdsDirectoryKernel = new MockNdsDirectoryKernel();
+        
         //Create a new user
-        final BeisRegistrationDetails registeredUser = registerNewUser(null);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null,mockNdsDirectoryKernel);
        
-        GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails(registeredUser.getTenant(), registeredUser.getUserDetails().getUsername());
+        GetPartiallyRegisteredDetailsNdsResponse response = getPartiallyRegisteredDetails(registeredUser.getTenant(), registeredUser.getUserDetails().getUsername(),mockNdsDirectoryKernel);
         
         assertTrue(response.isSuccess());
         assertNotNull(response.getPartiallyRegisteredDetails());
@@ -108,7 +117,8 @@ public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCame
      * @param userName - The user name with in the tenancy to get
      * @return - The partially registered details.
      */
-    private GetPartiallyRegisteredDetailsNdsResponse getPartiallyRegisteredDetails (String tenant, String userName) throws Exception {
+    private GetPartiallyRegisteredDetailsNdsResponse getPartiallyRegisteredDetails (String tenant, String userName, MockNdsDirectoryKernel mockNdsDirectoryKernel) throws Exception {
+        
         
         GetPartiallyRegisteredDetailsNdsRequest request = new GetPartiallyRegisteredDetailsNdsRequest();
                         
@@ -120,6 +130,15 @@ public class GetPartiallyRegisteredDetailsRouteTest extends BeisRegistrationCame
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockNdsDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                GetPartiallyRegisteredDetailsLdapComponent ldapComponent = new GetPartiallyRegisteredDetailsLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);
+                weaveById("getPartiallyRegisteredDetailsLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("getPartiallyRegisteredDetailsLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
             }
         });
 

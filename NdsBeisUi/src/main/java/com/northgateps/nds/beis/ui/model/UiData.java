@@ -62,14 +62,12 @@ public class UiData extends NdsUiData {
 
     /* the currently selected incident being shown on the dashboard */
     private ExemptionDetail dashboardIncident = null;
-
     private ExemptionTypeText selectedExemptionTypeText;
 
     private String selectedExemptionTypeLovText;
 
     /* hold currently selected exemption type.Require to clear data if exemption type is changed */
     private String selectedExemptionType;
-
     private String durationUnit;
 
     private int duration;
@@ -80,22 +78,23 @@ public class UiData extends NdsUiData {
     @RequiredFieldMetadata(invalidMessage = "Validation_Checkbox_Field_should_be_selected")
     private String isAgreeRegistrationTermsConditions;
 
-    private GetExemptionSearchResponseDetail getExemptionSearchResult;
+    @JsonIgnore
+    private transient GetExemptionSearchResponseDetail getExemptionSearchResult;
 
-    private GetPenaltySearchResponseDetail getPenaltySearchResult;
+    @JsonIgnore
+    private transient GetPenaltySearchResponseDetail getPenaltySearchResult;
 
     private ExemptionData selectedExemptionData;
-
     private PenaltyData selectedPenaltyData;
-    
     private UserType userType;
     
     private String penaltyValue;    
+    private String selectedExemptionRefNo;
+    private String selectedPenaltyRefNo;
     
     @JsonIgnore
     private transient RegisteredExemptionDetail registeredExemptionDetail;  
-    
-    @JsonIgnore
+
     @ViolationFieldMetadata(invalidMessage = "Validation_Field_must_not_be_empty_search",
             dependencies = {
             @FieldDependency(type = "allOf", parts = {
@@ -107,18 +106,16 @@ public class UiData extends NdsUiData {
                     @FieldDependencyPart(path = ".exemptionType_PRSD",values = { "ALL" }, comparator = "contains"),
                     @FieldDependencyPart(path = ".exemptionType_PRSN",values = { "ALL" }, comparator = "contains")}),
            @FieldDependency(path = "action", values = { "FindExemptions" }, comparator = "contains")})
-   private transient ExemptionSearch exemptionSearch;
+    private ExemptionSearch exemptionSearch;
     
-   public ExemptionSearch getExemptionSearch() {
-        return exemptionSearch;
+    public ExemptionSearch getExemptionSearch() {
+    	return exemptionSearch;
     }
-
 
     public void setExemptionSearch(ExemptionSearch exemptionSearch) {
-        this.exemptionSearch = exemptionSearch;
+    	this.exemptionSearch = exemptionSearch;
     }
 
-    @JsonIgnore
     @ViolationFieldMetadata(invalidMessage = "Validation_Field_must_not_be_empty_search",
             dependencies = {
             @FieldDependency(type = "allOf", parts = {
@@ -130,7 +127,7 @@ public class UiData extends NdsUiData {
                     @FieldDependencyPart(path = ".penaltyType_PRSD",values = { "ALL" }, comparator = "contains"),
                     @FieldDependencyPart(path = ".penaltyType_PRSN",values = { "ALL" }, comparator = "contains")}),
             @FieldDependency(path = "action", values = { "FindPenalties" }, comparator = "contains") })
-    private transient PenaltySearch penaltySearch;
+    private PenaltySearch penaltySearch;
     
     @JsonIgnore
     @RequiredFieldMetadata(dependencies = {            
@@ -362,7 +359,20 @@ public class UiData extends NdsUiData {
     public void setPenaltyValue(String penaltyValue) {
         this.penaltyValue = penaltyValue;
     }
+    
+    public String getSelectedExemptionRefNo() {
+        return selectedExemptionRefNo;
+    }
 
+    public void setSelectedExemptionRefNo(String selectedExemptionRefNo) {
+        this.selectedExemptionRefNo = selectedExemptionRefNo;
+    }
     
-    
+    public String getSelectedPenaltyRefNo() {
+        return selectedPenaltyRefNo;
+    }
+
+    public void setSelectedPenaltyRefNo(String selectedPenaltyRefNo) {
+        this.selectedPenaltyRefNo = selectedPenaltyRefNo;
+    }
 }

@@ -2,7 +2,9 @@ package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
 import java.util.Locale;
 
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import com.google.common.base.Function;
 
 import com.northgateps.nds.beis.ui.selenium.pageobject.AccountActivationPageObject;
 import com.northgateps.nds.platform.ui.selenium.PageObject;
@@ -28,4 +30,19 @@ public class AccountActivationPageHelper extends BasePageHelper<AccountActivatio
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
     }    
+    
+    public void waitUntilValidationMessageSeen(final String validationMessage) {
+        getWait().until(new Function<WebDriver, Boolean>() {
+
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                     return validationMessage.equals(findFaultMessage(validationMessage));
+                } catch (StaleElementReferenceException e) {
+                    getNewPageObject();
+                    return false; // try again
+                }
+            }
+        });
+    }
 }

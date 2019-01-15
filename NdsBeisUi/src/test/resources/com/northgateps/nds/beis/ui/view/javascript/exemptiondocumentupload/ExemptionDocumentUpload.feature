@@ -12,18 +12,18 @@ Scenario: Process exemption upload details
 	#No documents uploaded
 	Given I have not uploaded any file
 	When I select Next
-	Then I must receive "At least one file must be uploaded" as validation message
+	Then I must receive "You must upload at least one file" as validation message
 	And I will remain on the personalised-exemption-document-upload page
 	
 	#Select file of wrong type
     Given I select a file "testProperties.json" with an incorrect file type
-    Then I must receive "The file you are trying to upload is not an accepted format" as validation message
+    Then I must receive "You must upload a file that is one of the listed types" as validation message
     And the file will not be uploaded
     And I will remain on the personalised-exemption-document-upload page
 	
 	#Select file that is too large
     Given I select a file "Spring in Action, 4th Edition.pdf" that is larger than the maximum size
-    Then I must receive "The file you are trying to upload exceeds the file size limit. Please try again" as validation message
+    Then I must receive "The file you are trying to upload exceeds the maximum size allowed" as validation message
     And the file will not be uploaded
     And I will remain on the personalised-exemption-document-upload page
     

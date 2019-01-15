@@ -1,3 +1,5 @@
+"use strict";
+
 // Global variable need for google analytics data-ga-trackId
 (function(w) {
     try {
@@ -10,7 +12,7 @@
             w._gaq = w._gaq || [];
             w._gaq.push([ '_setAccount', googleAnalyticTrackingId ])
             w._gaq.push([ '_trackPageview' ]);
-            
+            w._gaq.push (['set', 'anonymizeIp', true]);
             $(function() {
                 (function() {
                     var ga = document.createElement('script');

@@ -62,8 +62,8 @@ public class ExpiredPasswordSteps {
         loginPageHelper = PageHelperFactory.visit(firstPageHelper,LoginPageHelper.class);
         checkOnPage(loginPageHelper, "login-form");
     }
-    
-    @Given("^I have entered an expired user's details on the login page$")
+
+    @Given("^I have logged in as an expired user$")
     public void i_have_entered_an_expired_user_s_details_on_the_login_page() throws Throwable {
         pageHelper.login(loginPageHelper);
     }

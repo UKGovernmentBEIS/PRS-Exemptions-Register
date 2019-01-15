@@ -21,7 +21,7 @@ Scenario: Process address details
 	Given I have not selected an address from the address search
 	And I have not supplied any manual address details
 	When I select Next
-	Then I will receive the message "Address must be entered"
+	Then I will receive the message "You must enter an address"
 	And I will remain on the account-address page
 	
 	#Not all address data supplied
@@ -41,7 +41,7 @@ Scenario: Process address details
 	Given I have selected Country as "United Kingdom"
 	And I have supplied Postcode not in UK format
 	When I select Next
-	Then I will receive the message "Postcode must be a valid post code"
+	Then I will receive the message "You must enter a valid postcode"
 	And I will remain on the account-address page
 	
 	#No postcode supplied
@@ -55,7 +55,7 @@ Scenario: Process address details
 	
 	Given I have supplied an invalid postcode as "xx 8da"
 	When I select Find address
-	Then I will receive the message "Postcode  must be a valid post code"
+	Then I will receive the message "You must enter a valid postcode"
 	And I will remain on the account-address page
 
 	#Valid postcode supplied with no addresses
@@ -106,9 +106,19 @@ Scenario: Process address details
 	Given I have selected or entered a valid address
 	When I select Next
 	Then I must move to the security-details page
+		
+	
+Scenario: Postcode length for Country as not United Kingdom
+	Given I am on the account-address page
+	And I have selected Enter an address manually
+	And I have selected Country as not United Kingdom
+	And I have supplied Postcode "NONUKPOSTCODE"
+	And I have supplied other details 
+	When I select Next
+	Then I will receive the message "The Postcode must be between 1 and 8 characters long" 
+	And I will remain on the account-address page
 	
 Scenario: Postcode optional
-
 	Given I am on the account-address page
 	And I have selected Enter an address manually
 	And I have selected Country as not United Kingdom
@@ -116,3 +126,6 @@ Scenario: Postcode optional
 	And I have supplied other details 
 	When I select Next
 	Then I must move to the security-details page
+	
+	
+	

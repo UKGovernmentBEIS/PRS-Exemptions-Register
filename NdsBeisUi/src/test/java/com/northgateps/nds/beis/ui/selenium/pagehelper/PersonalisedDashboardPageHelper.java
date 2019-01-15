@@ -54,7 +54,7 @@ public class PersonalisedDashboardPageHelper extends BasePageHelper<Personalised
     public PageHelper skipPageToEndExemption() {
         final PersonalisedDashboardPageObject pageObject = getPageObject();
         checkOnPage(this, "personalised-dashboard");
-        pageObject.clickAnchorShowCurrentExemptions();
+        pageObject.clickAnchorCurrentExemptions();
         List<WebElement> divs = getPageObject().getWebElementDivCurrentExemptions().findElements(
                 By.className("exemption-table"));
         divs.get(0).findElement(By.id("button.endExemption")).click();

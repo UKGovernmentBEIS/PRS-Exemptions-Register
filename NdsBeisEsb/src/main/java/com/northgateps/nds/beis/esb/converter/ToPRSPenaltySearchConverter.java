@@ -1,6 +1,7 @@
 
 package com.northgateps.nds.beis.esb.converter;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,11 @@ public final class ToPRSPenaltySearchConverter {
                 && StringUtils.equals(prsPenaltySearchNdsRequest.getPenaltySearch().getPropertyType(), "PRSN")) {
             prsPenaltySearchRequest.setPenaltyReasonCode(
                     prsPenaltySearchNdsRequest.getPenaltySearch().getPenaltyType_PRSN());
+        }
+        
+        if (!StringUtils.isEmpty(prsPenaltySearchNdsRequest.getPenaltySearch().getPenaltyRefNo())) {
+            prsPenaltySearchRequest.setPenaltyRefNo(
+                    new BigInteger(prsPenaltySearchNdsRequest.getPenaltySearch().getPenaltyRefNo()));
         }
 
         logger.info("Finished Conversion For PRSPenaltySearchNdsRequest");

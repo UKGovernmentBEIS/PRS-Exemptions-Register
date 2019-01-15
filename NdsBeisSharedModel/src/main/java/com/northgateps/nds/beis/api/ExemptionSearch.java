@@ -48,7 +48,7 @@ public class ExemptionSearch extends AbstractValidatableModel {
     private String town;
     
     
-    @EnumeratedValues(name = EXEMPTION_TYPE_TEXT)
+    @EnumeratedValues(name = "exemptionTypeTextDomestic")
     @ViolationFieldMetadata(invalidMessage = "Validation_Field_must_be_one_more_search_term",dependencies = {
             @FieldDependency(path = "~.exemptionPostcodeCriteria",comparator = "empty"),
             @FieldDependency(path = "~.exemptionLandlordsNameCriteria",comparator = "empty"),

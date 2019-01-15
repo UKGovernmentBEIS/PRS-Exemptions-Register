@@ -1,3 +1,5 @@
+"use strict";
+
 //Simple multi-level drop down selector. There's a select control for each option in the parent select element, Each is initially hidden and 
 // is displayed when the selected parent value matches the child select control
 (function() {
@@ -112,7 +114,7 @@
         // for each select list sent from the server, it either contains a list of
         // options, or a "reuse" instruction to use the list that the browser has
         // and just set the selected option. 
-        $('[data-refdataset]').each(function() {
+        $('select[data-refdataset]').each(function() {
             var refDataSet = this.getAttribute('data-refdataset');
             if (this.hasAttribute("data-reuse")) {
                 var optionsHTML = sessionStorage.getItem('refdataset-' + refDataSet);

@@ -34,7 +34,7 @@ public class RegisterPrsExemptionEmailNotifier
         logger.info("Started setting parameters in register exemption email template ");
 
         ArrayList<String> toList = new ArrayList<String>();
-        toList.add(ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdAdapter.EMAIL_ADDRESS).toString());
+        toList.add(ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdComponent.EMAIL_ADDRESS).toString());
         HashMap<String, Object> emailConfigMap = new HashMap<String, Object>();
         emailConfigMap.put("type", "RegisterExemptionEmailTemplate");
         emailConfigMap.put("to", toList);

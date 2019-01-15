@@ -14,7 +14,6 @@ cas.server.prefix: ${server.name}/NdsBeisCas
 cas.adminPagesSecurity.ip=127\.0\.0\.1
 
 logging.config: file:D:/source/beis/NdsBeisCas/etc/cas/config/log4j2.xml
-# cas.serviceRegistry.config.location: classpath:/services
 
 ##
 # Single Sign-On Session
@@ -56,7 +55,7 @@ cas.webflow.refresh=true
 
 #
 # LDAP
-nds.authn.ldap[0].authenticationType=NDS_TENANT_DIRECT
+nds.authn.ldap[0].name=NdsLdapTenantAuthentication
 nds.authn.ldap[0].ldapUrl=ldap://vm-nds-tst02:1389
 nds.authn.ldap[0].useSsl=false
 nds.authn.ldap[0].useStartTls=false
@@ -120,3 +119,9 @@ nds.ticketRegistryMongo.password=
 nds.ticketRegistryMongo.databaseName=nds_db
 nds.ticketRegistryMongo.replicaset=none
 nds.ticketRegistryMongo.maxConnections=100
+
+#application phase TEST /LIVE
+nds.applicationPhase=TEST
+
+#Feedback email address
+nds.feedbackEmail = beis@northgateps.com

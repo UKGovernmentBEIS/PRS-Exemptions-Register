@@ -13,18 +13,18 @@ Scenario: Process exemption text details
 	Given I have not loaded a document
 	And I have not entered any text 
 	When I select Next
-	Then I will receive "Either a file must be loaded or details entered" as validation message
+	Then I will receive "You must either upload a file or enter details" as validation message
 	And I will remain on the personalised-exemption-text page	
 	
     #Select file of wrong type
      Given I select a file "testProperties.json" with an incorrect file type
-    Then I will receive "The file you are trying to upload is not an accepted format" as validation message
+    Then I will receive "You must upload a file that is one of the listed types" as validation message
     And the document "testProperties.json" is not listed as uploaded
     And I will remain on the personalised-exemption-text page
     
     #Select file that is too large
     Given I select a file "Spring in Action, 4th Edition.pdf" that is larger than the maximum size
-    Then I will receive "The file you are trying to upload exceeds the file size limit. Please try again" as validation message
+    Then I will receive "The file you are trying to upload exceeds the maximum size allowed" as validation message
     And the document "Spring in Action, 4th Edition.pdf" is not listed as uploaded
     And I will remain on the personalised-exemption-text page
     

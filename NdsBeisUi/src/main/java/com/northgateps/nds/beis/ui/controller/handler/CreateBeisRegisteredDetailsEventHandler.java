@@ -38,6 +38,10 @@ public class CreateBeisRegisteredDetailsEventHandler extends AbstractViewEventHa
 
         final UiServiceClient uiSvcClient = controllerState.getController().getUiSvcClientFactory().getInstance(
                 BeisRegistrationNdsResponse.class);
+        
+        // do not automatically retry on connection errors
+        uiSvcClient.setRetriesRemaining(0);
+        
         if (!controllerState.isSyncController()) {
             uiSvcClient.post(createBeisRegisteredUserDetailsServiceEndPoint, beisRegistrationNdsRequest);
         } else {

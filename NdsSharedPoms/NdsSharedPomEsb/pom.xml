@@ -5,13 +5,13 @@
 
 	<groupId>com.northgateps.beis.sharedpoms</groupId>
 	<artifactId>sharedpoms-esb</artifactId>
-	<version>0.0.1503</version>
+	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>com.northgateps.beis.sharedpoms</groupId>
 		<artifactId>sharedpoms</artifactId>
-		<version>0.0.1503</version>
+		<version>0.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -21,7 +21,7 @@
 		<maven.plugin.jar.version>2.6</maven.plugin.jar.version>
 		<maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
 		<javax.servlet.api.version>3.1.0</javax.servlet.api.version>
-	    <camel.version>2.19.1</camel.version>
+	    <camel.version>2.21.0</camel.version>
 		<generatetransformations.maven.plugin.version>0.0.0</generatetransformations.maven.plugin.version>
 	</properties>
 	

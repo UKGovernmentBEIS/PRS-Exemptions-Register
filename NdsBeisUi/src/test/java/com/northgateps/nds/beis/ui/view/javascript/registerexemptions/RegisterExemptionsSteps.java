@@ -15,8 +15,11 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchExemptionsP
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterExemptionsPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchExemptionsPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
+import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
+import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -39,30 +42,28 @@ public class RegisterExemptionsSteps extends AlternateUrlBaseSteps {
         testHelper.beforeScenario();
         testHelper.setScenarioWebDriver(webDriver);
         testHelper.openUrl(GetUrl("register-search-exemptions"));
-        registerSearchExemptionsPageHelper = new RegisterSearchExemptionsPageHelper(testHelper.getScenarioWebDriver());
+        registerSearchExemptionsPageHelper = new RegisterSearchExemptionsPageHelper(testHelper.getScenarioWebDriver()); 
         registerSearchExemptionsPageObject = registerSearchExemptionsPageHelper.getPageObject();
-
+   }
+    
+    @After
+    public void afterScenario() {
+        testHelper.afterScenario();
     }
 
     @Given("^I am on the register-search-exemptions page$")
-    public void i_am_on_the_register_search_exemptions_page() throws Throwable {
-        registerSearchExemptionsPageHelper = new RegisterSearchExemptionsPageHelper(
-                registerSearchExemptionsPageObject.getDriver());
+    public void i_am_on_the_register_search_exemptions_page() throws Throwable {       
         checkOnPage(registerSearchExemptionsPageHelper, "register-search-exemptions");
-
     }
 
     @When("^I select the property address$")
     public void i_select_the_property_address() throws Throwable {
-        registerSearchExemptionsPageHelper.fillInForm();
-        registerSearchExemptionsPageHelper.click_addresslink();
-   
+        registerSearchExemptionsPageHelper.skipPage();   
      }
 
     @When("^I select the landlord name$")
     public void i_select_the_landlord_name() throws Throwable {
-        registerSearchExemptionsPageHelper.fillInForm();
-        registerSearchExemptionsPageHelper.click_landlordname();
+        registerSearchExemptionsPageHelper.skipPageClickingLandlordName();
     }
 
     @Then("^I will be taken to the register-exemptions page$")
@@ -73,7 +74,7 @@ public class RegisterExemptionsSteps extends AlternateUrlBaseSteps {
     @Given("^I am on the register-exemptions page$")
     public void i_am_on_the_register_exemptions_page() throws Throwable {
         //visit target page
-        pageHelper = PageHelperFactory.visit(registerSearchExemptionsPageHelper, RegisterExemptionsPageHelper.class);
+        pageHelper = PageHelperFactory.visitNew(registerSearchExemptionsPageHelper, RegisterExemptionsPageHelper.class);
         checkOnPage(pageHelper, "register-exemptions");
         pageObject=pageHelper.getPageObject();
 
@@ -82,36 +83,27 @@ public class RegisterExemptionsSteps extends AlternateUrlBaseSteps {
     @When("^I select Back$")
     public void i_select_Back() throws Throwable {
         pageObject.clickBack();
-
     }
 
     @Then("^I will be taken to the register-search-exemptions page$")
     public void i_will_be_taken_to_the_register_search_exemptions_page() throws Throwable {
         checkOnPage(pageHelper, "register-search-exemptions");
-        
-
     }
 
     @Then("^the search results will be displayed$")
     public void the_search_results_will_be_displayed() throws Throwable {
-        String address1 = "Flat 1, Projection West, Merchants Place, READING, RG1 1ET";
-        String address2 = "Flat 19, Projection West, Merchants Place, READING, RG1 1ET";
-        String address3 = "Flat 5, Projection West, Merchants Place, READING, RG1 1ET";
-        String address4 = "Flat 2, Projection West, Merchants Place, READING, RG1 1ET";
-        String landlordname = "dummy";
+        String address1 = "Unit 1, Bracknell Beeches, Bracknell, Berkshire, RG12 7BW";
+        String address2 = "Unit 12/13, Bracknell Beeches, Bracknell, Berkshire, RG12 7BW";
+        String landlordname = "TestOrg";
         List<WebElement> addressCells = pageObject.getDriver().findElements(By.className("dgstandard"));
         assertTrue("check address1 is displayed",addressCells.get(0).getText().trim().contains(address1));
         assertTrue("check address2 is displayed",addressCells.get(0).getText().trim().contains(address2));
-        assertTrue("check address3 is displayed",addressCells.get(0).getText().trim().contains(address3));
-        assertTrue("check address4 is displayed",addressCells.get(0).getText().trim().contains(address4));
         assertTrue("check landlordname is displayed",addressCells.get(0).getText().trim().contains(landlordname));
         
     }
  
     @When("^I select 'New search'$")
     public void i_select_New_search() throws Throwable {
-        registerSearchExemptionsPageHelper = new RegisterSearchExemptionsPageHelper(
-                registerSearchExemptionsPageObject.getDriver());
         registerSearchExemptionsPageHelper.click_addresslink();
         pageObject.getDriver().findElement(By.id("button.next")).click();
     }   
@@ -161,6 +153,27 @@ public class RegisterExemptionsSteps extends AlternateUrlBaseSteps {
     public void i_will_be_taken_to_the_report_content_email_link_page() throws Throwable {
         assertTrue("check link contains mailto:",
                 pageObject.getWebElementAnchorContent().getAttribute("href").contains("mailto:"));
+    }
+    
+    @Given("^I am on the register-exemptions page with EPC available$")
+    public void i_am_on_the_register_exemptions_page_with_EPC_available() throws Throwable {           
+        registerSearchExemptionsPageHelper = new RegisterSearchExemptionsPageHelper(webDriver);
+        
+       //set a custom form filler for register-search-exemptions page
+       registerSearchExemptionsPageHelper.setFormFiller(new FormFiller() {
+            public void fill(BasePageHelper<?> pageHelper) {
+                ((RegisterSearchExemptionsPageHelper) pageHelper).fillInForm("RG1 1ET");
+            }
+       });
+        
+        try {
+            pageHelper = PageHelperFactory.visitNew(registerSearchExemptionsPageHelper, RegisterExemptionsPageHelper.class);
+            checkOnPage(pageHelper, "register-exemptions");
+            pageObject = pageHelper.getPageObject();
+
+        } finally {
+            PageHelperFactory.unregisterFormFiller("register-search-exemptions");
+        }
     }
 
 }

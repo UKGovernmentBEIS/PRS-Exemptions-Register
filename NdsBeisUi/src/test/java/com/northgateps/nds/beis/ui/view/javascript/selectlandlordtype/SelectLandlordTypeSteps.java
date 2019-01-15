@@ -3,9 +3,6 @@ package com.northgateps.nds.beis.ui.view.javascript.selectlandlordtype;
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.AccountDetailsPageHelper;

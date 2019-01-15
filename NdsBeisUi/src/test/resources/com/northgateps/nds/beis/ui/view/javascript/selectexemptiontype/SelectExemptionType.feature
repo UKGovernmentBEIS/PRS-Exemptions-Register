@@ -11,7 +11,7 @@ Scenario: Select exemption type
 	
 	Given I have not entered any data
 	When I select Next
-	Then I will receive the message "What type of exemption are you registering must be selected"
+	Then I will receive the message "You must choose an option for What type of exemption are you registering"
 	And I will remain on the 'personalised-select-exemption-type' page
 	
 	Given I have selected an exemption type

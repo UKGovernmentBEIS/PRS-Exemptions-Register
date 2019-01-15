@@ -27,8 +27,8 @@ Scenario: Process email address
 	And I have supplied an invalid confirm email address
 	And I have supplied an invalid password
 	When I select Submit email address change
-	Then I will receive the message "New email address must be a valid email address"
-	And I will receive the message "Confirm new email address must be a valid email address"
+	Then I will receive the message "You must enter a valid email address in New email address"
+	And I will receive the message "You must enter a valid email address in Confirm new email address"
 	And I will remain on the personalised-change-email-address page
 #Unconfirmed email address
 	Given I have supplied a new email address

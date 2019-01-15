@@ -6,13 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsRequest;
 import com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.DirectoryServices;
 import com.northgateps.nds.platform.esb.directory.ServiceAccessDetails;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.esb.exception.NdsBusinessException;
@@ -23,9 +21,9 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
 /**
  * Uses the username and tenant information to lookup the user's unique account id and user details such as name,address,email address
  */
-public class RegisterPrsExemptionLookupIdAdapter extends NdsDirectoryAdapter<RegisterPrsExemptionNdsRequest, RegisterPrsExemptionNdsResponse> {
+public class RegisterPrsExemptionLookupIdComponent extends NdsDirectoryComponent<RegisterPrsExemptionNdsRequest, RegisterPrsExemptionNdsResponse> {
     
-    private static final NdsLogger logger = NdsLogger.getLogger(RegisterPrsExemptionLookupIdAdapter.class);
+    private static final NdsLogger logger = NdsLogger.getLogger(RegisterPrsExemptionLookupIdComponent.class);
     final ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
 
     public static String EMAIL_ADDRESS = "email";
@@ -33,16 +31,17 @@ public class RegisterPrsExemptionLookupIdAdapter extends NdsDirectoryAdapter<Reg
     public static String AGENT_ADDRESS = "agentAddress";
 
     @Override
-    protected void doRequestProcess(RegisterPrsExemptionNdsRequest request, DirectoryConnection directoryConnection,
+    protected void doProcess(RegisterPrsExemptionNdsRequest request, DirectoryAccessConnection directoryConnection,
             NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
                     throws NdsApplicationException, NdsBusinessException, DirectoryException {
+        
         logger.info(" Started setting account id in request and user details in exchange ");
         ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
 
         String serviceName = configurationManager.getString("service.foundationLayerPartyService.name");
         String userDn = getUserDn(configurationManager, request.getUserName(), request.getTenant());
 
-        ServiceAccessDetails serviceAccessDetails = UserServices.serviceLookup(directoryConnection, userDn, serviceName,
+        ServiceAccessDetails serviceAccessDetails = getUserManager().serviceLookup(directoryConnection, userDn, serviceName,
                 true, true, false);
 
         // Check the user id as we have a temporary issue where the uid is
@@ -56,7 +55,7 @@ public class RegisterPrsExemptionLookupIdAdapter extends NdsDirectoryAdapter<Reg
 
         // get the account id, set it in the request and set the request in the exchange
         request.setAccountId(serviceAccessDetails.getUserId());
-        Map<String, String> userAttributesMap = DirectoryServices.retrieveEntryAttributes(directoryConnection, userDn,
+        Map<String, String> userAttributesMap = getDirectoryManager().retrieveEntryAttributes(directoryConnection, userDn,
                 "*");
 
         getUserdetails(userAttributesMap, ndsExchange);

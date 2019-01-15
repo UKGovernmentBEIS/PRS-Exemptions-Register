@@ -11,15 +11,16 @@ import com.northgateps.nds.platform.test.configuration.PlatformCamelSecurityTest
 public class CamelSecurityTest extends PlatformCamelSecurityTest {
 
     /** 
-     * List of routes by their ID that are exempt from requiring a <policy> tag.
-     * Do not add to this list if you can at all help it.
+     * List of schemes of From uris in routes that are therefore exempt from requiring a <policy> tag because
+     * they either are not run in the context of a user, or they are subroutes of a route that is either
+     * verified as having a <policy> tag or is itself exempt.
+     * 
      * @See PlatformCamelSecurityTest for more details.
      */
     {
-        exceptionIds.add("testRouteForIncomingMsg");  // Test route for PE-41 will go away once Connect will send us response for a Incident
-        exceptionIds.add("receivedIncidentUpdateRoute");  // started from ActiveMQ
-        exceptionIds.add("purgeDocumentRoute");  // started from Camel timer
-        exceptionIds.add("PurgeBatchJobRoute");  // started from Camel timer
+        registerOmissionScheme("direct");   // (subRoutes)
+        registerOmissionScheme("activemq"); // (routes started by connect messages)
+        registerOmissionScheme("timer");    // (routes started by scheduler)
     }
     
     @Test

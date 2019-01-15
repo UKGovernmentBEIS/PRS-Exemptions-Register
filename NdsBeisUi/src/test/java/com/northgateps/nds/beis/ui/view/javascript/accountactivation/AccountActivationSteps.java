@@ -1,7 +1,6 @@
 package com.northgateps.nds.beis.ui.view.javascript.accountactivation;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
-import static org.junit.Assert.assertEquals;
 
 import org.openqa.selenium.WebDriver;
 
@@ -11,7 +10,6 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.AccountActivationPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.LoginPageObject;
-import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;
@@ -98,8 +96,7 @@ public class AccountActivationSteps {
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String message) throws Throwable {
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());    
-        assertEquals("check message",message,pageHelper.getFirstSummaryFaultMessage());
+        pageHelper.waitUntilValidationMessageSeen(message);
     }
 
     @Then("^I will remain on the account activation page$")

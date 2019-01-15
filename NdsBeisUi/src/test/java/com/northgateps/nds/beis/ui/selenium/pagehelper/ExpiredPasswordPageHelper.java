@@ -15,10 +15,10 @@ import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
 public class ExpiredPasswordPageHelper extends BasePageHelper<ExpiredPasswordPageObject> implements PageHelper {
 
     /** A possible password to use.  If using this as the old password then PASSWORD_2 will be the new password. */
-    private static final String PASSWORD_1 = "password123$%^";
+    private static final String PASSWORD_1 = "Password123$%^";
     
     /** A possible password to use.  If using this as the old password then PASSWORD_1 will be the new password. */
-    private static final String PASSWORD_2 = "password123|||";
+    private static final String PASSWORD_2 = "pAssword123|||";
 
     /** Set when we know which password was used on the login page (either PASSWORD_1 or PASSWORD_2). */
     private static String oldPassword;

@@ -21,7 +21,7 @@ import com.northgateps.nds.platform.application.api.validation.AbstractValidatab
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ExemptionSearch", propOrder = { "penaltyPostcodesCriteria", "penaltyLandlordsNameCriteria", "rentalPropertyDetails" ,"town",
-        "propertyType","penaltyType_PRSD","penaltyType_PRSN","languageCode","panelDisplayed"})
+        "propertyType", "penaltyType_PRSD", "penaltyType_PRSN", "languageCode", "panelDisplayed", "penaltyRefNo"})
 public class PenaltySearch extends AbstractValidatableModel{
     
     @StringLengthFieldMetadata(minLength =2,invalidMessage = "Validation_Field_must_be_a_valid_publicenquirysearch",validator = PublicEnquirySearchValidator.class,dependencies = {
@@ -82,6 +82,8 @@ public class PenaltySearch extends AbstractValidatableModel{
     private String languageCode;
     
     private boolean panelDisplayed;
+    
+    private String penaltyRefNo;
 
     public boolean isPanelDisplayed() {
         return panelDisplayed;
@@ -168,6 +170,14 @@ public class PenaltySearch extends AbstractValidatableModel{
     
     public void setPenaltyType_PRSN(String penaltyType_PRSN) {
         this.penaltyType_PRSN = penaltyType_PRSN;
+    }
+    
+    public String getPenaltyRefNo() {
+        return penaltyRefNo;
+    }
+
+    public void setPenaltyRefNo(String penaltyRefNo) {
+        this.penaltyRefNo = penaltyRefNo;
     }
     
   //if any advance search is done then return true so that advance search fields are displayed

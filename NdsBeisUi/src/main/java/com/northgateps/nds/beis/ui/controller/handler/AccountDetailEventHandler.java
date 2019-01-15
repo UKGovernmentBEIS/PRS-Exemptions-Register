@@ -24,7 +24,7 @@ public class AccountDetailEventHandler extends AbstractViewEventHandler {
         final UiData uiData = (UiData) model.getUiData();
         if(uiData.getRegistrationStatus() == RegistrationStatusType.FOUND_PARTIALLY_REGISTERED){
            if(model.getBeisRegistrationDetails().getUserDetails().getUserType() == UserType.AGENT){
-               if(model.getBeisRegistrationDetails().getAccountDetails().getOrganisationNameDetail().getOrgName() !=null){
+               if(model.getBeisRegistrationDetails().getAccountDetails().getOrganisationNameDetail() !=null  &&  model.getBeisRegistrationDetails().getAccountDetails().getOrganisationNameDetail().getOrgName() !=null){
                    AgentNameDetails agentNameDetails = new AgentNameDetails();
                    agentNameDetails.setAgentName(model.getBeisRegistrationDetails().getAccountDetails().getOrganisationNameDetail().getOrgName());
                    model.getBeisRegistrationDetails().getAccountDetails().setAgentNameDetails(agentNameDetails);

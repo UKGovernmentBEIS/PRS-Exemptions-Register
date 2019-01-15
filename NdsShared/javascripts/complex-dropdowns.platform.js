@@ -1,3 +1,5 @@
+"use strict";
+
 // Complex multi-level drop down selector. The <option> elements of <select> controls can have dependencies associated with them
 // such that they are only shown when conditions hold for other fields. 
 (function() {

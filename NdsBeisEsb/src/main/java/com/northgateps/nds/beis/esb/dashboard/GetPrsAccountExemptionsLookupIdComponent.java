@@ -2,7 +2,7 @@ package com.northgateps.nds.beis.esb.dashboard;
 
 import com.northgateps.nds.beis.api.dashboard.GetPRSAccountExemptionsNdsRequest;
 import com.northgateps.nds.beis.api.dashboard.GetPRSAccountExemptionsNdsResponse;
-import com.northgateps.nds.beis.esb.registration.RetrieveAccountIdLdapAdapter;
+import com.northgateps.nds.beis.esb.registration.RetrieveAccountIdLdapComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
@@ -12,10 +12,10 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  * that does all the work
  * 
  */
-public class GetPrsAccountExemptionsLookupIdAdapter extends RetrieveAccountIdLdapAdapter<GetPRSAccountExemptionsNdsRequest, GetPRSAccountExemptionsNdsResponse> {
+public class GetPrsAccountExemptionsLookupIdComponent extends RetrieveAccountIdLdapComponent<GetPRSAccountExemptionsNdsRequest, GetPRSAccountExemptionsNdsResponse> {
 
 	@SuppressWarnings("unused")
-	private static final NdsLogger logger = NdsLogger.getLogger(GetPrsAccountExemptionsLookupIdAdapter.class);
+	private static final NdsLogger logger = NdsLogger.getLogger(GetPrsAccountExemptionsLookupIdComponent.class);
 
 	@Override
 	protected String getUsername(GetPRSAccountExemptionsNdsRequest request) {

@@ -11,7 +11,7 @@ import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
  * Class to retrieve the party ref from ldap when saving registered account details
  *
  */
-public class SaveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter extends RetrieveAccountIdLdapAdapter<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
+public class SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent extends RetrieveAccountIdLdapComponent<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
                     
     /**
      * Return success on the response as the LDAP request must have worked.

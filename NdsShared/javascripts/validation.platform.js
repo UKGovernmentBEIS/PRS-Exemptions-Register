@@ -1,3 +1,5 @@
+"use strict";
+
 // When JS is available, the validation can stop the language switch submit. ForceSubmit overrides
 $('[formnovalidate]').click(function() { 
     $('#pageForm')[0].forceSubmit = true; 
@@ -65,8 +67,139 @@ $('input[type=\"number\"]').attr('type', 'text');
                 $('#pageForm')[0].blurset[controlName] =  $('#pageForm')[0].blurset[controlName] || [];
                 $('#pageForm')[0].blurset[controlName].push(fn);
             };
+            
+            var dependencyEvaluate = function(fieldDependency) {
+                var match = true;
+                var found = false;
+                var anyRadioButtonChecked = false;
+                var isRadio = false;                
+                if (fieldDependency.type === "anyOf") {
+                    $.each(fieldDependency.parts, function() {
+                       if (dependencyEvaluate(this)) {
+                           return false;
+                       } 
+                    });
+                } else if (fieldDependency.type === "allOf") {
+                    $.each(fieldDependency.parts, function() {
+                        if (! dependencyEvaluate(this)) {
+                            match = false;
+                            return false;
+                        } 
+                    });
+                } else { 
+                    $("[name='" + fieldDependency.path + "']").each(function() {
+                        found = true;
+                        if (this.type === "radio") {
+                            isRadio = true;
+                            if (this.checked) {
+                                anyRadioButtonChecked = true;
+                            } else {
+                                return true;
+                            }
+                        }
+                        if (fieldDependency.comparator === "contains") {
+                            if (fieldDependency.values.indexOf(this.value) === -1) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "notContains") {
+                            if (fieldDependency.values.indexOf(this.value) !== -1) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "lessThan") {
+                            if (! (this.value < fieldDependency.values[0])) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "lessThanOrEqual") {
+                            if (! (this.value <= fieldDependency.values[0])) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "greaterThan") {
+                            if (! (this.value > fieldDependency.values[0])) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "greaterThanOrEqual") {
+                            if (! (this.value >= fieldDependency.values[0])) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "empty") {
+                            if (! (this.value.length === 0)) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "notEmpty") {
+                            if (! (this.value.length > 0)) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "sameAs") {
+                            if (! (this.value === target.value)) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "notSameAs") {
+                            if (! (this.value !== target.value)) {
+                                match = false;
+                                return false;
+                            }
+                        } else if (fieldDependency.comparator === "compareField") {
+                        } else if (fieldDependency.comparator === "listContainsAny") {
+                            if (! (this.value instanceof Array)) {
+                                match = false;
+                                return false;
+                            }
+                            var intersect = false;
+                            for (var i = 0, len = this.value.length ; i < len ; i++) {
+                                if (fieldDependency.values.indexOf(this.value[i]) > -1) {
+                                    intersect = true;
+                                    break;
+                                }
+                            }
+                            if (! intersect) {
+                                match = false;
+                                return false;
+                            }
+                        }
+                    });
+                    if ((!found) && process.initialDependenciesState) {
+                        $.each(process.initialDependenciesState, function() { 
+                            var dependenciesState = this;
+                            if (dependenciesState.path === fieldDependency.path) {
+                                match = dependenciesState.applies;
+                                return false;
+                            }
+                        });
+                    }
+                }
+                
+                if (isRadio && !anyRadioButtonChecked) {
+                    return false;
+                }
+                
+                return match;
+            };
+            
+            var dependenciesHold = function(process, target) {
+                var match = true;
+                if (process.fieldDependencies) {
+                    $.each(process.fieldDependencies, function() {
+                        if (! dependencyEvaluate(this)) {
+                            match = false;
+                            return false;
+                        };
+                    });
+                }
+                return match;
+            };
 
+            //*************************************************************
             // This is the core of the formatting and validation process
+            //*************************************************************
             var doValidation = function(event, process, onNoMatch) {
                 // First deal with radio buttons
                 var lst = $('[name = "' + process.controlName + '"]:checked');
@@ -91,7 +224,9 @@ $('input[type=\"number\"]').attr('type', 'text');
                             // If this is a formatter process, and there is no radio button "stand in"
                             // then just apply the formatter to the value of the control
                             target = $('[name = "' + process.controlName + '"]')[0]; 
-                            process.fn.call(target); 
+                            if (process.fn) {
+                                process.fn.call(target); 
+                            }
                         }
                         return;
                     }
@@ -126,7 +261,13 @@ $('input[type=\"number\"]').attr('type', 'text');
                 for (var propertyName in process.dataProperties) {
                     target.dataProperties[propertyName] = process.dataProperties[propertyName];
                 }
-                var cmp = process.fn.call(target);
+                var cmp = true;
+                if (dependenciesHold(process, target)) {
+                    if (process.fn) {
+                        //**** Call the validator ****
+                        cmp = process.fn.call(target);
+                    }
+                }    
                 // restore the controls dataProperties
                 target.dataProperties = baseDataProperties;
                 if ((typeof cmp === "object") && (cmp !== null)) {
@@ -170,14 +311,15 @@ $('input[type=\"number\"]').attr('type', 'text');
                         }
                         return msg;
                     };
+                    var kindClasses = field.closest(".item-group").attr("class");
                     var invalidMsg = propertySubstitute(process["invalidMsg" + (violationProperties.variant || '')], violationProperties);
                     var faultMsg = propertySubstitute(process["faultMsg" + (violationProperties.variant || '')], violationProperties);
                     if (process.replace) {
                         invalidContainerField.find('.invalid' + process.invalidClassQualifier).html('<span class="error-message">' + invalidMsg + '</span>');
-                        fault.html('<span><a href="#' + field[0].id + '" data-validator="'+ process.validatorType +'">' + faultMsg + '</a></span>'); 
+                        fault.html('<span class="' + kindClasses + '"><a href="#' + field[0].id + '" data-validator="'+ process.validatorType +'">' + faultMsg + '</a></span>'); 
                     } else {
                         invalidContainerField.find('.invalid' + process.invalidClassQualifier).append('<span class="error-message">' + invalidMsg + '</span>');
-                        fault.append('<span><a href="#' + field[0].id + '" data-validator="'+ process.validatorType +'">' + faultMsg + '</a></span>'); 
+                        fault.append('<span class="' + kindClasses + '"><a href="#' + field[0].id + '" data-validator="'+ process.validatorType +'">' + faultMsg + '</a></span>'); 
                     }
                     $("a[href='#" + field[0].id + "']").on("click", function() {
                         try {
@@ -225,21 +367,25 @@ $('input[type=\"number\"]').attr('type', 'text');
                 
                 // Add the current format or validation to the preBlur phase 
                 addPreBlur(controlName, function() {
-                	// Stickies are error messages that are only cleared when the page is refreshed, not by validation.
-                	var anyStickies = false;
-                	                	                    
+                    // Stickies are error messages that are only cleared when the page is refreshed, not by validation.
+                    var anyStickies = false;
+                    //Don't clear message if onBlur event not present
+                    if (! process.fn) {
+                        return;
+                    }
                     // Remove the text from the "invalid" div underneath the control
                     var clear = function(process) {
+
                         var invalidContainerField = masterField;
                         while (invalidContainerField[0].attributes['data-invalid-id']) {
                             invalidContainerField = $("[id='" + invalidContainerField[0].getAttribute('data-invalid-id') + "']");
                         }
                         
                         if (invalidContainerField.find('.invalid' + process.invalidClassQualifier + " span.sticky-error").length > 0){
-                        	anyStickies = true;
-                        	invalidContainerField.find('.invalid' + process.invalidClassQualifier + " span").not(".sticky-error").remove();
+                            anyStickies = true;
+                            invalidContainerField.find('.invalid' + process.invalidClassQualifier + " span").not(".sticky-error").remove();
                         } else {
-                        	invalidContainerField.find('.invalid' + process.invalidClassQualifier).html('');
+                            invalidContainerField.find('.invalid' + process.invalidClassQualifier).html('');
                         }                            
                         
                         if (process.chained) {
@@ -251,35 +397,34 @@ $('input[type=\"number\"]').attr('type', 'text');
                     clear(process);
                                         
                     if (anyStickies) {
-                    	
-                    	// Remove the text from the fault summary at the top of the web page for non stickies                	
-                    	var fault = $("[id='" + control[0].getAttribute('data-fault-id') + "'] span").not(".sticky-error");                        
-                    	fault.html('');
-                    	fault.attr('hidden', 'hidden');                        
+
+                        // Remove the text from the fault summary at the top of the web page for non stickies                    
+                        var fault = $("[id='" + control[0].getAttribute('data-fault-id') + "'] span").not(".sticky-error");                        
+                        fault.html('');
+                        fault.attr('hidden', 'hidden');                        
                         fault = $("[id='" + masterField[0].getAttribute('data-fault-id') + "'] span").not(".sticky-error"); 
                         fault.html('');
-                    	fault.attr('hidden', 'hidden');
+                        fault.attr('hidden', 'hidden');
                         fault = $("[id='" + masterControl.getAttribute('data-fault-id') + "'] span").not(".sticky-error"); 
                         fault.html('');
-                    	fault.attr('hidden', 'hidden');  
-                    	    
+                        fault.attr('hidden', 'hidden');  
+
                     } else {
-                    	//remove the field violation
-                    	masterField.removeClass('violation error');
-	                    masterField.removeClass(process.className);
-	                    
-                    	// Remove the text from the fault summary at the top of the web page
-                    	var fault = $("[id='" + control[0].getAttribute('data-fault-id') + "']");                        
-                    	fault.html('');
-                    	fault.attr('hidden', 'hidden');                        
+                        //remove the field violation
+                        masterField.removeClass('violation error');
+                        masterField.removeClass(process.className);
+                        
+                        // Remove the text from the fault summary at the top of the web page
+                        var fault = $("[id='" + control[0].getAttribute('data-fault-id') + "']");                        
+                        fault.html('');
+                        fault.attr('hidden', 'hidden');                        
                         fault = $("[id='" + masterField[0].getAttribute('data-fault-id') + "']"); 
                         fault.html('');
-                    	fault.attr('hidden', 'hidden');
+                        fault.attr('hidden', 'hidden');
                         fault = $("[id='" + masterControl.getAttribute('data-fault-id') + "']"); 
                         fault.html('');
-                    	fault.attr('hidden', 'hidden');
+                        fault.attr('hidden', 'hidden');
                     }
-                               	
                     
                 });
                 
@@ -315,7 +460,7 @@ $('input[type=\"number\"]').attr('type', 'text');
         // Re-initialise the fault summary block to just the general prompt
         var fault = $('.fault'); 
         if ($('.fault > div').length === 0) { 
-        	fault.html('<div class="error-summary" role="group" hidden tabindex="-1"><h1 class="heading-medium error-summary-heading">' + $('#i18n-please-check-the-form')[0].content + '</h2><ul class="error-summary-list"></ul></div>');
+            fault.html('<div class="error-summary" role="group" hidden tabindex="-1"><h1 class="heading-medium error-summary-heading">' + $('#i18n-please-check-the-form')[0].content + '</h2><ul class="error-summary-list"></ul></div>');
         }
 
         // loop over every control on the page, and initialise it formatters and validators
@@ -452,6 +597,10 @@ $('input[type=\"number\"]').attr('type', 'text');
             
             /* provide a hook for external scripts to clean up validation messages */
             $('form').trigger("validation:afterBlockedSubmit");
+            
+            $('html, body').animate({
+                scrollTop: $('.violation').offset().top
+            }, 2000);
         } else {
             $('form').trigger("validation:doSubmit");
         }
@@ -467,17 +616,17 @@ $('input[type=\"number\"]').attr('type', 'text');
  * @returns
  */
 function displayErrorMessage(path, inlineMessage, message) {
-	
-	var idSelector = "#" + pathToIdSelector(path + ".field");
-		
-	$(idSelector).addClass('error');
-	
-	var field = $(idSelector + ', ' + idSelector + '> fieldset');
-	field.children('.invalid').append("<span class='error-message'>" + inlineMessage + "</span>");
-	
-	$(".fault .error-summary").removeAttr('hidden');
-	
-	$(".fault ul").append("<li id='" + path + ".fault'><span><a data-href='#" + path + ".field'>" + message + "</a></span></li>");		
+
+    var idSelector = "#" + pathToIdSelector(path + ".field");
+
+    $(idSelector).addClass('error');
+
+    var field = $(idSelector + ', ' + idSelector + '> fieldset');
+    field.children('.invalid').append("<span class='error-message'>" + inlineMessage + "</span>");
+
+    $(".fault .error-summary").removeAttr('hidden');
+
+    $(".fault ul").append("<li id='" + path + ".fault'><span><a data-href='#" + path + ".field'>" + message + "</a></span></li>");
 }
 
 /**
@@ -487,45 +636,45 @@ function displayErrorMessage(path, inlineMessage, message) {
  * @returns
  */
 function clearErrorMessage(path, clearStickies) {
-	
-	var idSelector = "#" + pathToIdSelector(path + ".field");
-			
-	// check if any stickies if interested and clear inline
-	var anyStickies = false;
-	
-	var field = $(idSelector + ', ' + idSelector + '> fieldset');
-		
-	if (!clearStickies) {
-		 if (field.children('.invalid').children('span.sticky-error').length > 0){
-         	anyStickies = true;
-		 }
-		 
-		 field.children('.invalid').children('span').not(".sticky-error").remove();
-	} else {
-		field.children('.invalid').children('span').remove();
-	}		
-	 
-	if (!anyStickies) {
-		$(idSelector).removeClass('error');
-	}
-	
-	//clear the top errors
-	idSelector = "#" + pathToIdSelector(path + ".fault");
-		
-	if (clearStickies) {
-		$(".fault " + idSelector + " span").remove();
-	} else {
-		$(".fault " + idSelector + " span").not(".sticky-error").remove();
-	}
-	
-	if ($(".fault " + idSelector + " span").length == 0 ) {
-		$(".fault " + idSelector).remove();		
-	}
-	
-	// hide the error summary box
-	if ($(".fault li span").length == 0 ) {
-		$(".fault .error-summary").attr('hidden', 'hidden');
-	}
+
+    var idSelector = "#" + pathToIdSelector(path + ".field");
+
+    // check if any stickies if interested and clear inline
+    var anyStickies = false;
+
+    var field = $(idSelector + ', ' + idSelector + '> fieldset');
+
+    if (!clearStickies) {
+         if (field.children('.invalid').children('span.sticky-error').length > 0){
+             anyStickies = true;
+         }
+
+         field.children('.invalid').children('span').not(".sticky-error").remove();
+    } else {
+        field.children('.invalid').children('span').remove();
+    }
+
+    if (! anyStickies) {
+        $(idSelector).removeClass('error');
+    }
+
+    //clear the top errors
+    idSelector = "#" + pathToIdSelector(path + ".fault");
+
+    if (clearStickies) {
+        $(".fault " + idSelector + " span").remove();
+    } else {
+        $(".fault " + idSelector + " span").not(".sticky-error").remove();
+    }
+
+    if ($(".fault " + idSelector + " span").length == 0 ) {
+        $(".fault " + idSelector).remove();
+    }
+
+    // hide the error summary box
+    if ($(".fault li span").length == 0 ) {
+        $(".fault .error-summary").attr('hidden', 'hidden');
+    }
 }
 
 /***
@@ -534,5 +683,5 @@ function clearErrorMessage(path, clearStickies) {
  * @returns the safe path 
  */
 function pathToIdSelector(path){
-	return path.replace("/\[/g", "").replace("/\]/g", "").replace("/'/g", "").replace(/\./g, "\\.").replace("/\$/g", "\\$");;
+    return path.replace("/\[/g", "").replace("/\]/g", "").replace("/'/g", "").replace(/\./g, "\\.").replace("/\$/g", "\\$");;
 }

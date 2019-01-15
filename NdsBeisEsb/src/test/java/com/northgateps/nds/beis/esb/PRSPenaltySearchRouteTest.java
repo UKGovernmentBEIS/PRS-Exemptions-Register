@@ -19,8 +19,7 @@ import com.northgateps.nds.beis.api.PenaltySearch;
 import com.northgateps.nds.beis.backoffice.service.prspenaltysearch.PRSPenaltySearchResponse;
 import com.northgateps.nds.beis.backoffice.service.prspenaltysearch.PRSPenaltySearchResponse.Penalties;
 import com.northgateps.nds.beis.backoffice.service.prspenaltysearch.PRSPenaltySearchResponse.Penalties.Penalty;
-import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
-import com.northgateps.nds.platform.esb.security.MockAuthentication;
+
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -44,12 +43,7 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
     @Override
     protected AbstractApplicationContext createApplicationContext() {
 
-        // grant test role based security access
-        MockAuthentication.setMockAuthentication("ROLE_BEIS_UI");
-
-        return new NdsFileSystemXmlApplicationContext(
-                new String[] { "src/main/webapp/WEB-INF/applicationContext-security.xml",
-                        "src/main/webapp/WEB-INF/beis-camel-context.xml" });
+      return RouteTestUtils.createApplicationContext(routeNameUnderTest);
     }
 
     private static final String MOCK_BEIS_REQUEST_CHECK = "mock:beis";
@@ -103,6 +97,16 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
         PenaltySearch penaltySearch = new PenaltySearch();
         penaltySearch.setPropertyType("PRSD");
         penaltySearch.setPenaltyType_PRSD("SUBLESS3");
+        prsPenaltySearchNdsRequest.setPenaltySearch(penaltySearch);
+        successPathPenaltySearch(prsPenaltySearchNdsRequest);
+
+    }
+    
+    @Test
+    public void successPathTestPenaltyRefNo() throws Exception {
+        PRSPenaltySearchNdsRequest prsPenaltySearchNdsRequest = new PRSPenaltySearchNdsRequest();
+        PenaltySearch penaltySearch = new PenaltySearch();
+        penaltySearch.setPenaltyRefNo("12");
         prsPenaltySearchNdsRequest.setPenaltySearch(penaltySearch);
         successPathPenaltySearch(prsPenaltySearchNdsRequest);
 
@@ -211,6 +215,44 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
 
         assertTrue(response.isSuccess());
         assertNotNull(response.getGetPenaltySearchResponseDetail());
+        assertMockEndpointsSatisfied();
+
+    }
+
+    public void successPathPenaltySearchPenaltyRefNo(PRSPenaltySearchNdsRequest prsPenaltySearchNdsRequest) throws Exception {
+        LOGGER.info("Starting success path test");
+        LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSPenaltySearchEndpoint}}")
+                + " to run unit tests");
+        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+                weaveAddLast().to(MOCK_BEIS_RESPONSE_CHECK);
+                replaceFromWith("direct:start");
+
+                interceptSendToEndpoint(SKIP_EndPoint).skipSendToOriginalEndpoint().to(MOCK_BEIS_REQUEST_CHECK).process(
+                        new Processor() {
+
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+
+                        PRSPenaltySearchResponse appResponse = createPRSPenaltySearchResponse();
+
+                        exchange.getIn().setBody(appResponse);
+                    }
+                });
+
+            }
+        });
+
+        context.start();
+        PRSPenaltySearchNdsResponse response = (PRSPenaltySearchNdsResponse) apiEndpoint.requestBody(
+                prsPenaltySearchNdsRequest);
+
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getGetPenaltySearchResponseDetail());
+        assertEquals("Penalty search response size should be one", Integer.parseInt("1"),
+                response.getGetPenaltySearchResponseDetail().getPenalties().size());  
         assertMockEndpointsSatisfied();
 
     }

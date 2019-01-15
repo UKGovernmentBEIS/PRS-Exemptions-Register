@@ -2,6 +2,7 @@ package com.northgateps.nds.beis.ui.controller.handler;
 
 import org.codehaus.plexus.util.StringUtils;
 
+import com.northgateps.nds.beis.api.PropertyType;
 import com.northgateps.nds.beis.ui.model.BeisAllModel;
 import com.northgateps.nds.beis.ui.model.UiData;
 import com.northgateps.nds.platform.api.NdsResponse;
@@ -32,10 +33,19 @@ public class ReferenceNumberGenerationEventHandler extends AbstractViewEventHand
         final BeisAllModel model = (BeisAllModel) allModel;
         // To reset the value if user change the exemption type --Start
         final UiData uiData = (UiData) model.getUiData();
+        
+        String selectedExemptionType = model.getExemptionDetails().getExemptionType();
+        PropertyType selectedpropertyType = model.getExemptionDetails().getPropertyType();
+        
         if (StringUtils.isNotEmpty(uiData.getSelectedExemptionType())
                 && !uiData.getSelectedExemptionType().equals(model.getExemptionDetails().getExemptionType())) {
+            
+            //clear the details and again set the selected exemption type and property type
             model.getExemptionDetails().reset();
             ((UiData) model.getUiData()).reset(controllerState);
+            model.getExemptionDetails().setExemptionType(selectedExemptionType);
+            model.getExemptionDetails().setPropertyType(selectedpropertyType); 
+            
         }
         uiData.setSelectedExemptionType(model.getExemptionDetails().getExemptionType());
         // End

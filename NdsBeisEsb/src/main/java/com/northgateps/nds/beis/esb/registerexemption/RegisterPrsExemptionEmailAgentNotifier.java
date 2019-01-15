@@ -36,8 +36,8 @@ public class RegisterPrsExemptionEmailAgentNotifier
 
         // set parameters for agent exemption registration email
         emailConfigMap.put("type", "RegisterAgentExemptionEmailTemplate");
-        emailConfigMap.put("agentName", ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdAdapter.AGENT_NAME));
-        emailConfigMap.put("agentAddress",ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdAdapter.AGENT_ADDRESS));
+        emailConfigMap.put("agentName", ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdComponent.AGENT_NAME));
+        emailConfigMap.put("agentAddress",ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdComponent.AGENT_ADDRESS));
         emailConfigMap.put("maxValueForExemptionType", "£" + request.getMaxPenaltyValue());
         emailConfigMap.put("to",request.getRegisterPrsExemptionDetails().getExemptionDetails().getLandlordDetails().getEmailAddress());
         emailConfigMap.put("exemptionReference",request.getRegisterPrsExemptionDetails().getExemptionDetails().getReferenceId());

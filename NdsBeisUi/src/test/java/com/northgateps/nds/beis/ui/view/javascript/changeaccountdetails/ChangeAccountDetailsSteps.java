@@ -15,7 +15,6 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedDashboardPage
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedAccountSummaryPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedChangeAccountDetailsPageObject;
-import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 import cucumber.api.java.After;
@@ -119,8 +118,7 @@ public class ChangeAccountDetailsSteps {
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String validationMessage) throws Throwable {
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());    
-        assertEquals("Check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
+        pageHelper.waitUntilValidationMessageSeen(validationMessage);
     }
 
     @Then("^I will remain on the personalised-change-account-details page$")
@@ -248,5 +246,11 @@ public class ChangeAccountDetailsSteps {
     @Given("^I have not supplied Agent name$")
     public void i_have_not_supplied_Agent_name() throws Throwable {
         pageObject.setTextNdsInputAgentName("");
+    }
+    
+    @When("^I click Submit$")
+    public void i_click_Submit() throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
+        pageObject.clickButtonOrg_NEXT();
     }
 }

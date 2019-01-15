@@ -1,6 +1,8 @@
 package com.northgateps.nds.beis.esb.getreferencevalues;
 
 import java.util.ArrayList;
+
+import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,9 +11,11 @@ import com.northgateps.nds.beis.api.getreferencevalues.GetReferenceValuesNdsResp
 import com.northgateps.nds.beis.api.getreferencevalues.ReferenceValuesDetails;
 import com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferenceValues;
 import com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferenceValuesResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsFilterSoapAdapter;
+import com.northgateps.nds.platform.esb.adapter.BackupCacheableAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxyImpl;
+import com.northgateps.nds.platform.esb.camel.CacheKeyGenerator;
+import com.northgateps.nds.platform.esb.camel.NdsCacheHandlerParser;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
@@ -19,7 +23,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  * Processes the request to and from the Get Reference Values service
  */
 public class GetReferenceValuesAdapter extends
-        NdsFilterSoapAdapter<GetReferenceValuesNdsRequest, GetReferenceValuesNdsResponse, GetReferenceValues, GetReferenceValuesResponse> {
+		BackupCacheableAdapter<GetReferenceValuesNdsRequest, GetReferenceValuesNdsResponse, GetReferenceValues, GetReferenceValuesResponse> 
+		implements CacheKeyGenerator {
 
     private static final NdsLogger logger = NdsLogger.getLogger(GetReferenceValuesAdapter.class);
 
@@ -139,5 +144,10 @@ public class GetReferenceValuesAdapter extends
         }
         
         return true;
+    }
+    
+    @Override
+    public void getCacheKey(Exchange exchange) {
+        exchange.getIn().setHeader(NdsCacheHandlerParser.CACHE_KEY_INDEX, this.getClass().getName());        
     }
 }

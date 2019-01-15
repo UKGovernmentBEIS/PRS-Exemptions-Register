@@ -19,7 +19,7 @@
  	<http>
  	
  		<!-- URLs and the roles required to access them -->
-		<intercept-url pattern="/**" requires-channel="https" access="hasRole('ROLE_BEIS_UI')" />
+		<intercept-url pattern="/**" requires-channel="https" access="hasAnyRole('ROLE_BEIS_UI','ROLE_BEIS_CAS')" />
 		
 		<!-- Checks the certificate is valid against our trust store (defined in Tomcat's server.xml) to authenticate the user. -->
 		<x509 subject-principal-regex="CN=(.*)" />

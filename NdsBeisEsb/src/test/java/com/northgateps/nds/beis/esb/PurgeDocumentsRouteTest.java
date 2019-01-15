@@ -8,8 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
-import com.northgateps.nds.platform.esb.security.MockAuthentication;
+
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 
@@ -36,11 +35,7 @@ public class PurgeDocumentsRouteTest extends CamelSpringTestSupport{
      */
     @Override
     protected AbstractApplicationContext createApplicationContext() {
-        MockAuthentication.setMockAuthentication("ROLE_BEIS_UI");
-
-        return new NdsFileSystemXmlApplicationContext(new String[] {
-                "src/main/webapp/WEB-INF/applicationContext-security.xml", "src/test/java/beis-camel-context-test.xml",
-                "src/main/webapp/WEB-INF/beis-camel-context.xml" });
+       return RouteTestUtils.createApplicationContext(routeNameUnderTest);
     }
 
     @Test

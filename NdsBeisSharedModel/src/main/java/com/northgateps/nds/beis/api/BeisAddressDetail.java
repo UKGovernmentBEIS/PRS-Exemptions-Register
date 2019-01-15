@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+
+import com.northgateps.nds.platform.application.api.depend.FieldDependency;
+import com.northgateps.nds.platform.application.api.depend.FieldDependencyPart;
 import com.northgateps.nds.platform.application.api.metadata.EnumeratedValues;
 import com.northgateps.nds.platform.application.api.metadata.FieldLabelTransformer;
 import com.northgateps.nds.platform.application.api.metadata.PostcodeFieldMetadata;
@@ -15,8 +18,6 @@ import com.northgateps.nds.platform.application.api.metadata.StringLengthFieldMe
 import com.northgateps.nds.platform.application.api.metadata.StripIndicesLabelTransformer;
 import com.northgateps.nds.platform.application.api.validation.AbstractValidatableModel;
 import com.northgateps.nds.platform.application.api.validation.js.FirstElementOnlyFilter;
-import com.northgateps.nds.platform.application.api.depend.FieldDependency;
-import com.northgateps.nds.platform.application.api.depend.FieldDependencyPart;
 
 
 /**
@@ -50,6 +51,7 @@ public class BeisAddressDetail extends AbstractValidatableModel {
             @FieldDependencyPart(path = "~.country", values = { "GB" }, comparator = "contains"),
             @FieldDependencyPart(path = "~.country", values = { "" }, comparator = "contains")
     }) })
+    @StringLengthFieldMetadata(maxLength = 8)
     @FieldLabelTransformer(transformer = StripIndicesLabelTransformer.class)
     private String postcode;
 

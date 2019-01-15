@@ -2,8 +2,10 @@ package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
 import java.util.Locale;
 
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 
+import com.google.common.base.Function;
 import com.northgateps.nds.beis.ui.selenium.pageobject.SecurityDetailsPageObject;
 import com.northgateps.nds.platform.ui.selenium.PageObject;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
@@ -22,8 +24,8 @@ public class SecurityDetailsPageHelper extends BasePageHelper<SecurityDetailsPag
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
                 getPageObject().setTextNdsInputUsername("PeSelTest-" + System.currentTimeMillis());
-                getPageObject().setTextNdsInputPassword("randompassword11");
-                getPageObject().setTextNdsInputConfirmPassword("randompassword11");
+                getPageObject().setTextNdsInputPassword("Randompassword11");
+                getPageObject().setTextNdsInputConfirmPassword("Randompassword11");
                 if (!getPageObject().getWebElementNdsCheckboxIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
                     getPageObject().clickNdsCheckboxIsAgreeRegistrationTermsConditions_AgreeTerms();
                 }
@@ -87,6 +89,21 @@ public class SecurityDetailsPageHelper extends BasePageHelper<SecurityDetailsPag
         final String password = "randomusername";
         getPageObject().setTextNdsInputPassword(password);
         getPageObject().setTextNdsInputConfirmPassword(password);
+    }
+    
+    public void waitUntilValidationMessageSeen(final String validationMessage) {
+        getWait().until(new Function<WebDriver, Boolean>() {
+
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                     return validationMessage.equals(findFaultMessage(validationMessage));
+                } catch (StaleElementReferenceException e) {
+                    getNewPageObject();
+                    return false; // try again
+                }
+            }
+        });
     }
 
 }

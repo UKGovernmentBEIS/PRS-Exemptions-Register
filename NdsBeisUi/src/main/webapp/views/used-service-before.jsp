@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <fmt:setLocale value="${language}" />
 <!DOCTYPE html>
-<html lang="${language}">
+<html lang="en">
 <fmt:message bundle="${FieldsBundle}" key="Title_UsedServiceBefore"
 	var="title" />
 <jsp:include page="head.jsp">
@@ -49,7 +49,7 @@
 					<div class="form-group">										
 						<nds:field path="uiData.usedServiceBefore">
 							<fieldset class="radio">
-								<nds:label class="form-label-bold"/>
+								<legend class="form-label-bold"><fmt:message bundle="${FieldsBundle}" key="Label_uiData.usedServiceBefore" /></legend>
 								<nds:invalid />
 								<nds:radiobutton
 									label="Label_UsedServiceBefore.Yes"

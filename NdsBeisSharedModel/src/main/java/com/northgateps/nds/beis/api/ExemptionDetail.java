@@ -33,6 +33,7 @@ import com.northgateps.nds.platform.application.api.format.js.PreserveFieldForma
 public class ExemptionDetail extends AbstractValidatableModel {
 
     public final static String EXEMPTION_TYPE_TEXT = "exemptionTypeText";
+  
     public final static String EXEMPTION_TYPE_LOV = "exemptionTyleLov";
 
     private String referenceId;
@@ -81,6 +82,8 @@ public class ExemptionDetail extends AbstractValidatableModel {
      */
     public void reset() {
         this.referenceId = null;
+        this.propertyType = null;
+        this.exemptionType = null;
         this.exemptionStartDate = null;
         this.epc = null;
         this.epcEvidenceFiles = new Upload();
@@ -88,8 +91,7 @@ public class ExemptionDetail extends AbstractValidatableModel {
         this.exemptionReason = null;
         this.exemptionReasonAdditionalText = null;
         this.exemptionText = null;
-        exemptionTextFile = new Upload();
-        this.landlordDetails=null;
+        exemptionTextFile = new Upload();        
     }
 
     public String getReferenceId() {

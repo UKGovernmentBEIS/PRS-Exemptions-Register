@@ -1,8 +1,6 @@
 package com.northgateps.nds.beis.ui.view.javascript.reportforgottenusername;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;

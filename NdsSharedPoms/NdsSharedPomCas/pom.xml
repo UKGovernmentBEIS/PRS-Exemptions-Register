@@ -5,7 +5,7 @@
         
 	<groupId>com.northgateps.beis.sharedpoms</groupId>
 	<artifactId>sharedpoms-cas</artifactId>
-	<version>0.0.1503</version>
+	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
 	<!-- Used for CI project management.  Do not add dependencies to this pom as they may upset the CAS projects dependencies. -->

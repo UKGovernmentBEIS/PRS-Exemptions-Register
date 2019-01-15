@@ -5,6 +5,9 @@
 		<result throwExceptionOnMissing="true"/>
     </header>
 	<override>
+		<!-- load environment variables -->	
+		<env/>
+
 		<!-- these are the "production" settings for the application, which override those given in the 
 		     definition below. As long as the developers do not have the .properties file they will
 		     automatically get a working development environment. Whereas for production like environments
@@ -26,9 +29,6 @@
 	        	<config-constrarg config-value=";"/>
 	      	</listDelimiterHandler>
 		</properties>
-
-		<!-- load environment variables -->	
-		<env/>
 
 	</override>
 

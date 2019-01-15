@@ -14,7 +14,7 @@ import com.northgateps.nds.platform.application.api.metadata.RequiredFieldMetada
  * Request to retrieve a PDF containing details of an exemption.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PrintExemptionDetailsNdsRequest", propOrder = { "tenant", "exemptionDetail", "exemptionType" })
+@XmlType(name = "PrintExemptionDetailsNdsRequest", propOrder = { "tenant", "exemptionDetail", "exemptionType", "propertyType" })
 @XmlRootElement(name = "PrintExemptionDetailsNdsRequest")
 public class PrintExemptionDetailsNdsRequest implements NdsRequest {
 
@@ -26,6 +26,8 @@ public class PrintExemptionDetailsNdsRequest implements NdsRequest {
 
     @RequiredFieldMetadata
     private ExemptionTypeDetails exemptionType;
+    
+    private String propertyType;
 
     public String getTenant() {
         return tenant;
@@ -49,5 +51,13 @@ public class PrintExemptionDetailsNdsRequest implements NdsRequest {
 
     public void setExemptionType(ExemptionTypeDetails exemptionType) {
         this.exemptionType = exemptionType;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
     }
 }

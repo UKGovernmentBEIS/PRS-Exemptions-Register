@@ -14,11 +14,10 @@ import com.northgateps.nds.beis.api.PersonNameDetail;
 import com.northgateps.nds.beis.api.UpdateBeisRegistrationDetails;
 import com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsNdsRequest;
 import com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryMissingAttributeValueException;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
@@ -28,21 +27,21 @@ import com.northgateps.nds.platform.esb.exception.NdsDirectoryException;
 /**
  * Adapter class that processes the retrieving of partially registered user details between native (REST) objects and LDAP objects
  */
-public class GetPartiallyRegisteredDetailsLdapAdapter 
-    extends NdsDirectoryAdapter<GetPartiallyRegisteredDetailsNdsRequest, GetPartiallyRegisteredDetailsNdsResponse> {
-
+public class GetPartiallyRegisteredDetailsLdapComponent 
+    extends NdsDirectoryComponent<GetPartiallyRegisteredDetailsNdsRequest, GetPartiallyRegisteredDetailsNdsResponse> {
+    
     @Override
-    protected void doRequestProcess(GetPartiallyRegisteredDetailsNdsRequest request,
-            DirectoryConnection directoryConnection, NdsSoapRequestAdapterExchangeProxy ndsExchange,
+    protected void doProcess(GetPartiallyRegisteredDetailsNdsRequest request,
+            DirectoryAccessConnection directoryConnection, NdsSoapRequestAdapterExchangeProxy ndsExchange,
             DirectoryConnectionConfig directoryConnectionConfigImpl)
-            throws NdsApplicationException, NdsBusinessException, DirectoryException {
+                    throws NdsApplicationException, NdsBusinessException, DirectoryException {
         
         UpdateBeisRegistrationDetails beisRegistrationDetails = new UpdateBeisRegistrationDetails();
 
         try {
             String userDn = getUserDn(configurationManager, request.getUsername(), request.getTenant());
 
-            Map<String, String> attributes = UserServices.userAttributes(directoryConnection, userDn);
+            Map<String, String> attributes = getUserManager().userAttributes(directoryConnection, userDn);
 
             beisRegistrationDetails.setAccountDetails(GetAccountDetailsFromLdapAttributes(attributes));
             beisRegistrationDetails.setUpdateUserDetails(GetUpdateUserDetailsFromLdapAttributes(attributes));
@@ -170,5 +169,4 @@ public class GetPartiallyRegisteredDetailsLdapAdapter
     protected String getRequestClassName() {        
         return GetPartiallyRegisteredDetailsNdsRequest.class.getName();
     }
-
 }

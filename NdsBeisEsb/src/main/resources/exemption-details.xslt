@@ -77,7 +77,7 @@
 												</xsl:call-template>											
 									</xsl:if>									
 									<xsl:call-template name="TableRowValue">
-										<xsl:with-param name="label" select="'Address of exempt property'" />
+										<xsl:with-param name="label" select="'Exempt property address'" />
 										<xsl:with-param name="node"
 											select="beped:exemptionDetail/beis:epc/beis:propertyAddress/beis:singleLineAddressPostcode" />
 									</xsl:call-template>
@@ -86,6 +86,12 @@
 										<xsl:with-param name="label" select="'Exemption type'" />
 										<xsl:with-param name="node"
 											select="beped:exemptionType/beis:pwsDescription" />
+									</xsl:call-template>
+									
+									<xsl:call-template name="TableRowValue">
+										<xsl:with-param name="label" select="'Property type'" />
+										<xsl:with-param name="node"
+											select="beped:propertyType" />
 									</xsl:call-template>
 								
 									<xsl:call-template name="TableRowValue">
@@ -222,11 +228,14 @@
 													<fo:block-container overflow="hidden">
 														<fo:block text-align="left">
 															<fo:inline>
-																<xsl:text>File uploaded: </xsl:text>
+																<xsl:text>You uploaded this</xsl:text>																														
 															</fo:inline>
+															<fo:inline>																
+																<xsl:value-of select="pmod:fileType" />																
+															</fo:inline>																
 															<fo:inline>
 																<xsl:value-of select="pmod:fileName" />
-															</fo:inline>
+															</fo:inline>															
 															<fo:inline-container>
 																<fo:block>
 																	<xsl:text>&#x200B;</xsl:text>

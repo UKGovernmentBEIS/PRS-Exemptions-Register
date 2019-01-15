@@ -3,11 +3,7 @@ package com.northgateps.nds.beis.esb.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.camel.Converter;
-import java.time.ZonedDateTime;
 
 import com.northgateps.nds.beis.api.RegisteredExemptionDetail;
 import com.northgateps.nds.beis.api.dashboard.DashboardDetails;

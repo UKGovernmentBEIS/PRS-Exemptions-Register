@@ -64,7 +64,13 @@ public class BeisController extends PlatformApplicationController {
  
         //dashboard urls
         attributes.put("moreAboutExemptionsUrl", ConfigurationFactory.getConfiguration().getString("moreAboutExemptions.url"));
-
+        
+        //register Search Exemptions url
+        attributes.put("registerSearchExemptionsUrl", ConfigurationFactory.getConfiguration().getString("registerSearchExemptions.moreAboutExemptions.url"));
+        
+        //register Search Penalties url
+        attributes.put("registerSearchPenaltiesUrl", ConfigurationFactory.getConfiguration().getString("registerSearchPenalties.moreAboutPenalties.url"));
+        
         //GOV UK site
         attributes.put("govUkUrl", ConfigurationFactory.getConfiguration().getString("govUk.url"));
         attributes.put("contactInfoEmailAddress", ConfigurationFactory.getConfiguration().getString("contactInfoEmail.address"));

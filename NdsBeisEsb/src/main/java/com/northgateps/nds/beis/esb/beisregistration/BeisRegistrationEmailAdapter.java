@@ -39,7 +39,7 @@ public class BeisRegistrationEmailAdapter
         
         HashMap<String, Object> emailConfigMap = new HashMap<String, Object>();
         emailConfigMap.put("type", "RegistrationEmailTemplate");
-        emailConfigMap.put("language", "English");
+        emailConfigMap.put("language", "en");
         emailConfigMap.put("to", toList);
         emailConfigMap.put("name", ndsRequest.getRegistrationDetails().getUserDetails().getUsername());
         emailConfigMap.put("activationCode", ndsRequest.getRegistrationDetails().getActivationCode());

@@ -52,7 +52,7 @@
 						<p>
 							<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_what_is_penalty_notice1" />
-							<a href="${moreAboutExemptionsUrl}" id="gov.uk.url"
+							<a href="${registerSearchPenaltiesUrl}" id="gov.uk.url"
 								target="_blank"><fmt:message bundle="${FieldsBundle}"
 									key="Link_find_more_about_penalty_notices" /></a>
 						</p>

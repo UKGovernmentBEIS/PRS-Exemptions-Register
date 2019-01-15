@@ -145,6 +145,7 @@
 		<property name="scriptsLoader">
 			<ref bean="ScriptsLoader" />
 		</property>
+		<property name="defaultCountryCodeForAddresses" value="GB" />
 		<property name="questionnaireLoader">
 			<bean class="com.northgateps.nds.platform.ui.controller.QuestionnaireLoader" />
 		</property>
@@ -161,7 +162,6 @@
 		<property name="viewNamePopulator">
 			<bean class="com.northgateps.nds.beis.ui.controller.ViewNamePopulator" />
 		</property>
-		<property name="esbServicesTimeLimit" value="25000" />
 		<property name="errorSanitizer">
 			<bean class="com.northgateps.nds.platform.ui.controller.DefaultErrorSanitizer" />
 		</property>
@@ -227,6 +227,17 @@
 							<map>
 								<entry key="NEXT">
 									<bean class="com.northgateps.nds.beis.ui.controller.handler.SelectLandLordTypeHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="select-landlord-or-agent">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.SelectAccountTypeHandler" />
 								</entry>
 							</map>
 						</property>
@@ -445,7 +456,7 @@
 									</bean>
 								</entry>
 								<entry key="AddResource">
-									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileAddEventHandler">
 										<property name="kindName" value="epcresource" />
 										<property name="path" value="exemptionDetails.epc.files" />
 										<property name="uploadPropertiesLoader">
@@ -475,7 +486,7 @@
 									</bean>
 								</entry>
 								<entry key="AddResource">
-									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileAddEventHandler">
 										<property name="kindName" value="Resource" />
 										<property name="path" value="exemptionDetails.epcEvidenceFiles" />
 										<property name="multipartPath" value="uiData.multipartExemptionFile" />
@@ -506,7 +517,7 @@
 									</bean>
 								</entry>
 								<entry key="AddResource">
-									<bean class="com.northgateps.nds.beis.ui.controller.handler.BeisFileAddEventHandler">
+									<bean class="com.northgateps.nds.platform.ui.controller.handler.FileAddEventHandler">
 										<property name="kindName" value="epcresource" />
 										<property name="path" value="exemptionDetails.exemptionTextFile" />
 										<property name="multipartPath" value="uiData.multipartExemptionTextFile" />
@@ -539,6 +550,24 @@
 						</property>
 					</bean>
 				</entry>
+				
+				<entry key="register-exemptions">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+								<entry key="{any}">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.GetSelectedExemptionDetailsEventHandler" />
+								</entry>	
+								<entry key="PREVIOUS">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSExemptionSearchHandler" />
+								</entry>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSExemptionSearchHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
 
 				<entry key="register-search-penalties">
 					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
@@ -553,7 +582,25 @@
 							</map>
 						</property>
 					</bean>
-				</entry>				
+				</entry>	
+				
+				<entry key="register-penalties">
+					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+						<property name="viewEventHandlers">
+							<map>
+							    <entry key="{any}">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.GetSelectedPenaltyDetailsEventHandler" />
+								</entry>	
+								<entry key="PREVIOUS">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSPenaltySearchHandler" />
+								</entry>
+								<entry key="NEXT">
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PRSPenaltySearchHandler" />
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>			
 				
 				<entry key="register-search-gdar-gdip">
 					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">

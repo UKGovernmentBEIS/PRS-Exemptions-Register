@@ -29,6 +29,8 @@ public class SubmitPrsExemptionHandler extends AbstractViewEventHandler {
     private static final String serviceEndPoint = ConfigurationFactory.getConfiguration().getString(
             "esbEndpoint.RegisterPrsExemption");
 
+    private static String submitPrsExemptionServiceTimeout = ConfigurationFactory.getConfiguration().getString(
+            "app.submitPrsExemptionTimeout", "0");
     /**
      * submits request to esb to register the exemption
      */
@@ -52,7 +54,7 @@ public class SubmitPrsExemptionHandler extends AbstractViewEventHandler {
         registerPrsExemptionNdsRequest.setPwsText(uiData.getSelectedExemptionTypeText().getPwsDescription());
         registerPrsExemptionNdsRequest.setMaxPenaltyValue(uiData.getPenaltyValue());
         registerPrsExemptionNdsRequest.setRegisterPrsExemptionDetails(registerPrsExemptionDetails);
-
+        uiSvcClient.setTimeLimit(Long.parseLong(submitPrsExemptionServiceTimeout));
         if (!controllerState.isSyncController()) {
             uiSvcClient.post(serviceEndPoint, registerPrsExemptionNdsRequest);
         } else {

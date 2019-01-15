@@ -6,12 +6,12 @@ import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredA
 import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsRequest;
 import com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsResponse;
-import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapAdapter;
+import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
-import com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsAdapter;
+import com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsComponent;
 
 /**
  * This adapts the Nds request to a foundation layer BEIS request for MaintainPartyDetails and handles the response.
@@ -67,12 +67,12 @@ public class SaveRegisteredAccountDetailsSoapAdapter extends NdsSoapAdapter <Sav
         if(ndsResponse.isSuccess())
         {            
             //Set party reference on exchange property for an LDAP adapter to deal with if it was partially registered
-            if(ndsExchange.getAnExchangeProperty(SaveRegisteredAccountDetailsAdapter.EXCHANGE_PROPERTY_PARTIALLY_REGISTERED) != null){
+            if(ndsExchange.getAnExchangeProperty(SaveRegisteredAccountDetailsComponent.EXCHANGE_PROPERTY_PARTIALLY_REGISTERED) != null){
                 
-                Boolean partiallyRegistered = (Boolean) ndsExchange.getAnExchangeProperty(SaveRegisteredAccountDetailsAdapter.EXCHANGE_PROPERTY_PARTIALLY_REGISTERED);
+                Boolean partiallyRegistered = (Boolean) ndsExchange.getAnExchangeProperty(SaveRegisteredAccountDetailsComponent.EXCHANGE_PROPERTY_PARTIALLY_REGISTERED);
                 
                 if(partiallyRegistered){
-                    ndsExchange.setAnExchangeProperty(BeisRegistrationUpdateAccountIdLdapAdapter.EXCHANGE_PROPERTY_ACCOUNT_ID, externalResponse.getPartyRef());
+                    ndsExchange.setAnExchangeProperty(BeisRegistrationUpdateAccountIdLdapComponent.EXCHANGE_PROPERTY_ACCOUNT_ID, externalResponse.getPartyRef());
                 }
             }
         }

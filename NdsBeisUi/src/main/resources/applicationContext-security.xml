@@ -31,7 +31,8 @@
 		<intercept-url pattern="/**" access="permitAll" />
 		
 		<!-- What to do when the session expires -->
-		<session-management invalid-session-url="/SessionExpired" />
+		<session-management invalid-session-strategy-ref="ndsSessionStrategy" />
+
 
 		<!-- Protects against session bleed bug/attack must be before="SECURITY_CONTEXT_FILTER" to work -->
         <custom-filter ref="sessionBleedFilter" before="SECURITY_CONTEXT_FILTER" />
@@ -140,5 +141,9 @@
 		<b:property name="tenantAttribute" value="NDS_TENANT" />
 		<b:property name="extractRolePattern" value="${role.extract.regex}" />
 	</b:bean>
+	
+	<b:bean id="ndsSessionStrategy" class="com.northgateps.nds.platform.ui.security.PlatformRedirectInvalidSessionStratety">
+        <b:constructor-arg value="/SessionExpired" />
+    </b:bean>
 	
 </b:beans>

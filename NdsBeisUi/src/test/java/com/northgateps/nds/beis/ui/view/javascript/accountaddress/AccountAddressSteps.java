@@ -402,9 +402,14 @@ public class AccountAddressSteps {
 
     @Given("^I have not supplied Postcode$")
     public void i_have_not_supplied_Postcode() throws Throwable {
-
+        pageObject.setTextNdsInputPostcode("");
     }
 
+    @Given("^I have supplied Postcode \"(.*?)\"$")
+    public void i_have_supplied_Postcode(String postcode) throws Throwable {
+        pageObject.setTextNdsInputPostcode(postcode);
+    }
+    
     @Given("^I have supplied other details$")
     public void i_have_supplied_other_details() throws Throwable {
         pageObject.setTextNdsInputLine0("Flat 1, Projection West");

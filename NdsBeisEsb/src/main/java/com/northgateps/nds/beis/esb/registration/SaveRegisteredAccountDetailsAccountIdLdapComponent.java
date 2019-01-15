@@ -12,8 +12,8 @@ import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
  * @param <TRequest> This must be a request class that implements the BeisPartyRequest interface
  * @param <TResponse> This must implement the NdsResponse interface
  */
-public class SaveRegisteredAccountDetailsAccountIdLdapAdapter extends
-        SaveAccountIdLdapAdapter<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
+public class SaveRegisteredAccountDetailsAccountIdLdapComponent extends
+        SaveAccountIdLdapComponent<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
 
     @Override
     protected SaveRegisteredAccountDetailsNdsResponse doResponseProcess(NdsSoapRequestAdapterExchangeProxy ndsExchange)

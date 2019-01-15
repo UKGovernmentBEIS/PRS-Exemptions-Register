@@ -76,7 +76,9 @@
 					</jsp:include>
 				</div>
 				
-
+                <div id="divTemp">
+					 <input type="hidden" name="hiddenUploadField" id="hiddenUploadField"/>
+			    </div>
 				<section class="next">
 					<c:if
 						test="${not empty command.exemptionDetails.epcEvidenceFiles.resources}">
@@ -85,7 +87,7 @@
 									bundle="${FieldsBundle}"
 									key="Label_exemptionDetails.uploadtext" />
 							</h3>
-							<table>
+							<table id="uploadedFiles">
 								<tr>
 									<th><fmt:message bundle="${FieldsBundle}"
 											key="UploadColumn_filename" /></th>

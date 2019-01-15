@@ -20,7 +20,7 @@
 	<!-- 
 		Set up Spring Session backed by a MongoDB connection, overrides Spring Session's annotation based configuration.
 	-->
- 	<bean class="org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration" />
+ 	<bean class="org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration" depends-on="mongoAvailabilityChecker"/>
 	<bean class="com.northgateps.nds.platform.ui.session.mongodb.MongoHttpSessionConfig">
 		<constructor-arg name="maxInactiveIntervalInSeconds" value="${app.session.maxInactiveIntervalInSeconds}" />
 		<constructor-arg name="maxInactiveIntervalInSecondsForNonLoggedInUsers" value="${app.session.maxInactiveIntervalInSecondsForNonLoggedInUsers}" />
@@ -32,7 +32,7 @@
 	-->
     <mongo:db-factory dbname="${ndsdb.name}" mongo-ref="mongo" />
 
-	<bean id="mongo" class="com.northgateps.nds.platform.application.mongo.NdsTrustAllMongoClient">
+	<bean id="mongo" class="com.northgateps.nds.platform.application.mongo.NdsTrustAllMongoClient" depends-on="mongoAvailabilityChecker">
         <constructor-arg name="serverList" value="${ndsdb.server}" />
         <constructor-arg name="portList" value="${ndsdb.port}" />
         <constructor-arg name="username" value="${ndsdb.user}" />
@@ -45,5 +45,21 @@
         <constructor-arg name="mongo" ref="mongo"/>
         <constructor-arg name="databaseName" value="${ndsdb.name}"/>
     </bean>
+
+	<!-- 
+		Blocks startup until Mongo is available.  If any beans need or set up access to Mongo on
+		initialisation, they must add the attribute depends-on="mongoAvailabilityChecker".
+	 -->
+	<bean id="mongoAvailabilityChecker" class="com.northgateps.nds.platform.application.mongo.MongoAvailabilityChecker">
+		<constructor-arg name="mongoClientClass" value="com.northgateps.nds.platform.application.mongo.NdsTrustAllMongoClient" />
+        <constructor-arg name="serverList" value="${ndsdb.server}" />
+        <constructor-arg name="portList" value="${ndsdb.port}" />
+        <constructor-arg name="username" value="${ndsdb.user}" />
+        <constructor-arg name="password" value="${ndsdb.password}" />
+        <constructor-arg name="maxPoolSize" value="${ndsdb.max.connection}" />
+        <constructor-arg name="replicaSet" value="${ndsdb.replicaset}" />
+        <constructor-arg name="databaseName" value="${ndsdb.name}"/>
+        <constructor-arg name="collectionName" value="${ndsdb.audit.collection.name}"/>
+	</bean>
 
 </beans>

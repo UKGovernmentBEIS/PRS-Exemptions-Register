@@ -19,8 +19,7 @@ import com.northgateps.nds.beis.api.PRSExemptionSearchNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.prsexemptionsearch.PRSExemptionSearchResponse;
 import com.northgateps.nds.beis.backoffice.service.prsexemptionsearch.PRSExemptionSearchResponse.Exemptions;
 import com.northgateps.nds.beis.backoffice.service.prsexemptionsearch.PRSExemptionSearchResponse.Exemptions.Exemption;
-import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
-import com.northgateps.nds.platform.esb.security.MockAuthentication;
+
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -43,13 +42,9 @@ public class PRSExemptionSearchRouteTest extends CamelSpringTestSupport {
 
     @Override
     protected AbstractApplicationContext createApplicationContext() {
-
-        // grant test role based security access
-        MockAuthentication.setMockAuthentication("ROLE_BEIS_UI");
-
-        return new NdsFileSystemXmlApplicationContext(
-                new String[] { "src/main/webapp/WEB-INF/applicationContext-security.xml",
-                        "src/main/webapp/WEB-INF/beis-camel-context.xml" });
+ 
+		return RouteTestUtils.createApplicationContext(routeNameUnderTest);
+				
     }
 
     private static final String MOCK_BEIS_REQUEST_CHECK = "mock:beis";
@@ -104,6 +99,16 @@ public class PRSExemptionSearchRouteTest extends CamelSpringTestSupport {
         exemptionSearch.setExemptionType_PRSN("WALL");
         prsExemptionSearchNdsRequest.setExemptionSearch(exemptionSearch);
         successPathExemptionSearch(prsExemptionSearchNdsRequest);
+
+    }
+    
+    @Test
+    public void successPathTestExemptionRefNo() throws Exception {
+        PRSExemptionSearchNdsRequest prsExemptionSearchNdsRequest = new PRSExemptionSearchNdsRequest();
+        ExemptionSearch exemptionSearch = new ExemptionSearch();
+        exemptionSearch.setExemptionRefNo("11");
+        prsExemptionSearchNdsRequest.setExemptionSearch(exemptionSearch);
+        successPathExemptionSearchExemptionRefNo(prsExemptionSearchNdsRequest);
 
     }
 
@@ -207,6 +212,44 @@ public class PRSExemptionSearchRouteTest extends CamelSpringTestSupport {
 
         assertTrue(response.isSuccess());
         assertNotNull(response.getGetExemptionSearchResponseDetail());
+        assertMockEndpointsSatisfied();
+
+    }
+    
+    public void successPathExemptionSearchExemptionRefNo(PRSExemptionSearchNdsRequest prsExemptionSearchNdsRequest) throws Exception {
+        LOGGER.info("Starting success path test");
+        LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSExemptionSearchEndpoint}}")
+                + " to run unit tests");
+        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+                weaveAddLast().to(MOCK_BEIS_RESPONSE_CHECK);
+                replaceFromWith("direct:start");
+
+                interceptSendToEndpoint(SKIP_EndPoint).skipSendToOriginalEndpoint().to(MOCK_BEIS_REQUEST_CHECK).process(
+                        new Processor() {
+
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+
+                        PRSExemptionSearchResponse appResponse = createPRSExemptionSearchResponse();
+
+                        exchange.getIn().setBody(appResponse);
+                    }
+                });
+
+            }
+        });
+
+        context.start();
+        PRSExemptionSearchNdsResponse response = (PRSExemptionSearchNdsResponse) apiEndpoint.requestBody(
+                prsExemptionSearchNdsRequest);
+
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getGetExemptionSearchResponseDetail());
+        assertEquals("Exemption search response size should be one", Integer.parseInt("1"),
+                response.getGetExemptionSearchResponseDetail().getExemptions().size());   
         assertMockEndpointsSatisfied();
 
     }

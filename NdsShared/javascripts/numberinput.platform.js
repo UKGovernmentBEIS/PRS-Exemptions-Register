@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
 	// Accept only number
 	function isNumberKey(evt){

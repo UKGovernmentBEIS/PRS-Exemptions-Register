@@ -9,7 +9,11 @@
     <meta id="entryPointName" name="entryPointName" content="${entryPointName}" />
     <meta id="request-method" name="request-method" content="${pageContext.request.method}" />
     <meta id="skipRefreshPagePreservation" name="skipRefreshPagePreservation" content="${skipRefreshPagePreservation}" />
-	   
+
+	<c:if test="${clientValuesRestore}">
+	    <meta id="clientValuesRestore" name="clientValuesRestore" content="true" />
+	</c:if>
+		   
     <c:choose>
         <c:when test="${not empty minify}">
             <script src="${contextUi}/assets/javascripts/beis-head-pkg${minify}.js?version=${version}"></script>

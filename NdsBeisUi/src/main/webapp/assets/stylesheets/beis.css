@@ -941,3 +941,8 @@ input[type=file] {
 	color: #b10e1e;
     font-weight: bold;
 }
+
+.hiddenField {
+	display:none;
+	visibility:hidden;
+}

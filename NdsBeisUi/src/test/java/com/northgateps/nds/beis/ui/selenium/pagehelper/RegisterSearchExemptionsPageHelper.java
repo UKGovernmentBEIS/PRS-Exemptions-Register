@@ -19,14 +19,12 @@ import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
 public class RegisterSearchExemptionsPageHelper extends BasePageHelper<RegisterSearchExemptionsPageObject>
         implements PageHelper {
     
-    
     //set default Form Filler
     {
         setFormFiller(new FormFiller() {
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
-                getPageObject().setTextNdsInputExemptionPostcodeCriteria("RG1 1ET");
-                getPageObject().clickButtonNext_FindExemptions();
+                fillInForm("RG12 7BW");
              }
         });
     }
@@ -39,30 +37,55 @@ public class RegisterSearchExemptionsPageHelper extends BasePageHelper<RegisterS
         super(driver, locale);
     }
 
-    public void click_addresslink()
-    {
+    public void click_addresslink() {
         final RegisterSearchExemptionsPageObject pageObject = getPageObject();
         pageObject.getDriver().findElement(By.id("button.authority.address")).click();
     }
     
-    public void click_landlordname()
-    {
+    public void click_landlordname() {
         final RegisterSearchExemptionsPageObject pageObject = getPageObject();
         pageObject.getDriver().findElement(By.id("button.authority.landlordname")).click();
     }
 
+    /** Picks postcode from the form filler, searches for it and picks an address. */
     @Override
     public PageHelper skipPage() {
-        final RegisterSearchExemptionsPageObject pageObject = getPageObject();
-        fillInForm();
-        pageObject.invalidateDcId();
+        searchPostcode();
+        
         click_addresslink();
+        
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
+        
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
+    }
+    
+    /** Picks postcode from the form filler, searches for it and picks an address by clicking the landlord's name. */
+    public PageHelper skipPageClickingLandlordName() {
+        searchPostcode();
+        
+        click_landlordname();
+        
+        BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
+        
+        return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
+    }
+    
+    private void searchPostcode() {
+        final RegisterSearchExemptionsPageObject pageObject = getPageObject();
+        
+        // enter postcode
+        fillInForm();
+        
+        // search for postcode entered by fillInForm
+        getPageObject().clickButtonNext_FindExemptions();
+        waitUntilElementFound(By.id("button.authority.address"));
+        
+        // pick a landlord from the list shown
+        pageObject.invalidateDcId();
+        
     }
 
     public WebElement getPropertyAddressSelectList() {
-
         return getPageObject().getDriver().findElement(By.id("button.authority.address"));
     }
     
@@ -91,19 +114,20 @@ public class RegisterSearchExemptionsPageHelper extends BasePageHelper<RegisterS
         
      }
     
-    public WebElement getPropertyTypeSelectList()
-    {
+    public WebElement getPropertyTypeSelectList() {
         return getPageObject().getDriver().findElement(By.id("uiData.exemptionSearch.service"));
     }
     
-    public WebElement getNonDomesticExemptionTypeSelectList()
-    {
+    public WebElement getNonDomesticExemptionTypeSelectList() {
         return getPageObject().getDriver().findElement(By.id("uiData.exemptionSearch.exemptionType_PRSN"));
     }
     
-    public WebElement getDomesticExemptionTypeSelectList()
-    {
+    public WebElement getDomesticExemptionTypeSelectList() {
         return getPageObject().getDriver().findElement(By.id("uiData.exemptionSearch.exemptionType_PRSD"));
+    }
+    
+    public void fillInForm(String postcode) {
+        getPageObject().setTextNdsInputExemptionPostcodeCriteria(postcode);
     }
 
 }

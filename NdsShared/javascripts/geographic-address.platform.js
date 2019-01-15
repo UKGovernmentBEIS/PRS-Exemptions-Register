@@ -1,3 +1,5 @@
+"use strict";
+
 $(function () {
     $(".geographicAddress").each(function() {
         var address = $(this);
@@ -6,11 +8,14 @@ $(function () {
         address.find(".findAddressSpinner").css('position', 'relative');
         address.find("button[value^='FindAddress:']").click(function() {
             new Spinner({ 'top' : '13px', 'left' : '22px', 'scale' : 0.5 }).spin(address.find(".findAddressSpinner")[0]);
+            
+            $("button[value^='NEXT']").hide();
         });
         
         address.find(".getAddressSpinner").css('position', 'relative');
         address.find("button[value^='GetAddress:']").click(function() {
             new Spinner({ 'top' : '13px', 'left' : '22px', 'scale' : 0.5 }).spin(address.find(".getAddressSpinner")[0]);
+            $("button[value^='NEXT']").hide();
         });
         
         address.find(".candidateAddressList").on('change', function() {

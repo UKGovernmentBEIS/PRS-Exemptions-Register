@@ -26,8 +26,8 @@ Scenario: Process personalised-landlord details for Person
 	And  I have supplied an invalid confirm email address as "dummy.co"
 	And  I have supplied an invalid phone number that does not consist of numeric or space characters with an optional leading + as "abcs"
 	When I select Next
-	Then I will receive the message "Email address must be a valid email address"
-	And I will receive the message "Confirm email address must be a valid email address"
+	Then I will receive the message "You must enter a valid email address in Email address"
+	And I will receive the message "You must enter a valid email address in Confirm email address"
 	And I will receive the message "Telephone number must be a valid phone number"
 	And I will remain on the personalised-landlord-details page
 	
@@ -35,7 +35,7 @@ Scenario: Process personalised-landlord details for Person
 	When I have supplied an email address as "nds-dummyOne@northgateps.com"
 	And I have supplied a different confirm email address as "dumy@northgateps.com"
 	And I select Next
-	Then I will receive the message "Confirm email address must match email address"
+	Then I will receive the message "You must make the email address and confirm email address the same"
 	And I will remain on the personalised-landlord-details page
 	
 #Happy path, move to personalised-landlord address page
@@ -48,7 +48,7 @@ Scenario: Process personalised-landlord details for Organisation
 
 	Given I am on the personalised-landlord-details to enter Organisation name
 	And I have not entered any data
-	When I select Next
+	When I click Next
 	Then I will receive the message "Organisation name must be entered"
 	And I will receive the message "Email address must be entered"
 	And I will receive the message "Confirm email address must be entered"

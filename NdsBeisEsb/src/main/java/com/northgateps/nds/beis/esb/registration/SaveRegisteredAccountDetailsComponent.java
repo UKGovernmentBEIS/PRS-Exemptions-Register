@@ -6,11 +6,10 @@ import com.northgateps.nds.beis.api.AccountType;
 import com.northgateps.nds.beis.api.UpdateBeisRegistrationDetails;
 import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsNdsRequest;
 import com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsNdsResponse;
-import com.northgateps.nds.platform.esb.adapter.NdsDirectoryAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
-import com.northgateps.nds.platform.esb.directory.DirectoryConnection;
+import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
-import com.northgateps.nds.platform.esb.directory.UserServices;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryMissingAttributeValueException;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryUnwillingToPerformOperationException;
@@ -30,20 +29,21 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
  *         generic. Raised Jira task BEIS-187
  *
  */
-public class SaveRegisteredAccountDetailsAdapter
-        extends NdsDirectoryAdapter<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
+public class SaveRegisteredAccountDetailsComponent
+        extends NdsDirectoryComponent<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {
 
     @SuppressWarnings("unused")
-    private static final NdsLogger logger = NdsLogger.getLogger(SaveRegisteredAccountDetailsAdapter.class);
+    private static final NdsLogger logger = NdsLogger.getLogger(SaveRegisteredAccountDetailsComponent.class);
 
     public static final String EXCHANGE_PROPERTY_PARTIALLY_REGISTERED = "partiallyRegistered";
 
     final ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
 
     @Override
-    protected void doRequestProcess(SaveRegisteredAccountDetailsNdsRequest request,
-            DirectoryConnection directoryConnection, NdsSoapRequestAdapterExchangeProxy ndsExchange,
-            DirectoryConnectionConfig directoryConnectionConfig) throws NdsApplicationException, NdsBusinessException {
+    protected void doProcess(SaveRegisteredAccountDetailsNdsRequest request,
+            DirectoryAccessConnection directoryConnection, NdsSoapRequestAdapterExchangeProxy ndsExchange,
+            DirectoryConnectionConfig directoryConnectionConfigImpl)
+                    throws NdsApplicationException, NdsBusinessException, DirectoryException {
 
         // get the LDAP properties we will be setting
         String ldapAttributeForename = configurationManager.getString("attribute.forename");
@@ -117,7 +117,7 @@ public class SaveRegisteredAccountDetailsAdapter
             String userDn = getUserDn(configurationManager,
                     request.getRegisteredAccountDetails().getUpdateUserDetails().getUsername(), request.getTenant());
 
-            UserServices.setAttributesOnEntry(directoryConnection, userDn, changes);
+            getUserManager().setAttributesOnEntry(directoryConnection, userDn, changes);
             
             //set an exchange property to indicate if this is a partial registration
             ndsExchange.setAnExchangeProperty(EXCHANGE_PROPERTY_PARTIALLY_REGISTERED, request.getPartiallyRegistered());
@@ -151,5 +151,5 @@ public class SaveRegisteredAccountDetailsAdapter
     @Override
     protected String getRequestClassName() {
         return SaveRegisteredAccountDetailsNdsRequest.class.getName();
-    }
+    }    
 }

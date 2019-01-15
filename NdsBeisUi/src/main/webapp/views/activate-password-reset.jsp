@@ -32,7 +32,7 @@
 			</div>
 			<div class="grid-row">
 				<div class="column-full">		
-				  <div class="${empty command.activatePasswordResetDetails.username || fault.length() gt 0 ? 'form-group' : 'form-group hide'}">
+				  <div class="${empty command.activatePasswordResetDetails.username ? 'form-group' : 'form-group hide'}">
 					<nds:input type="hidden"
 							path="activatePasswordResetDetails.readonlyUsername" />
 						<nds:field path="activatePasswordResetDetails.username"
@@ -43,7 +43,7 @@
 								readonly="${command.activatePasswordResetDetails.readonlyUsername}" class="form-control" />
 						</nds:field>
 						</div>
-				  <div class="${empty command.activatePasswordResetDetails.activationCode || fault.length() gt 0 ? 'form-group' : 'form-group hide'}">
+				  <div class="${empty command.activatePasswordResetDetails.activationCode  ? 'form-group' : 'form-group hide'}">
 						<nds:input type="hidden"
 							path="activatePasswordResetDetails.readonlyActivationCode" />
 						<nds:field path="activatePasswordResetDetails.activationCode">

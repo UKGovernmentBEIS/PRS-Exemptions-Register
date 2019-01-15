@@ -7,14 +7,14 @@ import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
- * Class to retrieve the account id from LDAP which extends RetrieveAccountIdLdapAdapter
+ * Class to retrieve the account id from LDAP which extends RetrieveAccountIdLdapComponent
  *
  */
-public class RetrieveRegisteredDetailsRetrieveAccountIdLdapAdapter extends
-        RetrieveAccountIdLdapAdapter<RetrieveRegisteredDetailsNdsRequest, RetrieveRegisteredDetailsNdsResponse> {
+public class RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent extends
+        RetrieveAccountIdLdapComponent<RetrieveRegisteredDetailsNdsRequest, RetrieveRegisteredDetailsNdsResponse> {
 
     private static final NdsLogger logger = NdsLogger.getLogger(
-            RetrieveRegisteredDetailsRetrieveAccountIdLdapAdapter.class);
+            RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent.class);
 
     @Override
     protected String getRequestClassName() {

@@ -43,6 +43,8 @@
 				<b:value>ndsdb.max.connection</b:value>
 				<b:value>app.session.maxInactiveIntervalInSeconds</b:value>
 				<b:value>app.session.maxInactiveIntervalInSecondsForNonLoggedInUsers</b:value>
+				<b:value>app.session.maxInactiveIntervalInSeconds</b:value>
+				<b:value>ndsdb.audit.collection.name</b:value>
 			</b:array>
 		</b:constructor-arg>
 	</b:bean>

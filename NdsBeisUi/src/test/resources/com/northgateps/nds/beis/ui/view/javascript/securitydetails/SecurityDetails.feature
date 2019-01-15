@@ -33,26 +33,32 @@ Scenario: Process security details
 	Then I will receive the message "Create a username must be a valid user name"
 	And I will remain on the security-details page
 	
+	#Username supplied outside lengtn restrictions 3 and 100
+	Given I have supplied a username which is outside of length restrictions
+	When I select Next
+	Then I will receive the message "The username must be between 3 and 100 characters long"
+	And I will remain on the security-details page
+	
 	#Invalid new password supplied
 	
 	Given I have supplied a password without enough characters
 	When I select Next
-	Then I will receive the message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
 	And I will remain on the security-details page
 
     Given I have supplied a password without enough numbers
 	When I select Next
-	Then I will receive the message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
 	And I will remain on the security-details page
 	
 	Given I have supplied a password without enough letters
 	When I select Next
-	Then I will receive the message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
 	And I will remain on the security-details page
 	
 	Given I have supplied a password that includes user details
 	When I select Next
-	Then I will receive the message "Username and password must not be the same"
+	Then I will receive the message "You must make the password different from the username"
 	And I will remain on the security-details page
 		
 	
@@ -60,7 +66,7 @@ Scenario: Process security details
 	Given I have supplied a password
 	And I have supplied a different confirm password
 	When I select Next
-	Then I will receive the message "Confirm password must match password"
+	Then I will receive the message "You must make the passwords the same"
 	And I will remain on the security-details page
 	
 	#Happy path, move to account confirmation page

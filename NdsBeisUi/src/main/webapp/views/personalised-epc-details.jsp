@@ -52,8 +52,8 @@
 						<c:set var="showaddbutton" value="true" />
 					</c:otherwise>
 				</c:choose>
-
-				<div class="form-group">	
+			
+                <div class="form-group">	
 									
 					<jsp:include page="personalised-exemption-upload-component.jsp">
 						<jsp:param name="path"
@@ -71,7 +71,10 @@
 						<jsp:param name="actionvalue" value="AddResource" />
 					</jsp:include>
 				</div>
-
+                      
+                <div id="divTemp">
+					 <input type="hidden" name="hiddenUploadField" id="hiddenUploadField"/>
+			    </div>
 				<section class="next">
 					<c:if
 						test="${not empty command.exemptionDetails.epc.files.resources}">
@@ -80,7 +83,7 @@
 									bundle="${FieldsBundle}"
 									key="Label_exemptionDetails.uploadtext" />
 							</h3>
-							<table>
+							<table id="uploadedFiles">
 								<tr>
 									<th><fmt:message bundle="${FieldsBundle}"
 											key="UploadColumn_filename" /></th>

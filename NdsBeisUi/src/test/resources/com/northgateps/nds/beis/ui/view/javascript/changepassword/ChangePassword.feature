@@ -66,7 +66,7 @@ And I will remain on the personalised-change-password page
 Given I have supplied a valid old password
 And I have supplied a new password that includes user details
 When I select 'Change password'
-Then I will receive the message "Username and password must not be the same"
+Then I will receive the message "You must make the password different from the username"
 And I will remain on the personalised-change-password page
 
 #Unconfirmed password 
@@ -74,7 +74,7 @@ Given I have supplied a valid old password
 Given I have supplied a valid new password 
 And I have supplied a different confirm password 
 When I select 'Change password' 
-Then I will receive the message "Confirm password must match new password" 
+Then I will receive the message "You must make the passwords the same" 
 And I will remain on the personalised-change-password page
 
 #Happy path, move to account address page 

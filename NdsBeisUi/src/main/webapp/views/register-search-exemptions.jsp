@@ -31,7 +31,7 @@
 				<p>
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_uiData.searchExemptionText" />
-					<a href="${moreAboutExemptionsUrl}"
+					<a href="${registerSearchExemptionsUrl}"
 						id="min.standard.energy.efficiency" target="_blank"><fmt:message
 							bundle="${FieldsBundle}"
 							key="Paragraph_MinStandrdEnergyEfficiency" /></a>
@@ -119,7 +119,7 @@
 								<nds:selectelement
 									path="uiData.exemptionSearch.exemptionType_PRSD"
 									id="select-box-prsd"
-									items="${command.uiData.refData.getExemptionTypeText('PRSD')}"
+									items="${command.uiData.refData.getDomesticExemptions()}"
 									labeldecoration="required" />
 							</div>
 
@@ -127,12 +127,10 @@
 								<nds:selectelement
 									path="uiData.exemptionSearch.exemptionType_PRSN"
 									id="select-box-prsn"
-									items="${command.uiData.refData.getExemptionTypeText('PRSN')}"
+									items="${command.uiData.refData.getNonDomesticExemptions()}"
 									labeldecoration="required" />
-
-							</div>
-
-
+							</div>							
+						
 						</div>
 					</details>
 					

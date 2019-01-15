@@ -172,7 +172,7 @@ public class ExemptionDocumentUploadSteps {
                 pageObject.getDriver().findElement(By.className("filename")).getText());
 
     }
-
+	
     @Then("^I will have an option to remove the file$")
     public void i_will_have_an_option_to_remove_the_file() throws Throwable {
         WebElement element = pageObject.getDriver().findElement(By.xpath("//*[contains(@id,'DeleteResource')]"));
@@ -210,7 +210,7 @@ public class ExemptionDocumentUploadSteps {
     @When("^I select Remove file$")
     public void i_select_Remove_file() throws Throwable {
         pageHelper.ClearForm();
-
+        
     }
 
     @Then("^the document \"(.*?)\" is not listed as uploaded$")
