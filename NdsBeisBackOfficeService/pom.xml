@@ -24,12 +24,16 @@
 	</distributionManagement>
 
 	<parent>
-		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<groupId>com.northgateps.nds.sharedpoms</groupId>
 		<artifactId>sharedpoms-esb</artifactId>
-		<version>(,1.0.0]</version>
-		<relativePath>../NdsSharedPoms/NdsSharedPomEsb/pom.xml</relativePath>
+		<version>0.0.0-SNAPSHOT</version>
+        <relativePath />
 	</parent>
-	
+
+    <properties>
+        <nds.platform.version>0.0.0-SNAPSHOT</nds.platform.version>
+    </properties>
+    
 	<dependencies>
 		<dependency>
 			<!-- Need to use various utils in the platform to perform the tests. -->
@@ -38,11 +42,9 @@
 			<version>${nds.platform.version}</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
 
-	<properties>
-		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
-	</properties>
+
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -229,4 +231,60 @@
 			</plugin>
 		</plugins>
 	</build>
+
+    <profiles>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. 
+            It has no influence on the Maven build itself. -->
+        <profile>
+            <id>only-eclipse</id>
+            <activation>
+                <property>
+                    <name>m2e.version</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.eclipse.m2e</groupId>
+                            <artifactId>lifecycle-mapping</artifactId>
+                            <version>1.0.0</version>
+                            <configuration>
+                                <lifecycleMappingMetadata>
+                                    <pluginExecutions>
+                                        <!-- 
+                                            Tells Eclipse to run the AspectJ weaving as part of its builds so the logging system 
+                                            will still work in Tomcat after a Maven Update (Alt+F5 in Eclipse) 
+                                        -->
+                                        <pluginExecution>
+                                            <pluginExecutionFilter>
+                                                <groupId>org.codehaus.mojo</groupId>
+                                                <artifactId>aspectj-maven-plugin</artifactId>
+                                                <versionRange>[${aspectj.maven.plugin.version},)</versionRange>
+                                                <goals>
+                                                    <goal>compile</goal>
+                                                </goals>
+                                            </pluginExecutionFilter>
+                                            <action>
+                                                <execute>
+                                                    <!-- 
+                                                        If this plugin is causing performance issues on Eclipse, set this to false.
+                                                        However you may then need to run the plugin manually (
+                                                        eg build from the command line) to ensure the logging 
+                                                        system is weaved in. 
+                                                      -->
+                                                    <runOnIncremental>false</runOnIncremental>
+                                                    <runOnConfiguration>true</runOnConfiguration>
+                                                </execute>
+                                            </action>
+                                        </pluginExecution>
+                                    </pluginExecutions>
+                                </lifecycleMappingMetadata>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>

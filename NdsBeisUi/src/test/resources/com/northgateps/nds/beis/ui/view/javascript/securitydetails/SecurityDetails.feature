@@ -72,4 +72,4 @@ Scenario: Process security details
 	#Happy path, move to account confirmation page
 	Given I have supplied valid data
 	When I select Next
-	Then I will be taken to the account-confirmation page
+	Then I will be taken to the account-confirmation page with the correct signposting

@@ -54,7 +54,7 @@ Scenario: Process address details
 	
 	Given I have supplied a valid postcode with no Address exists
 	When I select Find address
-	Then I will receive the message "No Address found for given postcode" 
+	Then I will receive the validation message "No Address found for given postcode" 
 	And I will remain on the personalised-property-address page
 	
 	#Valid postcode supplied with addresses

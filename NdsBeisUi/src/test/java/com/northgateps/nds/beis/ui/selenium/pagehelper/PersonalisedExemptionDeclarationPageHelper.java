@@ -19,7 +19,7 @@ public class PersonalisedExemptionDeclarationPageHelper
         setFormFiller(new FormFiller() {
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
-                getPageObject().clickNdsCheckboxIsAgreed_Agree();
+                getPageObject().clickInputIsAgreed_Agree();
             }
         });
     }

@@ -11,6 +11,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionDeclarationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionListOfValuesPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionTextPageHelper;
+import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedFurtherInformationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedSelectExemptionTypePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
@@ -43,6 +44,8 @@ public class ContentSecuritySteps {
 	private PersonalisedExemptionTextPageHelper personalisedExemptionTextPageHelper;
 
 	private BasePageHelper<?> endPageHelper;
+	
+	private BasePageHelper<?> furtherInfoHelper;
 
     @Before
     public void beforeScenario() {
@@ -123,11 +126,15 @@ public class ContentSecuritySteps {
 
     @Given("^I select mandatory field and submit$")
     public void i_select_mandatory_field_and_submit() throws Throwable {
-    	endPageHelper = (BasePageHelper<?>) new PersonalisedExemptionDeclarationPageHelper(webDriver);
+    	furtherInfoHelper = (BasePageHelper<?>) new PersonalisedFurtherInformationPageHelper(webDriver);
     	
     	// check if the previous step triggered a mod-security "Security check" page
-    	checkNotOnPage(endPageHelper, "406");
+    	checkNotOnPage(furtherInfoHelper, "406");
+
+       	furtherInfoHelper.skipPage();
     	
+    	endPageHelper = (BasePageHelper<?>) new PersonalisedExemptionDeclarationPageHelper(webDriver);
+    	    	
     	endPageHelper.skipPage();
     }
 

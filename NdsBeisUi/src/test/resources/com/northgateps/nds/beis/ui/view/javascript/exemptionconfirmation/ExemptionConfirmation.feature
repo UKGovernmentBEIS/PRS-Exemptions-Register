@@ -14,6 +14,7 @@ Scenario: Moving back and selecting different exemption type and then submitting
     When I select back and move to exemption type page
     And I select a different exemption type 'ALLIMP' and try submitting the exemption
     Then I must be taken to personalised-exemption-confirmation page
+    And I can see the correct guidance text
     When I select 'View my exemptions'
 	Then I will be taken to the personalised-dashboard page
 	

@@ -50,8 +50,7 @@ public class SelectLandlordOrAgentSteps {
     }
     
     @Given("^I am on the select-landlord-or-agent page$")
-    public void i_am_on_the_select_landlord_or_agent_page() throws Throwable {
-        
+    public void i_am_on_the_select_landlord_or_agent_page() throws Throwable {       
        
         /*Set a custom form filler for used-service-before page*/
         firstPageHelper.setFormFiller(new FormFiller() {
@@ -96,7 +95,7 @@ public class SelectLandlordOrAgentSteps {
 
     @Given("^I have selected landlord$")
     public void i_have_selected_landlord() throws Throwable {
-        pageObject.clickNdsRadiobuttonUserType_LANDLORD();
+       pageObject.clickNdsRadiobuttonelementUserType("LANDLORD");
     }
 
     @Then("^I will be taken to the 'select-landlord-type' page$")
@@ -106,7 +105,7 @@ public class SelectLandlordOrAgentSteps {
     
     @Given("^I have selected agent$")
     public void i_have_selected_agent() throws Throwable {
-        pageObject.clickNdsRadiobuttonUserType_AGENT();
+        pageObject.clickNdsRadiobuttonelementUserType("AGENT");
     }
 
     @Then("^I will be taken to the 'account-details' page$")

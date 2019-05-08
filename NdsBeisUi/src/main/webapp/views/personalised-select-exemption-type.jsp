@@ -28,9 +28,11 @@
 					<jsp:include page="form-error.jsp"/>
 					<section id="forminfowrap">
 						<h2 class="form-title heading-large" role="banner">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_Select_Exemption_Type" />
+							<fmt:message bundle="${FieldsBundle}" key="Heading_Select_Exemption_Type" />
 						</h2>
+                        <p>
+                            <fmt:message bundle="${FieldsBundle}" key="Prompt_Select_Exemption_Type" />
+                        </p>    
 					</section>
 				</div>
 			</div>

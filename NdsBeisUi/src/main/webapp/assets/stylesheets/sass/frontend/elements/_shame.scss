@@ -1,4 +1,4 @@
-// Show the arrow on summary elements in Firefox - _details.scss
+﻿// Show the arrow on summary elements in Firefox - _details.scss
 // The current Firefox implementation uses display: list-item to show the arrow marker.
 // We want to use display: inline-block to shrink-wrap the focus outline around the text.
 // This will turn off inline-block for Firefox that's not using the polyfill only.

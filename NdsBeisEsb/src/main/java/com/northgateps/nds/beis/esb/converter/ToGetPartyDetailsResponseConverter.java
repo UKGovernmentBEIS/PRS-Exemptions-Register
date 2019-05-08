@@ -15,7 +15,10 @@ import com.northgateps.nds.beis.api.PersonNameDetail;
 import com.northgateps.nds.beis.api.UserType;
 import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.common.AddressType;
+import com.northgateps.nds.beis.backoffice.service.core.MessageStructure;
+import com.northgateps.nds.beis.backoffice.service.core.MessagesStructure;
 import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsResponse;
+import com.northgateps.nds.platform.api.NdsMessages;
 import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
@@ -54,17 +57,18 @@ public final class ToGetPartyDetailsResponseConverter {
 
         if (getPartyDetailsResponse != null) {
             if (getPartyDetailsResponse.isSuccess()) {
-                retrieveRegisteredDetailsNdsResponse.setSuccess(true);             
+                retrieveRegisteredDetailsNdsResponse.setSuccess(true);
 
-                if(getPartyDetailsResponse.getUserType() != null){
-                    if(getPartyDetailsResponse.getUserType().equals("Agent")){
+                if (getPartyDetailsResponse.getUserType() != null) {
+                    if (getPartyDetailsResponse.getUserType().equals("Agent")) {
                         beisUserDetails.setUserType(UserType.AGENT);
                         accountDetails.setAgentNameDetails(new AgentNameDetails());
                         accountDetails.getAgentNameDetails().setAgentName(
                                 getPartyDetailsResponse.getOrganisationName());
-                    }else{
+                    } else {
                         beisUserDetails.setUserType(UserType.LANDLORD);
-                        if (getPartyDetailsResponse.getFirstName() != null && getPartyDetailsResponse.getLastName() != null) {
+                        if (getPartyDetailsResponse.getFirstName() != null
+                                && getPartyDetailsResponse.getLastName() != null) {
                             accountDetails.setPersonNameDetail(new PersonNameDetail());
                             accountDetails.getPersonNameDetail().setFirstname(getPartyDetailsResponse.getFirstName());
                             accountDetails.getPersonNameDetail().setSurname(getPartyDetailsResponse.getLastName());
@@ -73,13 +77,13 @@ public final class ToGetPartyDetailsResponseConverter {
                             accountDetails.getOrganisationNameDetail().setOrgName(
                                     getPartyDetailsResponse.getOrganisationName());
                         }
-                    }  
+                    }
 
                 }
-                
+
                 accountDetails.setTelNumber(getPartyDetailsResponse.getPhoneNumber());
                 beisRegistrationDetails.setAccountDetails(accountDetails);
-                beisUserDetails.setEmail(getPartyDetailsResponse.getEmailAddress());                
+                beisUserDetails.setEmail(getPartyDetailsResponse.getEmailAddress());
                 beisRegistrationDetails.setUserDetails(beisUserDetails);
 
                 if (getPartyDetailsResponse.getAddress() != null) {
@@ -94,6 +98,31 @@ public final class ToGetPartyDetailsResponseConverter {
                 }
 
                 retrieveRegisteredDetailsNdsResponse.setBeisRegistrationDetails(beisRegistrationDetails);
+            } else {
+                Boolean success = null;
+                MessagesStructure messagesStructure = getPartyDetailsResponse.getMessages();
+                if (messagesStructure != null) {
+                    List<MessageStructure> messages = messagesStructure.getMessage();
+                    if (messages != null) {
+
+                        for (MessageStructure messageStructure : messages) {
+
+                            // genuine error
+                            NdsMessages ndsMessages = new NdsMessages();
+                            ndsMessages.setExceptionCaught(
+                                    (messageStructure.getText() != null) ? messageStructure.getText() : "");
+                            ndsMessages.setErrorNumber(
+                                    (messageStructure.getCode() != null) ? messageStructure.getCode() : "");
+                            ndsMessages.setErrorType((messageStructure.getSeverity() != null)
+                                    ? messageStructure.getSeverity().toString() : "");
+                            retrieveRegisteredDetailsNdsResponse.setNdsMessages(ndsMessages);
+
+                            success = false;
+
+                        }
+                    }
+                }
+                retrieveRegisteredDetailsNdsResponse.setSuccess(success);
             }
         }
         logger.info("Finished Conversion For GetPartyDetailsResponse");

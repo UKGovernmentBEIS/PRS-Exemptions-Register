@@ -8,7 +8,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-2.19.1.xsd
 		 http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
-
 		 http://cxf.apache.org/core  http://cxf.apache.org/schemas/core.xsd
 		 http://www.northgateps.com/schema/spring/nds-camel-extensions http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd
 		 http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
@@ -38,10 +37,13 @@
         <constructor-arg name="collectionName" value="${ndsdb.audit.collection.name}"/>
     </bean>
 
-    
-
-	<bean id="prepareSecurity"
+    <bean id="prepareSecurity"
 		class="com.northgateps.nds.platform.esb.util.security.NdsPrepareSecurityAuthenticationHeader" />
+		
+	<bean id="constrainedValuesCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetConstrainedValuesCacheAdapter" />
+	<bean id="prsExemptionRefDataCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetPrsExemptionRefDataCacheAdapter" />
+	<bean id="prsPenaltyRefDataCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetPrsPenaltyRefDataCacheAdapter" />
+	<bean id="referenceDataCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetReferenceDataCacheAdapter" />
 
 	<!-- Loaded JAXBContext on startup for better performance of object to xml conversion -->
 	<bean id="ndsJaxbContext"
@@ -67,10 +69,7 @@
 		</property>
 	</bean>
 
-    <!-- Helps with setting up caches -->
-    <bean id="camelCacheSetupBean" class="com.northgateps.nds.platform.esb.camel.CamelCacheSetupBean" />
-
-	<!-- define some properties that define our configuration environment. -->
+    <!-- define some properties that define our configuration environment. -->
 	<bean id="properties"
 		class="com.northgateps.nds.platform.esb.util.configuration.NdsPropertiesComponent" />
 
@@ -174,8 +173,7 @@
 		serviceClass="com.northgateps.nds.beis.api.updateexemptiondetails.UpdateExemptionDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
 		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
 		</cxf:providers>
 	</cxf:rsServer>
 
@@ -183,8 +181,7 @@
 		serviceClass="com.northgateps.nds.beis.api.viewdocument.ViewPdfServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
 		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
 		</cxf:providers>
 	</cxf:rsServer>
 
@@ -207,7 +204,6 @@
 
 	<bean id="prsExemptionUpdateAdapter"
 		class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateAdapter" />
-
 
 	<bean id="infrastructureErrorProcessor"
 		class="com.northgateps.nds.platform.esb.exception.InfrastructureErrorProcessor" />
@@ -268,7 +264,10 @@
 	<bean id="deleteUploadedFilesAdapter"
 		class="com.northgateps.nds.platform.esb.fileresourceoperation.DeleteUploadedFilesPersistenceAdapter">
         <constructor-arg value="reference number" />    
-    </bean>   
+    </bean>
+    
+    <bean id="statisticsAdapter"
+		class="com.northgateps.nds.beis.esb.statistics.StatisticsPersistenceAdapter" />
 
 	<bean id="validateRetrieveRegisteredUserDetails"
 		class="com.northgateps.nds.beis.esb.process.ValidateRetrieveRegisteredUserDetails">
@@ -398,6 +397,11 @@
 		class="com.northgateps.nds.beis.esb.dashboard.GetUserTypePartyDetailsAdapter" />
 		
 	<bean id="getUserEmailAddressAdapter" class="com.northgateps.nds.beis.esb.registration.GetUserEmailAddressAdapter" />
+	
+	<bean id="statisticsEmailAdapter"
+		class="com.northgateps.nds.beis.esb.statistics.StatisticsEmailAdapter">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+	</bean>
 
 	<cxf:rsServer id="fileAddService" address="/fileAddService"
 		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileAddServiceInterface"
@@ -483,6 +487,7 @@
 		serviceName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.maintainpartydetails.MaintainPartyDetailsWSDLPort"
 		endpointName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
+		
 		loggingFeatureEnabled="true">
 		<cxf:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
@@ -700,23 +705,6 @@
 		<routeContextRef ref="directoryRoutes" />
 		<routeContextRef ref="generateReferenceRoutes" />
 
-		<camel:endpoint id="pedefaultCache"
-			uri="cache:pedefaultCache?diskExpiryThreadIntervalSeconds=120
-		&amp;diskPersistent=false&amp;eternal=false&amp;key=requestHash&amp;maxElementsInMemory=1000
-		&amp;memoryStoreEvictionPolicy=MemoryStoreEvictionPolicy.LFU&amp;objectCache=false&amp;overflowToDisk=true
-		&amp;timeToIdleSeconds=300&amp;timeToLiveSeconds=300" />
-
-		<camel:endpoint id="generateReferenceCache"
-			uri="cache:{{generate.reference.cache}}?diskExpiryThreadIntervalSeconds=120
-		&amp;diskPersistent=false&amp;eternal=false&amp;key=requestHash&amp;maxElementsInMemory=1000
-		&amp;memoryStoreEvictionPolicy=MemoryStoreEvictionPolicy.LFU&amp;objectCache=false&amp;overflowToDisk=true
-		&amp;timeToIdleSeconds=0&amp;timeToLiveSeconds=0" />
-
-        <!-- Used to setup backup cache -->
-        <camel:endpoint id="backupCache"
-            uri="cache:backupCache?diskPersistent=false&amp;eternal=true&amp;key=requestHash&amp;maxElementsInMemory=1000
-                &amp;memoryStoreEvictionPolicy=MemoryStoreEvictionPolicy.LFU&amp;objectCache=false&amp;overflowToDisk=false" />
-
 		<dataFormats>
 			<jaxb id="jaxb-registerPrsExemptionResponse"
 				contextPath="com.northgateps.nds.beis.backoffice.service.registerprsexemption" />
@@ -753,20 +741,7 @@
 			<process ref="ndsDirectoryErrorRecoveryProcessor" />
 		</onException>
 
-        <!-- Used to setup backup cache -->
-        <route id="setupBackupCacheAtStartRoute">
-            <from uri="timer://setupBackupCacheAtStart?repeatCount=1" />
-            <camel:setHeader headerName="CamelCacheOperation">
-                <camel:constant>CamelCacheAdd</camel:constant>
-            </camel:setHeader>
-            <camel:setHeader headerName="CamelCacheKey">
-                <simple>"startup"</simple>
-            </camel:setHeader>
-            <bean ref="camelCacheSetupBean" method="setupCache" />
-            <camel:to ref="backupCache"/>
-        </route>
-
-		<route id="getPartiallyRegisteredDetailsServiceRoute" trace="true"
+        <route id="getPartiallyRegisteredDetailsServiceRoute" trace="true"
 			streamCache="true" handleFault="true">
 			<from uri="{{apiGetPartiallyRegisteredDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
@@ -785,6 +760,7 @@
 				<bean ref="getUserTypePartyDetailsAdapter" method="createPartyDetailsRequest" />
 				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
 				<to uri="direct:getPartyDetails" />
+				<bean ref="validateGetPrsAccountExemptionsRequest" method="validateUserDataInBackoffice" />
 				<bean ref="getUserTypePartyDetailsAdapter" method="getUserType" /> 
 				<bean ref="getPrsAccountExemptionsAdapter" method="processRequest" />
 				<to uri="cxf:bean:beisGetPrsAccountExemptionsService" />
@@ -834,9 +810,7 @@
 				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
 
 				<!-- read the constrained values from file/cache -->
-				<ndsext:toWithCache uri="pedefaultCache"
-					otherwiseuri="singleFileReader:{{beis.csvConstraintsFilePath}}"
-					keyGeneratorRef="getConstrainedValuesAdapter"/>
+				<bean ref="constrainedValuesCacheAdapter" method="doCaching" /> 
 					
 				<!-- bind to a java class ie. CsvConstrainedValueRecord -->
 				<unmarshal ref="csvBindyConstrainedValueRecord" />
@@ -1118,16 +1092,11 @@
 			<from uri="{{apiGetPrsExemptionRefData}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="getPrsExemptionRefDataAdapter" method="processRequest" />
-				
-				<log message="Getting PRS Excemption Ref Data" />
-				<ndsext:toWithCache uri="pedefaultCache" otherwiseuri="cxf:bean:getPrsExemptionRefDataEndPoint" 
-					backupCache="backupCache" backupAdapter="getPrsExemptionRefDataAdapter"
-					unmarshalRef="jaxb-getPrsExemptionRefDataResponse" keyGeneratorRef="getPrsExemptionRefDataAdapter"/>
+				<!-- read the prs exemption ref data from backoffice/cache -->
+				<bean ref="prsExemptionRefDataCacheAdapter" method="doCaching" /> 
+                <unmarshal ref="jaxb-getPrsExemptionRefDataResponse" />
+				<bean ref="getPrsExemptionRefDataAdapter" method="processResponse" />
 
-<!-- 				<unmarshal ref="jaxb-getPrsExemptionRefDataResponse" /> -->
-<!-- 				<bean ref="getPrsExemptionRefDataAdapter" method="processResponse" /> -->
-				
-				
 			</policy>
 		</route>
 		
@@ -1137,13 +1106,11 @@
 			<policy ref="generalSecurityPolicy">
 				<bean ref="getPrsPenaltyRefDataAdapter" method="processRequest" />
 				
-				<log message="Getting PRS Penalty Ref Data" />
-				<ndsext:toWithCache uri="pedefaultCache" otherwiseuri="cxf:bean:getPrsPenaltyRefDataEndPoint"
-					backupCache="backupCache" backupAdapter="getPrsPenaltyRefDataAdapter"
-					unmarshalRef="jaxb-getPrsPenaltyRefDataResponse" keyGeneratorRef="getPrsPenaltyRefDataAdapter"/>
-									
-<!-- 				<unmarshal ref="jaxb-getPrsPenaltyRefDataResponse" /> -->
-<!-- 				<bean ref="getPrsPenaltyRefDataAdapter" method="processResponse" /> -->
+				<!-- read the prs exemption ref data from backoffice/cache -->
+				<bean ref="prsPenaltyRefDataCacheAdapter" method="doCaching" /> 
+				<unmarshal ref="jaxb-getPrsPenaltyRefDataResponse" />
+				<bean ref="getPrsPenaltyRefDataAdapter" method="processResponse" />
+
 			</policy>
 		</route>
 		
@@ -1217,13 +1184,10 @@
 				<log message="${threadName} &gt;&gt;&gt; we've got a BEIS request from ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<bean ref="getReferenceValuesAdapter" method="processFilterRequest" />
 				<bean ref="getReferenceValuesAdapter" method="processRequest" />
-				
-				<ndsext:toWithCache uri="pedefaultCache" otherwiseuri="cxf:bean:beisGetReferenceValuesService"
-					backupCache="backupCache" backupAdapter="getReferenceValuesAdapter"
-					unmarshalRef="jaxb-getReferenceValuesResponse" keyGeneratorRef="getReferenceValuesAdapter"/>
-					
-<!-- 				<unmarshal ref="jaxb-getReferenceValuesResponse" /> -->
-<!-- 				<bean ref="getReferenceValuesAdapter" method="processResponse" /> -->
+				<!-- read the prs exemption ref data from backoffice/cache -->
+				<bean ref="referenceDataCacheAdapter" method="doCaching" /> 
+                <unmarshal ref="jaxb-getReferenceValuesResponse" />
+				<bean ref="getReferenceValuesAdapter" method="processResponse" />
 				<bean ref="getReferenceValuesAdapter" method="processFilterResponse" />
 			</policy>
 		</route>
@@ -1238,6 +1202,33 @@
 		<route id="PurgeBatchJobRoute">
 			<from uri="timer://purgeRegistrationAndFilesBatchJob?period={{timerPeriod}}" />
 			<to uri="direct:purgeDocumentRoute" />
+		</route>
+		
+		<route id="statisticsBatchJobRoute">
+			<from uri="timer://statisticsBatchJob?period={{statisticsInterval}}" />
+			<to uri="direct:statisticsRoute" />
+		</route>
+		
+		<route id="statisticsRoute">
+			<from uri="direct:statisticsRoute" />
+			<bean id="statisticsAdapter.processRecords" ref="statisticsAdapter" method="processRecords" />
+			<when>
+				<simple>${exchangeProperty[${type:com.northgateps.nds.platform.esb.adapter.persistence.BatchJobPersistenceAdapter.DATE_TIME_NOW_RAN}]} != null</simple>
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'statisticsAdapterRequest')" />
+				<bean ref="statisticsAdapter" method="createUserAccountStatisticsRequest" />
+			    <to uri="direct:userAccountStatistics" />			    
+				<bean ref="statisticsAdapter" method="processUserAccountStatisticsResponse" />
+				<bean ref="ndsExchangeUtilities" method="peekMessageToOut(*, 'statisticsAdapterRequest')" />
+				<bean ref="statisticsAdapter" method="prepareStatsForEmailRequest" />
+				<bean ref="statisticsEmailAdapter" method="processRequest" />
+				<setHeader headerName="Content-Type">
+				  <constant>text/html</constant>
+				</setHeader>
+				<to uri="smtp://{{smtp.host.server}}" />
+				<bean ref="statisticsEmailAdapter" method="processResponse" />
+				<bean id="statisticsAdapter.insertAuditRecord" ref="statisticsAdapter" method="insertAuditRecord" />
+				<bean id="statisticsAdapter.purgeAuditRecords" ref="statisticsAdapter" method="purgeAuditRecords" />
+			</when>						
 		</route>
 	</camelContext>
 

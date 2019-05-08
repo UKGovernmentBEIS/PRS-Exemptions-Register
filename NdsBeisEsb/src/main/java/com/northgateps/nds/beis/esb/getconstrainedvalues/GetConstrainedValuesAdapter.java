@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import org.apache.camel.Exchange;
-
 import com.northgateps.nds.beis.api.getconstrainedvalues.GetConstrainedValuesNdsRequest;
 import com.northgateps.nds.beis.api.getconstrainedvalues.GetConstrainedValuesNdsResponse;
 import com.northgateps.nds.platform.api.ConstrainedValue;
 import com.northgateps.nds.platform.esb.adapter.NdsCsvAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxyImpl;
-import com.northgateps.nds.platform.esb.camel.CacheKeyGenerator;
-import com.northgateps.nds.platform.esb.camel.NdsCacheHandlerParser;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -36,11 +31,9 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 // Abstracting the looping code from here, to loop TRecords in
 // NdsConstraintsAdapter which produces generic
 // array list of constraints to be used in this class here
-public class GetConstrainedValuesAdapter extends
-		NdsCsvAdapter<CsvConstrainedValueRecord, GetConstrainedValuesNdsRequest, GetConstrainedValuesNdsResponse> 
-		implements CacheKeyGenerator {
+public class GetConstrainedValuesAdapter extends NdsCsvAdapter<CsvConstrainedValueRecord, GetConstrainedValuesNdsRequest, GetConstrainedValuesNdsResponse>  {
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
 	private static final NdsLogger logger = NdsLogger.getLogger(GetConstrainedValuesAdapter.class);
 
 	@Override
@@ -133,10 +126,5 @@ public class GetConstrainedValuesAdapter extends
 	protected String getSuffix(GetConstrainedValuesNdsRequest ndsRequest) {
 		return "";
 	}
-
-    @Override
-    public void getCacheKey(Exchange exchange) {
-        exchange.getIn().setHeader(NdsCacheHandlerParser.CACHE_KEY_INDEX, this.getClass().getName());        
-    }
 
 }

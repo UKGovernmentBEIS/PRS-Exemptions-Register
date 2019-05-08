@@ -53,13 +53,14 @@ files:
   "NdsBeisCas/etc/cas/config/cas.properties.sample":
     actions:
       blank_properties:
-        - cas.tgc.encryptionKey
-        - cas.tgc.signingKey
-        - cas.webflow.encryption.key
-        - cas.webflow.signing.key
+        - cas.tgc.crypto.encryption.key
+        - cas.tgc.crypto.signing.key
+        - cas.webflow.crypto.encryption.key
+        - cas.webflow.crypto.signing.key
+        - cas.authn.pm.reset.crypto.encryption.key
+        - cas.authn.pm.reset.crypto.signing.key
         - nds.authn.ldap[0].ldapUrl
-        - nds.authn.ldap[0].trustCertificates
-        - nds.authn.ldap[0].trustStorePassword
+        - nds.authn.ldap[0].bindCredential
         - nds.httpClient.truststore.psw
         - nds.audit.keyStore_password
         - nds.audit.trustStore_password
@@ -67,6 +68,8 @@ files:
         - nds.ticketRegistryMongo.ports
         - nds.ticketRegistryMongo.userId
         - nds.ticketRegistryMongo.password
+        - cas.authn.pm.ldap.ldapUrl
+        - cas.authn.pm.ldap.bindCredential
   "NdsBeisCas/src/main/resources/services/beis-ssl-service.json":
     actions:
       remove_file:
@@ -83,14 +86,7 @@ files:
     actions:
       replace_strings:
         - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:4444=testServer
-  "NdsSharedPoms/NdsSharedPomCas/pom.xml":
+  "NdsEnvironment/environment/develop/certs":
     actions:
-      replace_strings:
-        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:9090=mavenRepo
-        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}=gitServer
-  "NdsSharedPoms/pom.xml":
-    actions:
-      replace_strings:
-        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}:9090=mavenRepo
-        - (?:[0-9]{1,3}\.){3}[0-9]{1,3}=gitServer
+      remove_folder:    
   

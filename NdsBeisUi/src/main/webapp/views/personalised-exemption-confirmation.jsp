@@ -52,27 +52,21 @@
 					<c:choose>
 					<c:when
 						test="${command.exemptionDetails.propertyType.name() == 'PRSD'}">
-						<p>
+						<p class="body-text">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Label_happen_next_text_domestic" />
 						</p>
-						<p>
-							<fmt:message bundle="${FieldsBundle}"
-								key="Label_happen_next_further_text_domestic" />
-						</p>
 					</c:when>
 					<c:otherwise>
-						<p>
+						<p class="body-text">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Label_happen_next_text_non_domestic" />
 						</p>
-						<p>
-							<fmt:message bundle="${FieldsBundle}"
-								key="Label_happen_next_further_text_non_domestic" />
-						</p>
 					</c:otherwise>
-				</c:choose>
-
+				    </c:choose>
+					<p class="body-text">
+					  <fmt:message bundle="${FieldsBundle}"	key="Paragraph_DashboardHint5SelfCertification" />
+					</p>					
 					<section class="submit">
 						<div class="form-group">
 							<a href="${contextUi}/personalised-dashboard?tenant=${command.tenant}" id="finish" class="button next">

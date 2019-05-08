@@ -135,8 +135,9 @@ public class DashboardEventHandler extends AbstractViewEventHandler {
                         if(error.getViolations() != null){
                             if(error.getViolations().get(0) != null){
                                 if (error.getViolations().get(0).getMessage() != null) {                                    
+                                   //BEI-187 -The landlord is no longer current and BEI-188 A suitable party does not exist for the PartyRef supplied 
                                     if (error.getViolations().get(0).getMessage().contains(
-                                            "The user is only partially registered and does not have a valid account id")) {        
+                                            "The user is only partially registered and does not have a valid account id") || error.getViolations().get(0).getMessage().contains("BEI-187") || error.getViolations().get(0).getMessage().contains("BEI-188") ) {        
                                         // Set an indicator on the model.
                                         uiData.setRegistrationStatus(RegistrationStatusType.FOUND_PARTIALLY_REGISTERED);
                                         return true;        

@@ -3,8 +3,6 @@ package com.northgateps.nds.beis.esb.getprsexemptionrefdata;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverter;
 
 import com.northgateps.nds.beis.api.ExemptionTypeDetails;
@@ -12,11 +10,9 @@ import com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDat
 import com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDataNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataRequest;
 import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataResponse;
-import com.northgateps.nds.platform.esb.adapter.BackupCacheableAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsFilterSoapAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxyImpl;
-import com.northgateps.nds.platform.esb.camel.CacheKeyGenerator;
-import com.northgateps.nds.platform.esb.camel.NdsCacheHandlerParser;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
@@ -25,9 +21,7 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  * back office.
  *
  */
-public class GetPrsExemptionRefDataAdapter extends
-		BackupCacheableAdapter<GetPrsExemptionRefDataNdsRequest, GetPrsExemptionRefDataNdsResponse, GetPRSExemptionReferenceDataRequest, GetPRSExemptionReferenceDataResponse> 
-		implements CacheKeyGenerator {
+public class GetPrsExemptionRefDataAdapter extends NdsFilterSoapAdapter<GetPrsExemptionRefDataNdsRequest, GetPrsExemptionRefDataNdsResponse, GetPRSExemptionReferenceDataRequest, GetPRSExemptionReferenceDataResponse> {
 
     private static final NdsLogger logger = NdsLogger.getLogger(GetPrsExemptionRefDataAdapter.class);
 
@@ -87,29 +81,25 @@ public class GetPrsExemptionRefDataAdapter extends
         return GetPrsExemptionRefDataNdsRequest.class.getName();
     }
     
-    @Override
-    public void getCacheKey(Exchange exchange) {
-        exchange.getIn().setHeader(NdsCacheHandlerParser.CACHE_KEY_INDEX, this.getClass().getName());        
-    }
-
-    // N/A
-	@Override
-	protected GetPrsExemptionRefDataNdsResponse doFilterResponseProcess(GetPrsExemptionRefDataNdsResponse ndsResponse,
-			GetPrsExemptionRefDataNdsRequest ndsRequest, NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	// N/A
-	@Override
-	protected GetPrsExemptionRefDataNdsRequest doFilterRequestProcess(GetPrsExemptionRefDataNdsRequest ndsRequest,
-			NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+   
+    
 
 	@Override
 	protected String getNdsResponseClassName() {
 		return GetPrsExemptionRefDataNdsResponse.class.getName();
 	}
+
+    @Override
+    protected GetPrsExemptionRefDataNdsResponse doFilterResponseProcess(GetPrsExemptionRefDataNdsResponse ndsResponse,
+            GetPrsExemptionRefDataNdsRequest ndsRequest, NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected GetPrsExemptionRefDataNdsRequest doFilterRequestProcess(GetPrsExemptionRefDataNdsRequest ndsRequest,
+            NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

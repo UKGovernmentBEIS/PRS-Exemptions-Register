@@ -1,17 +1,15 @@
 package com.northgateps.nds.beis.esb.getprspenaltyrefdata;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.TypeConverter;
 
 import com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataNdsRequest;
 import com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata.GetPRSPenaltyReferenceDataRequest;
 import com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata.GetPRSPenaltyReferenceDataResponse;
-import com.northgateps.nds.platform.esb.adapter.BackupCacheableAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsFilterSoapAdapter;
+import com.northgateps.nds.platform.esb.adapter.NdsSoapAdapter;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxyImpl;
-import com.northgateps.nds.platform.esb.camel.CacheKeyGenerator;
-import com.northgateps.nds.platform.esb.camel.NdsCacheHandlerParser;
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
@@ -20,9 +18,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  * back office.
  *
  */
-public class GetPrsPenaltyRefDataAdapter extends
-		BackupCacheableAdapter<GetPrsPenaltyRefDataNdsRequest, GetPrsPenaltyRefDataNdsResponse, GetPRSPenaltyReferenceDataRequest, GetPRSPenaltyReferenceDataResponse>
-		implements CacheKeyGenerator {
+public class GetPrsPenaltyRefDataAdapter extends NdsFilterSoapAdapter<GetPrsPenaltyRefDataNdsRequest, GetPrsPenaltyRefDataNdsResponse, GetPRSPenaltyReferenceDataRequest, GetPRSPenaltyReferenceDataResponse>
+		{
     
     private static final NdsLogger logger = NdsLogger.getLogger(GetPrsPenaltyRefDataAdapter.class);
 
@@ -70,28 +67,23 @@ public class GetPrsPenaltyRefDataAdapter extends
     }
 
     @Override
-    public void getCacheKey(Exchange exchange) {
-        exchange.getIn().setHeader(NdsCacheHandlerParser.CACHE_KEY_INDEX, this.getClass().getName());        
-    }
-
-    // N/A
-	@Override
-	protected GetPrsPenaltyRefDataNdsResponse doFilterResponseProcess(GetPrsPenaltyRefDataNdsResponse ndsResponse,
-			GetPrsPenaltyRefDataNdsRequest ndsRequest, NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	// N/A
-	@Override
-	protected GetPrsPenaltyRefDataNdsRequest doFilterRequestProcess(GetPrsPenaltyRefDataNdsRequest ndsRequest,
-			NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	protected String getNdsResponseClassName() {
 		return GetPrsPenaltyRefDataNdsResponse.class.getName();
 	}
+
+    @Override
+    protected GetPrsPenaltyRefDataNdsResponse doFilterResponseProcess(GetPrsPenaltyRefDataNdsResponse ndsResponse,
+            GetPrsPenaltyRefDataNdsRequest ndsRequest, NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected GetPrsPenaltyRefDataNdsRequest doFilterRequestProcess(GetPrsPenaltyRefDataNdsRequest ndsRequest,
+            NdsSoapRequestAdapterExchangeProxyImpl ndsExchange) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+   
 }

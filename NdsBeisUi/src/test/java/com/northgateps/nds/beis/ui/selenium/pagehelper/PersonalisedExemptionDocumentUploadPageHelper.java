@@ -8,23 +8,25 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionDocumentUploadPageObject;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.PageObject;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
 import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
+import com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils;
 
 @PageObject(pageObjectClass = PersonalisedExemptionDocumentUploadPageObject.class)
 public class PersonalisedExemptionDocumentUploadPageHelper
         extends BasePageHelper<PersonalisedExemptionDocumentUploadPageObject> implements PageHelper {
 
-    private static final String fileGridLocation = "file:/C:/grid/beis/uploadfiles/";
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
     
     //set default Form Filler
     {
         setFormFiller(new FormFiller() {
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
-                getPageObject().getDriver().findElement(By.id("resource")).sendKeys(getFilePath("test.docx"));
+                beisUtils.selectFile(getPageObject().getDriver(), "test.docx");  
             }
         });
     }
@@ -35,17 +37,12 @@ public class PersonalisedExemptionDocumentUploadPageHelper
 
     public PersonalisedExemptionDocumentUploadPageHelper(WebDriver driver, Locale locale) {
         super(driver, locale);
-    }
-
-    public String getFilePath(String fileName) {
-
-        return fileGridLocation + fileName;
-
-    }
+    }    
 
    public void ClearForm() {
         final PersonalisedExemptionDocumentUploadPageObject pageObject = getPageObject();
-        List<WebElement> rows = pageObject.getDriver().findElements(By.cssSelector("tr"));
+        StepsUtils.checkOnPage(this, "personalised-exemption-document-upload");
+        List<WebElement> rows = pageObject.getDriver().findElements(By.cssSelector("tr"));        
         for (WebElement row : rows) {
             List<WebElement> cells = row.findElements(By.cssSelector("td"));
             if (cells.size() > 0) { // No td cells in the header row
@@ -73,8 +70,10 @@ public class PersonalisedExemptionDocumentUploadPageHelper
 
     @Override
     public PageHelper skipPage() {
+    	
         final PersonalisedExemptionDocumentUploadPageObject pageObject = getPageObject();
         fillInForm();
+        StepsUtils.checkOnPage(this, "personalised-exemption-document-upload");
         pageObject.invalidateDcId();
         pageObject.clickNext();
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());

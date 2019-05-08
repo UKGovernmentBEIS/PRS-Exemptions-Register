@@ -128,7 +128,7 @@ public class ExemptionDeclarationSteps {
 
     @Given("^I have ticked the declaration box$")
     public void i_have_ticked_the_declaration_box() throws Throwable {
-        pageObject.clickNdsCheckboxIsAgreed_Agree();
+        pageObject.clickInputIsAgreed_Agree();
     }
 
     @Then("^I will be taken to personalised-exemption-confirmation page$")

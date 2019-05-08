@@ -1,10 +1,11 @@
 Feature: Register Exemption - Exemption text and document upload 
 
 Scenario: Navigate back to personalised-exemption-document-upload page 
-	Given I am on the personalised-exemption-text page
-	When I select Back
-	Then I will be taken to the personalised-exemption-document-upload page
-	And the details previously entered will be displayed
+    Given I am on the personalised-exemption-text page
+    When I select Back
+    Then I will be taken to the personalised-exemption-document-upload page
+    And the details previously entered will be displayed
+
 	
 Scenario: Process exemption text details
 	Given I am on the personalised-exemption-text page
@@ -41,8 +42,8 @@ Scenario: Process exemption text details
     Then the document "test.docx" is not listed as uploaded
     Then I will remain on the personalised-exemption-text page
     
-    #Happy path,move to personalised-exemption-declaration page
+    #Happy path,move to personalised-further-information page
    	Given I select a file "test.docx" that is of the correct type and size
     When I select Next
-    Then I will be taken to the personalised-exemption-declaration page
+    Then I will be taken to the personalised-further-information page
     

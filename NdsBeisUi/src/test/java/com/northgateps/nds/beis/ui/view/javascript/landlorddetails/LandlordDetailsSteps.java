@@ -95,7 +95,7 @@ public class LandlordDetailsSteps {
     public void details_previously_entered_will_be_displayed() throws Throwable {
         personalisedSelectLandlordTypeAgentPageHelper = new PersonalisedSelectLandlordTypeAgentPageHelper(testHelper.getScenarioWebDriver());
         personalisedSelectLandlordTypeAgentPageObject = personalisedSelectLandlordTypeAgentPageHelper.getNewPageObject();
-        assertTrue("Checking details",personalisedSelectLandlordTypeAgentPageObject.getWebElementNdsRadiobuttonAccountType_PERSON().isSelected());
+        assertTrue("Checking details",personalisedSelectLandlordTypeAgentPageObject.isSelectedNdsRadiobuttonelementAccountType("PERSON"));
     }
 
     @Given("^I have not entered any data$")

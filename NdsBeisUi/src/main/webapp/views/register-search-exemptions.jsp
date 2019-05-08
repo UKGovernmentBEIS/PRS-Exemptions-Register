@@ -28,7 +28,7 @@
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_Register_Search_Exemptions" />
 				</h1>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_uiData.searchExemptionText" />
 					<a href="${registerSearchExemptionsUrl}"
@@ -36,7 +36,7 @@
 							bundle="${FieldsBundle}"
 							key="Paragraph_MinStandrdEnergyEfficiency" /></a>
 				</p>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_exemptionSearchText1" />
 					<br />

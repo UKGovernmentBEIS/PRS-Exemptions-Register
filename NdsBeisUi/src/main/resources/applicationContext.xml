@@ -15,10 +15,10 @@
     ">
 
 	<!-- Set up ehCache for the application in time for other configuration files to use it if needed. -->
-	<b:bean id="ehcache"
-		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-		p:config-location="classpath:ehcacheBeisUi.xml" />	
-		
+    <b:bean id="ehcache"
+        class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+        p:config-location="classpath:ehcacheBeisUi.xml" />
+			
 	<!-- 
 		Load these properties from our main properties file for use in this configuration 
 		cas.server.hostInternal - CAS server address for UI to CAS back-channel communication 

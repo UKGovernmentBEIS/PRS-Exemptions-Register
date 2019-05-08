@@ -20,7 +20,7 @@ xmlns:beisc="http://northgateps.com/BEISCommonTypes">
 									<xsd:element name="Exemption" maxOccurs="unbounded">
 										<xsd:complexType>
 							<xsd:sequence>
-							<xsd:element name="ExemptionRefNo" type="xsd:integer"/>
+							<xsd:element name="ExemptionRefNo" type="xsd:integer" />
 							<xsd:element name="ExemptionReference" type="xsd:string" minOccurs="0"/>
 							<xsd:element name="Service">
 							<xsd:annotation>
@@ -58,6 +58,8 @@ xmlns:beisc="http://northgateps.com/BEISCommonTypes">
 								<xsd:documentation>The address as a single string i.e. formatted address</xsd:documentation>
 								</xsd:annotation>
 							</xsd:element>
+                                                        <xsd:element name="Landlord" type="xsd:string" 
+                                                            minOccurs="0" />        
 						</xsd:sequence>
 					</xsd:complexType>
 									</xsd:element>

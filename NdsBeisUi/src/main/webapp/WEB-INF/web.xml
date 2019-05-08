@@ -10,18 +10,24 @@
 		<param-value>/WEB-INF/classes/log4j.properties</param-value>
 	</context-param>
 
-	<!-- Set up Spring Web Security configured by applicationContext-security.xml  -->
+	<!-- Set up Spring Web Security configured by applicationContext-security.xml -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext.xml, classpath:applicationContext-security.xml, classpath:applicationContext-session.xml</param-value>
 	</context-param>
-	
-	<listener><listener-class>org.springframework.web.context.ContextLoaderListener</listener-class></listener>
-	<listener><listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class></listener>
-	
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+
 	<!-- Cleans logging system at the end of each request -->
-	<listener><listener-class>com.northgateps.nds.platform.ui.request.RequestDestroyedListener</listener-class></listener>
-	
+	<listener>
+		<listener-class>com.northgateps.nds.platform.ui.request.RequestDestroyedListener</listener-class>
+	</listener>
+
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -40,28 +46,28 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<filter>
-	    <filter-name>failedRequestFilter</filter-name>
+		<filter-name>failedRequestFilter</filter-name>
 		<filter-class>org.apache.catalina.filters.FailedRequestFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
-	    <filter-name>failedRequestFilter</filter-name>
-	    <url-pattern>/*</url-pattern>
+		<filter-name>failedRequestFilter</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-    <!-- Use Spring Session rather than HttpSession -->
-    <filter>
-        <filter-name>springSessionRepositoryFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <async-supported>true</async-supported>
-    </filter>
-    <filter-mapping>
-        <filter-name>springSessionRepositoryFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
-    
+	<!-- Use Spring Session rather than HttpSession -->
+	<filter>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
+
 	<!-- Use Spring Security -->
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
@@ -98,10 +104,19 @@
 	<welcome-file-list>
 		<welcome-file>index.htm</welcome-file>
 	</welcome-file-list>
-
-	<!-- Show error.jsp instead of stacktraces for ServletExceptions -->
+	
 	<error-page>
-		<location>/views/error.jsp</location>
+		<location>/errorHandler</location>
 	</error-page>
+	<servlet>
+		<servlet-name>errorHandler</servlet-name>
+		<servlet-class>com.northgateps.nds.platform.ui.servlet.ErrorHandler</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>errorHandler</servlet-name>
+		<url-pattern>/errorHandler</url-pattern>
+	</servlet-mapping>
 
 </web-app>

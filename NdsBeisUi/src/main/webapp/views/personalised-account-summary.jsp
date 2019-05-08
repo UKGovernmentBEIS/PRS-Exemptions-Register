@@ -160,7 +160,14 @@
 						id="button.changePassword" role="link">
 						<fmt:message bundle="${FieldsBundle}" key="Link_ChangePassword" />
 					</button>
+					<div>
+						<button type="submit" name="action" value="NEXT:DeleteMyAccount"
+							id="button.deleteMyAccount" role="link">
+							<fmt:message bundle="${FieldsBundle}" key="Link_Delete_my_account" />
+						</button>
+					</div>
 				</div>
+
 
 				<section class="submit">
 					<div class="actions-group">

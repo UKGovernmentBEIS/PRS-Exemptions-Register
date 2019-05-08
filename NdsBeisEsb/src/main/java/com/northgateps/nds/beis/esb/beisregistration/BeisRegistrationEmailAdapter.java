@@ -2,6 +2,7 @@ package com.northgateps.nds.beis.esb.beisregistration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsRequest;
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsResponse;
 import com.northgateps.nds.platform.esb.adapter.NdsEmailAdapter;
@@ -18,8 +19,9 @@ import com.northgateps.nds.platform.util.configuration.ConfigurationManager;
 public class BeisRegistrationEmailAdapter
         extends NdsEmailAdapter<BeisRegistrationNdsRequest, BeisRegistrationNdsResponse> {
 
-    final static ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
     protected final NdsLogger logger = NdsLogger.getLogger(getClass());
+    final static ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
+    public static final String EMAIL_LOGO = configurationManager.getString("email.branding.logo", "");
     public static final String EMAIL_CONFIGURATION_FILE=configurationManager.getString("email.templatename");
 
     /**
@@ -50,6 +52,7 @@ public class BeisRegistrationEmailAdapter
                 generateEmailBodyActivationText(ndsRequest.getRegistrationDetails().getActivationCode(),
                         ndsRequest.getRegistrationDetails().getTenant()));
         emailConfigMap.put("emailTemplateFile",EMAIL_CONFIGURATION_FILE);
+        emailConfigMap.put("emailLogo", EMAIL_LOGO);
         
         return emailConfigMap;
     }

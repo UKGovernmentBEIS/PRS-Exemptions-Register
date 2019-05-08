@@ -83,6 +83,11 @@ public class AccountActivationSteps {
      
     }
     
+    @Given("^I have not entered a valid code$")
+    public void i_have_not_entered_a_valid_code() throws Throwable {
+    	pageObject.setTextNdsInputActivationCode("xxx");
+    }
+    
     @Given("^I have not entered any data$")
     public void i_have_not_entered_any_data() throws Throwable {
        

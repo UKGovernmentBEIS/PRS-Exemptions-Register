@@ -69,7 +69,7 @@ public class AccountDetailsSteps {
         selectLandlordTypePageHelper = new SelectLandlordTypePageHelper(webDriver);
         selectLandlordTypePageObject = selectLandlordTypePageHelper.getPageObject();
         assertTrue("Check if Person selected",
-                selectLandlordTypePageObject.getWebElementNdsRadiobuttonAccountType_PERSON().isSelected());
+                selectLandlordTypePageObject.isSelectedNdsRadiobuttonelementAccountType("PERSON"));
     }
 
     @Given("^I am on the account-details to enter Person details$")
@@ -227,7 +227,7 @@ public class AccountDetailsSteps {
         selectLandlordOrAgentPageHelper = new SelectLandlordOrAgentPageHelper(webDriver);
         selectLandlordOrAgentPageObject = selectLandlordOrAgentPageHelper.getPageObject();
         assertTrue("Check if Agent selected",
-                selectLandlordOrAgentPageObject.getWebElementNdsRadiobuttonUserType_AGENT().isSelected());
+                selectLandlordOrAgentPageObject.isSelectedNdsRadiobuttonelementUserType("AGENT"));
     }
     
 

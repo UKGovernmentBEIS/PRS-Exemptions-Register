@@ -21,7 +21,8 @@ public class RegisterPrsExemptionEmailNotifier
 
     protected final NdsLogger logger = NdsLogger.getLogger(getClass());
     static ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
-    public static final String EMAIL_CONFIGURATION_FILE=configurationManager.getString("email.templatename");
+    public static final String EMAIL_LOGO = configurationManager.getString("email.branding.logo", "");
+    public static final String EMAIL_CONFIGURATION_FILE=configurationManager.getString("email.templatename");    
 
     /**
      * Sends email to registered email address
@@ -42,7 +43,7 @@ public class RegisterPrsExemptionEmailNotifier
         emailConfigMap.put("exemptionType", request.getPwsText());
         emailConfigMap.put("propertyAddress",request.getRegisterPrsExemptionDetails().getExemptionDetails().getEpc().getPropertyAddress().getSingleLineAddressPostcode());  
         emailConfigMap.put("emailTemplateFile",EMAIL_CONFIGURATION_FILE);
-        
+        emailConfigMap.put("emailLogo", EMAIL_LOGO);
         try{
             emailConfigMap.put("url", generateEmailBodyText(request.getTenant()));
         }catch(NoSuchElementException e){

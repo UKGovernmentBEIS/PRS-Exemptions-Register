@@ -12,33 +12,38 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
+import com.northgateps.nds.beis.ui.selenium.pagehelper.ClosePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.NavigationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedDashboardPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedEpcDetailsPageHelper;
-import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionDeclarationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionDocumentUploadPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionListOfValuesPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionRequirementsPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionStartDatePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionTextPageHelper;
+import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedFurtherInformationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedPropertyAddressPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedSelectExemptionTypePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedSelectPropertyTypePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
+import com.northgateps.nds.beis.ui.selenium.pageobject.ClosePageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedEpcDetailsPageObject;
-import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionDeclarationPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionDocumentUploadPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionListOfValuesPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionStartDatePageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionTextPageObject;
+import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedFurtherInformationPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedSelectExemptionTypePageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedSelectPropertyTypePageObject;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 
@@ -64,8 +69,6 @@ public class NavigationSteps {
     PersonalisedEpcDetailsPageObject epcDetailsPageObject;
     PersonalisedSelectExemptionTypePageHelper personalisedSelectExemptionTypePageHelper;
     PersonalisedSelectExemptionTypePageObject personalisedSelectExemptionTypePageObject;
-    private static final String fileGridLocation = "file:/C:/grid/beis/uploadfiles/";
-
     PersonalisedSelectExemptionTypePageHelper selectExemptionTypePageHelper;
     PersonalisedSelectExemptionTypePageObject selectExemptionTypePageObject;
     PersonalisedExemptionRequirementsPageHelper personalisedExemptionRequirementsPageHelper;
@@ -74,8 +77,8 @@ public class NavigationSteps {
     PersonalisedSelectPropertyTypePageObject selectPropertyTypePageObject;
     PersonalisedExemptionDocumentUploadPageHelper documentUploadPageHelper;
     PersonalisedExemptionDocumentUploadPageObject documentUploadPageObject;
-    PersonalisedExemptionDeclarationPageHelper exemptionDeclarationPageHelper;
-    PersonalisedExemptionDeclarationPageObject exemptionDeclarationPageObject;
+    PersonalisedFurtherInformationPageHelper personalisedFurtherInformationPageHelper;
+    PersonalisedFurtherInformationPageObject personalisedFurtherInformationPageObject;
     PersonalisedExemptionTextPageHelper exemptionTextPageHelper;
     PersonalisedExemptionTextPageObject exemptionTextPageObject;
     PersonalisedExemptionStartDatePageHelper exemptionStartDatePageHelper;
@@ -83,7 +86,11 @@ public class NavigationSteps {
     PersonalisedExemptionListOfValuesPageHelper exemptionListOfValuesPageHelper;
     PersonalisedExemptionListOfValuesPageObject exemptionListOfValuesPageObject;
     UsedServiceBeforePageHelper firstPageHelper;
-
+    ClosePageHelper closePageHelper;
+    ClosePageObject closePageObject;
+    
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
+    
     @Managed
     private WebDriver webDriver;
 
@@ -99,11 +106,7 @@ public class NavigationSteps {
     public void afterScenario() {
         testHelper.afterScenario();
     }
-
-    private String getFilePath(String fileName) {
-        return fileGridLocation + fileName;
-    }
-
+    
     @Given("^I have selected a non-domestic exemption of \"(.*?)\"$")
     public void i_have_selected_a_non_domestic_exemption_of(String code) throws Throwable {
 
@@ -171,14 +174,28 @@ public class NavigationSteps {
     public void i_am_on_the_epc_details_page() throws Throwable {
         checkOnPage(epcDetailsPageHelper, "personalised-epc-details");
     }
+    
+	@Then("^I can see the digital assist guidance text$")
+	public void i_can_see_the_digital_assist_guidance_text() {
+		closePageHelper = new ClosePageHelper(webDriver);
+		closePageObject = closePageHelper.getPageObject();
+
+		assertTrue("help to register your exemption, get in touch by email, is not present", closePageObject
+				.getTextFooterFooter().contains("help to register your exemption, get in touch by email"));
+		assertTrue("call the digital helpline on",
+				closePageObject.getTextFooterFooter().contains("call the digital helpline on"));
+	}
 
     @Given("^I have uploaded \"(.*?)\" as EPC$")
     public void i_have_uploaded_as_EPC(String fileName) throws Throwable {
-        epcDetailsPageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath(fileName));
+        beisUtils.selectFile(epcDetailsPageObject.getDriver(), fileName);  
+        checkOnPage(epcDetailsPageHelper, "personalised-epc-details");
     }
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
+    	WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", nextButton);   	
         epcDetailsPageObject.clickNext();
     }
 
@@ -195,18 +212,28 @@ public class NavigationSteps {
 
     }
 
-    @Then("^I will be taken to the personalised-exemption-declaration page$")
-    public void i_will_be_taken_to_the_exemption_declaration_page() throws Throwable {
-        checkOnPage(documentUploadPageHelper, "personalised-exemption-declaration");
-        exemptionDeclarationPageHelper = new PersonalisedExemptionDeclarationPageHelper(webDriver);
-        exemptionDeclarationPageObject = exemptionDeclarationPageHelper.getPageObject();
+    @Then("^I will be taken to the personalised-further-information page$")
+    public void i_will_be_taken_to_the_personalised_further_information_page() throws Throwable {
+        checkOnPage(documentUploadPageHelper, "personalised-further-information");
+        personalisedFurtherInformationPageHelper = new PersonalisedFurtherInformationPageHelper(webDriver);
+        personalisedFurtherInformationPageObject = personalisedFurtherInformationPageHelper.getPageObject();
     }
 
     @When("^I select Back$")
-    public void i_select_Back() throws Throwable {
-        exemptionDeclarationPageObject.clickBack();
-
+    public void i_select_Back() throws Throwable {    	
+    	JavascriptExecutor js = (JavascriptExecutor)documentUploadPageObject.getDriver();
+    	 // if the element is on top.
+    	js.executeScript("scroll(250, 0)");
+    	WebElement backButton = documentUploadPageObject.getDriver().findElement(By.xpath("//button[@id='button.back']"));    	
+    	Actions actions = new Actions(documentUploadPageObject.getDriver());
+    	actions.moveToElement(backButton).click().perform();       
     }
+    
+    @When("^I click Back$")
+    public void i_click_Back() throws Throwable {    	
+    	personalisedFurtherInformationPageObject.clickBack();
+    }
+
 
     @Then("^previous exemption document upload details will be displayed$")
     public void previous_exemption_document_upload_details_will_be_displayed() throws Throwable {
@@ -227,13 +254,28 @@ public class NavigationSteps {
     public void i_will_be_taken_to_the_personalised_epc_details_page() throws Throwable {
         checkOnPage(documentUploadPageHelper, "personalised-epc-details");
     }
+    
+    @Then("^I will be navigated to the personalised-epc-details page$")
+    public void i_will_be_navigated_to_the_personalised_epc_details_page() throws Throwable {
+    	documentUploadPageHelper.getPageObject().clickBack();
+        checkOnPage(documentUploadPageHelper, "personalised-epc-details");
+    }
 
     @Then("^I will be taken to the personalised-exemption-text page$")
-    public void i_will_be_taken_to_the_personalised_exemption_text_page() throws Throwable {
+    public void i_will_be_taken_to_the_personalised_exemption_text_page() throws Throwable {    	
         checkOnPage(documentUploadPageHelper, "personalised-exemption-text");
         exemptionTextPageHelper = new PersonalisedExemptionTextPageHelper(webDriver);
         exemptionTextPageObject = exemptionTextPageHelper.getPageObject();
     }
+    
+    @Then("^I will be taken to personalised-exemption-text page$")
+    public void i_will_be_taken_to_personalised_exemption_text_page() throws Throwable {
+    	documentUploadPageHelper.getNewPageObject().clickButtonNext_NEXT();
+        checkOnPage(documentUploadPageHelper, "personalised-exemption-text");
+        exemptionTextPageHelper = new PersonalisedExemptionTextPageHelper(webDriver);
+        exemptionTextPageObject = exemptionTextPageHelper.getPageObject();
+    }
+
 
     @Given("^I supplied valid data$")
     public void i_supplied_valid_data() throws Throwable {
@@ -278,17 +320,17 @@ public class NavigationSteps {
         exemptionListOfValuesPageHelper.fillInForm();
     }
 
-    @Then("^I will be taken to personalised-exemption-declaration page$")
-    public void i_will_be_taken_to_personalised_exemption_declaration_page() throws Throwable {
-        checkOnPage(exemptionListOfValuesPageHelper, "personalised-exemption-declaration");
-        exemptionDeclarationPageHelper = new PersonalisedExemptionDeclarationPageHelper(webDriver);
-        exemptionDeclarationPageObject = exemptionDeclarationPageHelper.getPageObject();
+    @Then("^I will be taken to personalised-further-information page$")
+    public void i_will_be_taken_to_personalised_further_information_page() throws Throwable {
+        checkOnPage(exemptionListOfValuesPageHelper, "personalised-further-information");
+        personalisedFurtherInformationPageHelper = new PersonalisedFurtherInformationPageHelper(webDriver);
+        personalisedFurtherInformationPageObject = personalisedFurtherInformationPageHelper.getPageObject();
     }
 
     @When("^I select Back option$")
     public void i_select_Back_option() throws Throwable {
-        exemptionDeclarationPageObject = exemptionDeclarationPageHelper.getNewPageObject();
-        exemptionDeclarationPageObject.clickBack();
+        personalisedFurtherInformationPageObject = personalisedFurtherInformationPageHelper.getNewPageObject();
+        personalisedFurtherInformationPageObject.clickBack();
 
     }
 
@@ -335,9 +377,33 @@ public class NavigationSteps {
                         By.className("filename")).getText());
     }
     
+    @When("^Pressing Back I will be navigated to the personalised-epc-details page$")
+    public void pressing_Back_I_will_be_navigated_to_the_personalised_epc_details_page() {
+        // if the element is on top.
+        JavascriptExecutor js = (JavascriptExecutor)documentUploadPageObject.getDriver();         
+        js.executeScript("scroll(document.body.scrollHeight,0)");
+        NdsUiWait wait = documentUploadPageHelper.getWait();        
+        wait.untilElementClickedOK(By.className("back"), documentUploadPageObject.getDriver());    	
+    	try {
+    		checkOnPage(documentUploadPageHelper, "personalised-epc-details");
+    	} catch (AssertionError ae) {
+    		pressing_Back_I_will_be_navigated_to_the_personalised_epc_details_page();
+    	}
+    }
+    
+    @When("^pressing Next button I will be taken to the personalised-further-information page$")
+    public void pressing_Next_button_I_will_be_taken_to_the_personalised_further_information_page() {    	
+		documentUploadPageObject.clickNext();	    	
+    	try {
+    		checkOnPage(documentUploadPageHelper, "personalised-further-information");
+    	} catch (AssertionError ae) {
+    		pressing_Next_button_I_will_be_taken_to_the_personalised_further_information_page();
+    	}
+    }
+    
     @When("^I select Next button$")
     public void i_select_Next_button() throws Throwable {
-        WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
+    	WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
         ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", nextButton);
         documentUploadPageObject.clickNext();
     }
@@ -345,5 +411,16 @@ public class NavigationSteps {
     @When("^I select Next on list of values page$")
     public void i_select_Next_on_list_of_values_page() throws Throwable {
         exemptionListOfValuesPageObject.clickNext();
+    }
+    
+    @When("^I select next button$")
+    public void i_select_next_button() throws Throwable {
+    	JavascriptExecutor js = (JavascriptExecutor)documentUploadPageObject.getDriver();
+    	// if the element is on bottom.
+    	js.executeScript("scroll(0, 250)");
+	   	WebElement nextButton = documentUploadPageObject.getDriver().findElement(By.cssSelector("button[value=NEXT]"));    	
+	   	Actions actions = new Actions(documentUploadPageObject.getDriver());
+	   	actions.moveToElement(nextButton).click().perform(); 
+	   	BasePageHelper.waitUntilPageLoading(documentUploadPageObject.getDriver());
     }
 }

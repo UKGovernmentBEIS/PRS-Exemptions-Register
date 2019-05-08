@@ -9,11 +9,11 @@
         
         <h2 class="visuallyhidden">Support links</h2>
         <ul>
-          <!-- Show version number -->
-          <c:if test="${not empty version}">
-            <li>${version}</li>
-          </c:if>
           <li>
+            If you need help to register your exemption, get in touch by email 
+            <a id="link.navigation.phase.support" href="mailto:${supportEmail}">${supportEmail}</a>
+             or call the digital helpline on ${supportNumber}
+          </li>          <li>
             <a href="${contextUi}/cookies" id="link.navigation.cookies" target="_blank">Cookies</a>
           </li>
           <li>
@@ -28,8 +28,11 @@
             		Department of Business, Energy and Industrial Strategy
             	</a>
           </li>
-          
-        </ul>
+          <!-- Show version number -->
+          <c:if test="${not empty version}">
+            <li>${version}</li>
+          </c:if>          
+         </ul>
         
         <div class="open-government-licence">
           <p class="logo">

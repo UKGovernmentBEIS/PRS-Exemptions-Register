@@ -34,14 +34,30 @@
 						<fmt:message bundle="${FieldsBundle}" key="Heading_Dashboard" />
 					</h2>
 				</section>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_DashboardSummary" />
 				</p>
 				<div class="panel panel-border-wide">
-				  <p>
+				  <p class="body-text">
 				    <fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_DashboardHint" />
+				  </p>
+				  <p class="body-text">
+				    <fmt:message bundle="${FieldsBundle}"
+						key="Paragraph_DashboardHint2" />
+				  </p>
+				  <p class="body-text">
+				    <fmt:message bundle="${FieldsBundle}"
+						key="Paragraph_DashboardHint3" />
+				  </p>
+				  <p class="body-text">
+				    <fmt:message bundle="${FieldsBundle}"
+						key="Paragraph_DashboardHint4" />
+				  </p>
+				  <p>
+				    <fmt:message bundle="${FieldsBundle}"
+						key="Paragraph_DashboardHint5SelfCertification" />
 				  </p>
 				</div>
 			</div>
@@ -111,6 +127,16 @@
 													</thead>
 													<tr>
 														<td class="dgdata"><fmt:message
+																bundle="${FieldsBundle}" key="RowLabel_ExemptionReference" /></td>
+														<td class="dgdata" colspan="2">${command.dashboardDetails.currentExemptions[res.index].exemptionReference}</td>
+													</tr>
+													<tr>
+														<td class="dgdata"><fmt:message
+																bundle="${FieldsBundle}" key="RowLabel_Landlord" /></td>
+														<td class="dgdata" colspan="2">${command.dashboardDetails.currentExemptions[res.index].landlord}</td>
+													</tr>
+													<tr>
+														<td class="dgdata"><fmt:message
 																bundle="${FieldsBundle}" key="RowLabel_StartDate" /></td>
 														<td class="dgdata" colspan="2"><time
 																datetime="${command.dashboardDetails.currentExemptions[res.index].startDate}">
@@ -167,6 +193,18 @@
 														</th>
 													</tr>
 												</thead>
+												<tr>
+													<td class="dgdata"><p>
+															<fmt:message bundle="${FieldsBundle}" key="RowLabel_ExemptionReference" />
+														</p></td>
+													<td class="dgdata"><p>${command.dashboardDetails.expiredExemptions[res.index].exemptionReference}</p></td>
+												</tr>
+												<tr>
+													<td class="dgdata"><p>
+															<fmt:message bundle="${FieldsBundle}" key="RowLabel_Landlord" />
+														</p></td>
+													<td class="dgdata"><p>${command.dashboardDetails.expiredExemptions[res.index].landlord}</p></td>
+												</tr>
 												<tr>
 													<td class="dgdata"><fmt:message
 															bundle="${FieldsBundle}" key="RowLabel_StartDate" /></td>

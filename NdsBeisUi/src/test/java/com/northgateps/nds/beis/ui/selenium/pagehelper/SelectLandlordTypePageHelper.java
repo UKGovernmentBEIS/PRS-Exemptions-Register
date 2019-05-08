@@ -33,10 +33,10 @@ public class SelectLandlordTypePageHelper extends BasePageHelper<SelectLandlordT
     public void fillInForm(String type) {
         SelectLandlordTypePageObject pageObject = getNewPageObject();   
         
-        if (type.equals("PERSON")) {
-            pageObject.clickNdsRadiobuttonAccountType_PERSON();
+        if (type.equals("PERSON")) {            
+            pageObject.clickNdsRadiobuttonelementAccountType("PERSON");
         } else {
-            pageObject.clickNdsRadiobuttonAccountType_ORGANISATION();
+            pageObject.clickNdsRadiobuttonelementAccountType("ORGANISATION");            
         }            
     }
     

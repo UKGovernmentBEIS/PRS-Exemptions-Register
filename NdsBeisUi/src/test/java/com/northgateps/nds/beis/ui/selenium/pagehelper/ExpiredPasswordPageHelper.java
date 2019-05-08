@@ -1,9 +1,14 @@
 package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pageobject.ExpiredPasswordPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.LoginPageObject;
@@ -50,16 +55,16 @@ public class ExpiredPasswordPageHelper extends BasePageHelper<ExpiredPasswordPag
         pageObject = getNewPageObject();
         fillInForm(oldPassword, newPassword, confirmNewPassword);
         
-        pageObject.clickNext();
+        pageObject.clicksaveChanges();
         
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
     }
 
     public void fillInForm(String oldPassword, String newPassword, String confirmNewPassword) {
-        pageObject.setTextNdsInputOldPassword(oldPassword);
-        pageObject.setTextNdsInputNewPassword(newPassword);
-        pageObject.setTextNdsInputConfirmPassword(confirmNewPassword);
+        pageObject.setTextCurrentPassword(oldPassword);
+        pageObject.setTextNewPassword(newPassword);
+        pageObject.setTextConfirmPassword(confirmNewPassword);
     }
 
     /** Skip the login page using either PASSWORD_1 or PASSWORD_2 for user ExpiredPasswordTest. */ 
@@ -105,4 +110,35 @@ public class ExpiredPasswordPageHelper extends BasePageHelper<ExpiredPasswordPag
     public static String getNewPassword() {
         return newPassword;
     }
+
+    /**
+     * @return a collection of the displayed summary validation message using the css class "fault".
+     */
+    public List<String> getSummaryFaultMessages() {
+        WebDriver driver = getPageObject().getDriver();
+        WebElement summaryFault = null;
+        
+        // protect against being on an error page that doesn't have a fault section
+        try {
+            summaryFault = driver.findElement(By.className("error-summary-list"));
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+        
+        List<String> messages = new ArrayList<String>();
+        if (summaryFault != null) {
+            List<WebElement> elements = summaryFault.findElements(By.xpath(".//li"));
+            for (WebElement item : elements) {
+                if (item.isDisplayed()) {
+                    List<WebElement> linkElements = item.findElements(By.xpath(".//a"));
+                    for (WebElement linkElement : linkElements) {
+                        messages.add(linkElement.getAttribute("innerHTML"));
+                    }
+                }
+            }            
+        }
+
+        return messages;
+    }
+    
 }

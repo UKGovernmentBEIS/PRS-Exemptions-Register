@@ -82,7 +82,7 @@ public class SelectLandlordTypeSteps {
 
     @Given("^I have selected organisation as landlord type$")
     public void i_have_selected_organisation_as_landlord_type() throws Throwable {
-        pageObject.clickNdsRadiobuttonAccountType_ORGANISATION();
+        pageObject.clickNdsRadiobuttonelementAccountType("ORGANISATION");
     }
 
     @Then("^I will be taken to the account-details page$")
@@ -101,7 +101,7 @@ public class SelectLandlordTypeSteps {
 
     @Given("^I have selected person as landlord type$")
     public void i_have_selected_person_as_landlord_type() throws Throwable {
-        pageObject.clickNdsRadiobuttonAccountType_PERSON();
+        pageObject.clickNdsRadiobuttonelementAccountType("PERSON");
     }
 
     @Then("^First name and Last name will be available for input$")
@@ -126,8 +126,7 @@ public class SelectLandlordTypeSteps {
     public void details_previously_entered_will_be_displayed() throws Throwable {
         selectLandlordOrAgentPageHelper = new SelectLandlordOrAgentPageHelper(webDriver);
         selectLandlordOrAgentPageObject = selectLandlordOrAgentPageHelper.getPageObject();
-        assertTrue("Check if lanlord selected",
-                selectLandlordOrAgentPageObject.getWebElementNdsRadiobuttonUserType_LANDLORD().isSelected());
+        assertTrue("Check if lanlord selected", selectLandlordOrAgentPageObject.isSelectedNdsRadiobuttonelementUserType("LANDLORD"));
     }
 
     @Then("^I will receive the message \"(.*?)\"$")

@@ -1,64 +1,44 @@
-<script th:inline="javascript">
-    /*<![CDATA[*/
-
-    var policyPattern = /*[[${policyPattern}]]*/ ;
-    
-    /*]]>*/
-</script>
-
 <div class="alert alert-info">
-    <h2 th:utext="#{screen.mustchangepass.heading}"/>
-    <p/>
-    <br/>
 
-    <form id="passwordManagementForm" th:if="${passwordManagementEnabled}" method="post" th:object="${password}">
-        <p>
-
-        <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
-            <span th:each="err : ${#fields.errors('*')}" th:utext="${err}"/>
-        </div>
-
-        <table>
-            <tr>
-                <td class="pm">
-                    <label for="password">Enter password:</label>
-                </td>
-                <td class="pm">
-                    <input class="required" type="password" id="password" th:field="*{password}"/>
-                </td>
-            </tr>
-            <tr>
-                <td class="pm">
-                    <label for="confirmedPassword">Confirm password:</label>
-                </td>
-                <td class="pm">
-                    <input class="required" type="password" id="confirmedPassword" th:field="*{confirmedPassword}" />
-                </td>
-            </tr>
-        </table>
-
-        <div>
-            <br/>
-            <meter max="4" id="password-strength-meter"/>
-        </div>
-        </p>
-        <p id="password-strength-text"></p>
+    <h1 class="form-title heading-large" th:utext="${expiredPass} ? #{screen.expiredpass.heading} : #{screen.mustchangepass.heading}"/>
+   
+    <form id="passwordManagementForm" th:if="${passwordManagementEnabled}" method="post" th:object="${newPassword}">
         
+		<div class="error-summary" th:if="${#fields.hasErrors('*')}">
+			<h1 class="heading-medium error-summary-heading" th:text="#{screen.expiredpass.changepwd.label}"></h1>
+			<ul class="error-summary-list">
+				<li th:each="err : ${#fields.errors('*')}">
+					<a href="#expired-password-details" th:utext="${err}"></a>
+				</li>
+			</ul>
+		</div>
+		<p>
+	   	 	<h2 th:utext="#{screen.expiredpass.instructions}"></h2><br>   
+			<div class="form-group" id="#expired-password-details" th:classappend="${#fields.hasErrors('confirmPassword') or #fields.hasErrors('newPassword') or #fields.hasErrors('oldPassword')} ? error : ''">
+            	
+	             <div id="expiredpwd.oldpwd">					
+                 	<label class="form-label" for="oldPassword" th:utext="#{screen.expiredpass.changepwd.label.oldPassword}"/>
+                 	<input class="form-control" type="password" id="oldPassword"  th:field="*{oldPassword}" autocomplete="off"/>
+                 	<span class="error-message" th:if="${ #fields.hasErrors('oldPassword')}" th:utext="#{screen.expiredpass.fieldserror}"></span>
+                 </div>
+                 <br/>                     
+                 <div id="expiredpwd.pwd">					
+                 	<label class="form-label" for="newPassword" th:utext="#{screen.expiredpass.changepwd.label.newPassword}"/>
+                 	<input class="form-control" type="password" id="newPassword" th:field="*{newPassword}"/>
+                 	<span class="error-message" th:if="${ #fields.hasErrors('newPassword')}" th:utext="#{screen.expiredpass.fieldserror}"></span>
+                 </div>
+                 <br/>
+                 <div id="expiredpwd.confirmpwd">
+                 	<label class="form-label" for="confirmPassword" th:utext="#{screen.expiredpass.changepwd.label.confirmedPassword}"/>
+                 	<input class="form-control" type="password" id="confirmPassword" th:field="*{confirmPassword}" />
+                 	<span class="error-message" th:if="${#fields.hasErrors('confirmPassword')}" th:utext="#{screen.expiredpass.fieldserror}"></span>
+                 </div>          
+			</div>	       
+        </p>             
         <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
         <input type="hidden" name="_eventId" value="submit"/>
-        <input class="btn btn-success"
-               name="submit"
-               accesskey="s"
-               th:value="#{screen.pm.button.submit}"
-               id="submit"
-               type="submit"/>
-        <input
-                class="btn-reset"
-                name="cancel"
-                accesskey="c"
-                th:value="#{screen.pm.button.cancel}"
-                type="button"
-                onclick="location.href = location.href;"/>
+        <input class="button" name="submit" accesskey="s" th:value="#{screen.expiredpwd.button.submit}" id="submitExpiredChangePwd"
+               type="submit"/>        
     </form>
-    <p th:unless="${passwordManagementEnabled}" th:utext="#{screen.mustchangepass.message}"/>
+    
 </div>

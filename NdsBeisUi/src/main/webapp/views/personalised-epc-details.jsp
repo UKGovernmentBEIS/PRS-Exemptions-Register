@@ -34,7 +34,7 @@
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_Energy_Performance_Certificate" />
 				</h1>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Prompt_Energy_Performance_Certificate" />
 				</p>

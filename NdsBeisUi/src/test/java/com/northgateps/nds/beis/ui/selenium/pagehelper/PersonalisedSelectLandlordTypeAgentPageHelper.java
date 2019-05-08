@@ -35,9 +35,9 @@ public class PersonalisedSelectLandlordTypeAgentPageHelper extends BasePageHelpe
         PersonalisedSelectLandlordTypeAgentPageObject pageObject = getNewPageObject();   
         
         if (type.equals("PERSON")) {
-            pageObject.clickNdsRadiobuttonAccountType_PERSON();
+            pageObject.clickNdsRadiobuttonelementAccountType("PERSON");
         } else {
-            pageObject.clickNdsRadiobuttonAccountType_ORGANISATION();
+            pageObject.clickNdsRadiobuttonelementAccountType("ORGANISATION");            
         }            
     }
     

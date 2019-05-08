@@ -47,10 +47,9 @@ public class PersonalisedSelectPropertyTypePageHelper extends BasePageHelper<Per
     
     public void fillInForm(String type) {
         if (type.equals("DOMESTIC")) {
-            getPageObject().clickNdsRadiobuttonPropertyType_PRSD();
+            getPageObject().clickNdsRadiobuttonelementPropertyType("PRSD");
         } else {
-            getPageObject().clickNdsRadiobuttonPropertyType_PRSN();
-            getPageObject().clickNdsRadiobuttonPropertyType_PRSN();
+            getPageObject().clickNdsRadiobuttonelementPropertyType("PRSN");            
         }
     }
 

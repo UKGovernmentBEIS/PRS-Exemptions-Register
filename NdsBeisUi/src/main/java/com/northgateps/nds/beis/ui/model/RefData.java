@@ -11,6 +11,7 @@ import com.northgateps.nds.beis.ui.field.PenaltyTypeTextComponent;
 import com.northgateps.nds.platform.ui.field.EnumeratedValuesBinding;
 import com.northgateps.nds.platform.ui.model.NdsRefData;
 import com.northgateps.nds.platform.ui.model.ReferenceValue;
+import com.northgateps.nds.platform.ui.tags.form.LabelValuePair;
 
 /**
  * A container for retaining reference data in the UI, persisted by round
@@ -35,6 +36,99 @@ public class RefData extends NdsRefData implements Serializable {
     List<ReferenceValue> domesticList = new ArrayList<ReferenceValue>();
     
     List<ReferenceValue> nonDomesticList = new ArrayList<ReferenceValue>();
+    
+    public List<LabelValuePair> yesNoValues;
+    public List<LabelValuePair> accountType;
+    public List<LabelValuePair> propertyType;
+    public List<LabelValuePair> userType;    
+    
+    public List<LabelValuePair> getUserType() {
+        return userType;
+    }
+    
+    public void setUserType(List<LabelValuePair> userType) {
+        this.userType = userType;
+    }
+
+
+    public List<ReferenceValue> getReturnList() {
+        return returnList;
+    }
+
+    
+    public void setReturnList(List<ReferenceValue> returnList) {
+        this.returnList = returnList;
+    }
+
+    
+    public List<ReferenceValue> getDomesticList() {
+        return domesticList;
+    }
+
+    
+    public void setDomesticList(List<ReferenceValue> domesticList) {
+        this.domesticList = domesticList;
+    }
+
+    
+    public List<ReferenceValue> getNonDomesticList() {
+        return nonDomesticList;
+    }
+
+    
+    public void setNonDomesticList(List<ReferenceValue> nonDomesticList) {
+        this.nonDomesticList = nonDomesticList;
+    }
+
+    
+    public List<LabelValuePair> getYesNoValues() {
+        return yesNoValues;
+    }
+
+    
+    public void setYesNoValues(List<LabelValuePair> yesNoValues) {
+        this.yesNoValues = yesNoValues;
+    }
+
+    
+    public List<LabelValuePair> getAccountType() {
+        return accountType;
+    }
+
+    
+    public void setAccountType(List<LabelValuePair> accountType) {
+        this.accountType = accountType;
+    }
+
+    
+    public List<LabelValuePair> getPropertyType() {
+        return propertyType;
+    }
+
+    
+    public void setPropertyType(List<LabelValuePair> propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    
+    public RefData() {
+        yesNoValues = new ArrayList<LabelValuePair>();
+        yesNoValues.add(new LabelValuePair("Label_UsedServiceBefore.Yes", "true"));
+        yesNoValues.add(new LabelValuePair("Label_UsedServiceBefore.No", "false"));
+        
+        
+        accountType = new ArrayList<LabelValuePair>();
+        accountType.add(new LabelValuePair("Label_exemptionDetails.landlordDetails.accountType.ORGANISATION", "ORGANISATION"));
+        accountType.add(new LabelValuePair("Label_exemptionDetails.landlordDetails.accountType.PERSON", "PERSON"));
+        
+        userType = new ArrayList<LabelValuePair>();
+        userType.add(new LabelValuePair("Label_beisRegistrationDetails.userDetails.userType.LANDLORD", "LANDLORD"));
+        userType.add(new LabelValuePair("Label_beisRegistrationDetails.userDetails.userType.AGENT", "AGENT"));
+        
+        propertyType = new ArrayList<LabelValuePair>();
+        propertyType.add(new LabelValuePair("Label_exemptionDetails.propertyType.domestic", "PRSD"));
+        propertyType.add(new LabelValuePair("Label_exemptionDetails.propertyType.nondomestic", "PRSN"));
+    }
     
     public  List<PenaltyTypeText> getPenaltyTypeText() {
         return penaltyTypeText;

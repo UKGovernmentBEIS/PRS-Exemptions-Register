@@ -2,6 +2,7 @@ package com.northgateps.nds.beis.ui.view.javascript.selectexemptiontype;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -95,8 +96,10 @@ public class SelectExemptionTypeSteps {
                 testHelper.getScenarioWebDriver().findElement(By.id("exemptionDetails.propertyType2")).isSelected());
     }
 
-    @Then("^I have not entered any data$")
-    public void i_have_not_entered_any_data() throws Throwable {
+    @Then("^I have not entered any data and prompt is present$")
+    public void i_have_not_entered_any_data_and_prompt_is_present() throws Throwable {
+    	assertTrue("You must select the one that is most relevant is not present ", pageObject.getTextMainContent().contains(
+                "You must select the one that is most relevant"));
     }
 
     @When("^I select Next$")

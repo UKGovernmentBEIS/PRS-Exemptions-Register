@@ -28,11 +28,11 @@
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_register_search_penalties" />
 				</h1>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_penalties_notice_text" />
 				</p>
-				<p>
+				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Paragraph_penalties_notice_text1" />
 				</p>

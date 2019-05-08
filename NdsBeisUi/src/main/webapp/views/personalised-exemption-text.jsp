@@ -133,7 +133,7 @@
 					<section class="submit">
 						<div>
 							<button type="submit" name="action" value="NEXT" id="button.next"
-								class="button next">
+								class="button next" formnovalidate>
 								<fmt:message bundle="${FieldsBundle}" key="Button_NEXT" />
 							</button>
 						</div>

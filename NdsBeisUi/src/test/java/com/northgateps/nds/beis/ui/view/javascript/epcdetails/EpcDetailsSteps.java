@@ -20,9 +20,8 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelp
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedEpcDetailsPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedPropertyAddressPageObject;
-import com.northgateps.nds.platform.ui.selenium.core.AbstractSeleniumTest;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
-import com.northgateps.nds.platform.ui.selenium.drivers.DriverFactory;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 
 import cucumber.api.java.After;
@@ -36,6 +35,8 @@ public class EpcDetailsSteps {
 
     private final Map<String, ?> testProperties = JsonPropertiesLoader.load("testProperties.json",
             this.getClass().getClassLoader());
+    
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
 
     private final String loginUsername = (String) testProperties.get("loginUsername");
     private final String loginPassword = (String) testProperties.get("loginPassword");
@@ -45,23 +46,14 @@ public class EpcDetailsSteps {
     PersonalisedDashboardPageHelper dashboardPageHelper;
     PersonalisedDashboardPageObject PersonalisedDashboardPageObject;
     PersonalisedPropertyAddressPageHelper propertyAddressPageHelper;
-    PersonalisedPropertyAddressPageObject PersonalisedPropertyAddressPageObject;
-    private static final String fileGridLocation = "file:/C:/grid/beis/uploadfiles/";
-    UsedServiceBeforePageHelper firstPageHelper;
+    PersonalisedPropertyAddressPageObject PersonalisedPropertyAddressPageObject;   
+    UsedServiceBeforePageHelper firstPageHelper;    
 
     @Managed
     private WebDriver webDriver;
 
     @Before
-    public void beforeScenario() {
-        String useFilelocation;
-
-        DriverFactory driverFactory = AbstractSeleniumTest.createDriverFactory();
-        useFilelocation = fileGridLocation;
-
-        System.out.println(
-                "During EvidenceUpload, the Driverfactory was of type " + driverFactory.getClass().getSimpleName()
-                        + ", " + "which means that files will be uploaded from " + useFilelocation + ".");
+    public void beforeScenario() {  
         testHelper.beforeScenario();
         testHelper.setScenarioWebDriver(webDriver);
         firstPageHelper = new UsedServiceBeforePageHelper(testHelper.getScenarioWebDriver());
@@ -71,11 +63,8 @@ public class EpcDetailsSteps {
     @After
     public void afterScenario() {
         testHelper.afterScenario();
-    }
+    }   
 
-    private String getFilePath(String fileName) {
-        return fileGridLocation + fileName;
-    }
 
     @Given("^I am on the personalised-epc-details page$")
     public void i_am_on_the_epc_details_page() throws Throwable {
@@ -145,15 +134,14 @@ public class EpcDetailsSteps {
     }
 
     @Given("^I have select a file with a correct file type$")
-    public void i_have_select_a_file_with_a_correct_file_type() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath("test.docx"));
+    public void i_have_select_a_file_with_a_correct_file_type() throws Throwable {       
+        selectFile("test.docx", "personalised-epc-details");       
     }
 
     @Given("^I select a file with an incorrect file type$")
     public void i_select_a_file_with_an_incorrect_file_type() throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath("testProperties.json"));
+        selectFile("testProperties.json", "personalised-epc-details");        
     }
 
     @Then("^the file will not be uploaded$")
@@ -170,12 +158,12 @@ public class EpcDetailsSteps {
     @Given("^I select a file that is larger than the maximum size$")
     public void i_select_a_file_that_is_larger_than_the_maximum_size() throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(
-                getFilePath("Spring in Action, 4th Edition.pdf"));
+        selectFile("Spring in Action, 4th Edition.pdf", "personalised-epc-details");        
     }
 
     @When("^I click on 'Remove File' link for the uploaded file$")
     public void i_click_on_Remove_File_link_for_the_uploaded_file() throws Throwable {
+    	checkOnPage(pageHelper, "personalised-epc-details");
         List<WebElement> rows = pageObject.getDriver().findElements(By.cssSelector("tr"));
         for (WebElement row : rows) {
             List<WebElement> cells = row.findElements(By.cssSelector("td"));
@@ -208,13 +196,17 @@ public class EpcDetailsSteps {
     @Given("^I enter the description for the file$")
     public void i_enter_the_description_for_the_file() throws Throwable {
         pageObject.getDriver().findElement(By.id("exemptionDetails.epc.files.resources0.description")).sendKeys(
-                "Java Programming");
-        ;
+                "Java Programming");       
     }
 
     @Then("^I must move to personalised-exemption-start-date page$")
     public void i_must_move_to_personalised_exemption_start_date_page() throws Throwable {
         checkOnPage(pageHelper, "personalised-exemption-start-date");
+    }
+    
+    private void selectFile(String filename, String page) {
+        checkOnPage(pageHelper, page);
+        beisUtils.selectFile(pageObject.getDriver(), filename);
     }
 
 }

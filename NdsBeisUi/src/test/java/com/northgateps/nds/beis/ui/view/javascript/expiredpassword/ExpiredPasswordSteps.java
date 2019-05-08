@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.WebDriver;
 
+import com.northgateps.nds.beis.ui.selenium.pagehelper.ExpiredPasswordConfirmationPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.ExpiredPasswordPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
@@ -38,6 +39,7 @@ public class ExpiredPasswordSteps {
     ExpiredPasswordPageObject pageObject;
     ExpiredPasswordPageHelper pageHelper;
     UsedServiceBeforePageHelper firstPageHelper;
+    ExpiredPasswordConfirmationPageHelper expiredPasswordConfirmationPageHelper;
     
     @Managed
     private WebDriver webDriver;
@@ -48,6 +50,7 @@ public class ExpiredPasswordSteps {
         testHelper.setScenarioWebDriver(webDriver);
         firstPageHelper = new UsedServiceBeforePageHelper(testHelper.getScenarioWebDriver());
         pageHelper = new ExpiredPasswordPageHelper(webDriver);
+        expiredPasswordConfirmationPageHelper = new ExpiredPasswordConfirmationPageHelper(webDriver);
         testHelper.openUrl();
     }
 
@@ -69,23 +72,24 @@ public class ExpiredPasswordSteps {
     }
 
     @Then("^I must see the expired password page$")
-    public void i_must_see_the_expired_password_page() throws Throwable {
-        checkOnPage(loginPageHelper, "expired-password");
-        pageObject = pageHelper.getNewPageObject();
+    public void i_must_see_the_expired_password_page() throws Throwable {  
+        checkOnPage(pageHelper, "expired-password");
+        pageObject = pageHelper.getNewPageObject();       
+        assertTrue("checking on expired password page", pageObject.getTextNdsFormTitleHeading().contains("Your password has expired"));
     }
 
     @When("^I press submit$")
     public void i_press_submit() throws Throwable {
-        pageObject.clickNext();
+        pageObject.clicksaveChanges();
     }
 
     @Then("^I should see a validation error containing \"(.*?)\"$")
     public void i_should_see_a_validation_error_containing(String message) throws Throwable {
-    	String error = pageObject.getFaultMessage();
+       
         try {
-        	assertTrue(error.contains(message));
+        	assertTrue(pageHelper.getSummaryFaultMessages().contains(message));
         } catch (AssertionError ae) {
-        	logger.error("Expected message : \"" + message + "\" did not match error message : \"" + error + "\"");
+        	logger.error("Expected message : \"" + message + "\" did not match error message : \"");
         	throw ae;
         }
     }
@@ -100,8 +104,8 @@ public class ExpiredPasswordSteps {
         pageHelper.skipPage("lksdajlk", "asdfsd", "342534");
     }
 
-    @When("^I enter mathching password and confirmation passwords but wrong old password$")
-    public void i_enter_mathching_password_and_confirmation_passwords_but_wrong_old_password() throws Throwable {
+    @When("^I enter matching password and confirmation passwords but wrong old password$")
+    public void i_enter_matching_password_and_confirmation_passwords_but_wrong_old_password() throws Throwable {
         pageHelper.skipPage("lksdajlk", "psst", "psst");
     }
 
@@ -117,17 +121,17 @@ public class ExpiredPasswordSteps {
     }
 
     @Then("^I should see the password confirmation page$")
-    public void i_should_see_the_password_confirmation_page() throws Throwable {
+    public void i_should_see_the_password_confirmation_page() throws Throwable {        
         checkOnPage(pageHelper, "expired-password-confirmation");
     }
 
     @When("^I click the next button$")
     public void i_click_the_next_button() throws Throwable {
-        pageHelper.getNewPageObject().clickNext();
+        expiredPasswordConfirmationPageHelper.getPageObject().clickButtonContinue();
     }
     
     @Then("^I should see the \"(.*?)\" page with the sign in link and definitely not be logged in\\.$")
     public void i_should_see_the_page_with_the_sign_in_link_and_definitely_not_be_logged_in(String arg1) throws Throwable {
-    	checkOnPage(pageHelper, "failover-landing");
+    	checkOnPage(pageHelper, "login-form");
     }
 }

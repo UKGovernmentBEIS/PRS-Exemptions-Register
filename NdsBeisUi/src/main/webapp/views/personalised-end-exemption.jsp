@@ -38,11 +38,11 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<div class="form-group">
-						<p>							
+						<p class="body-text">							
 							<fmt:message bundle="${FieldsBundle}" key="Message_End_Exemption" />						
 						</p>						
 						<h4 id="address" class="heading-small">${command.uiData.registeredExemptionDetail.address}</h4>
-						<p>
+						<p class="body-text">
 							${command.uiData.registeredExemptionDetail.description}
 						</p>						
 						<div class="panel panel-border-wide">

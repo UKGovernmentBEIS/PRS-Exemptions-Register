@@ -37,6 +37,9 @@ public class ExemptionTypeText extends ReferenceValue implements ExemptionType, 
     private String frvPwsText;
     private String frvDomain;
     private List<ExemptionTypeLov> exemptionTypeLovList;
+    private String confirmationPagetitle;
+    private String confirmationcheckbox;
+    private String confirmationwording;
 
     @Override
     public String getDescription() {
@@ -279,6 +282,30 @@ public class ExemptionTypeText extends ReferenceValue implements ExemptionType, 
     public void setExemptionTypeLovList(List<ExemptionTypeLov> exemptionTypeLovList) {
         this.exemptionTypeLovList = exemptionTypeLovList;
     }
+
+	public String getConfirmationPagetitle() {
+		return confirmationPagetitle;
+	}
+
+	public void setConfirmationPagetitle(String confirmationPagetitle) {
+		this.confirmationPagetitle = confirmationPagetitle;
+	}
+
+	public String getConfirmationcheckbox() {
+		return confirmationcheckbox;
+	}
+
+	public void setConfirmationcheckbox(String confirmationcheckbox) {
+		this.confirmationcheckbox = confirmationcheckbox;
+	}
+
+	public String getConfirmationwording() {
+		return confirmationwording;
+	}
+
+	public void setConfirmationwording(String confirmationwording) {
+		this.confirmationwording = confirmationwording;
+	}
 
  
 

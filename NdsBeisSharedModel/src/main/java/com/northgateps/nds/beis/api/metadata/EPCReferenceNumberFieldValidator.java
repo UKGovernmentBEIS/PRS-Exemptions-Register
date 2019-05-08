@@ -53,7 +53,7 @@ public class EPCReferenceNumberFieldValidator extends AbstractFieldValidator {
     public String getTestFn(ValidationContext<?> validationContext) {
         ResourceLoader scriptsLoader = validationContext != null ? validationContext.getScriptsLoader() : new ScriptsLoader();
         String script = "var document = this;\n" + scriptsLoader.load("metadata.beis.js") +
-                        "\nvar fn = document.validationFunctions['" + this.getTypeName() + "'];";
+                        "\nvar fn = document.validationFunctions['" + this.getTypeName(validationContext) + "'];";
         return script;   	
     	
     }

@@ -17,6 +17,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedExemptionStar
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionStartDatePageObject;
+import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 
@@ -95,8 +96,9 @@ public class ExemptionStartDateSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
-        pageObject.clickButtonNext_NEXT();
+        BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
+        pageObject = pageHelper.getNewPageObject();       
+        pageObject.clickNext();
     }
 
     @Then("^I must receive \"(.*?)\" as validation message$")
@@ -117,6 +119,10 @@ public class ExemptionStartDateSteps {
 
     @Then("^I will receive validation message \"(.*?)\"$")
     public void i_will_receive_validation_message(String message) throws Throwable {
+        if (!pageHelper.getFirstSummaryFaultMessage().contains(message)){
+            pageObject.clickNext();
+            BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
+        }
         assertTrue("Check validation message", pageHelper.getFirstSummaryFaultMessage().contains(message));
     }
 

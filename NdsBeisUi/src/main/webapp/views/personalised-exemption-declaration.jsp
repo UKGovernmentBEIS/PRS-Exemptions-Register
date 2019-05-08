@@ -285,14 +285,18 @@
 							class="form-checkbox">
 							<nds:invalid />
 							<fieldset>
-								<label class="block-label selection-button-checkbox"
-									for="uiData.isAgreed"> <nds:checkbox value="Agree"
-										autolabel="false" /> <fmt:message bundle="${FieldsBundle}"
-										key="Label_uiData.isAgreed" />
-								</label>
+							    <div class="multiple-choice">
+							        <!--  Can't use the NDS CheckBoxTag - see comment on the CheckBoxTag  -->								    
+								    <input id="uiData.isAgreed" name="uiData.isAgreed" autolabel="false" type="checkbox" value="Agree">
+									<label class="block-label selection-button-checkbox"
+										for="uiData.isAgreed">									 
+										 <fmt:message bundle="${FieldsBundle}" key="Label_uiData.isAgreed" />
+									</label>
+									<input type="hidden" name="_uiData.isAgreed" value="on">
+								</div>
 							</fieldset>
 						</nds:field>
-						<p>
+						<p class="body-text">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_privacy_policy_start" />
 							<a href="privacy-policy" id="privacy-policy-link" target="_blank">

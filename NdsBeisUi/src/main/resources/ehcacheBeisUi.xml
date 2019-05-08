@@ -4,7 +4,7 @@
          updateCheck="true" monitoring="autodetect"
          dynamicConfig="true">
 
-    <defaultCache
+    <defaultCache name="defaultCache"
             maxEntriesLocalHeap="0"
             eternal="false"
             timeToIdleSeconds="120"
@@ -12,11 +12,20 @@
             memoryStoreEvictionPolicy="LRU"
             statistics="false">
     </defaultCache>
-    
+
+    <cache name="defaultCache"
+            maxEntriesLocalHeap="0"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            memoryStoreEvictionPolicy="LRU"
+            statistics="false">
+    </cache>
+        
     <cache name="viewprofiles"
            maxEntriesLocalHeap="1000"
            eternal="false"
-           timeToIdleSeconds="120"
+           timeToIdleSeconds="20"
            timeToLiveSeconds="120"
            memoryStoreEvictionPolicy="LFU"
            transactionalMode="off">
@@ -25,8 +34,8 @@
     <cache name="questionnaires"
            maxEntriesLocalHeap="10"
            eternal="false"
-           timeToIdleSeconds="5"
-           timeToLiveSeconds="5"
+           timeToIdleSeconds="20"
+           timeToLiveSeconds="120"
            memoryStoreEvictionPolicy="LRU"
            transactionalMode="off">
     </cache>
@@ -48,16 +57,6 @@
            memoryStoreEvictionPolicy="LRU"
            transactionalMode="off">
     </cache>
-
-    
-    <cache name="cvlists"
-           maxEntriesLocalHeap="10"
-           eternal="false"
-           timeToIdleSeconds="120"
-           timeToLiveSeconds="120"
-           memoryStoreEvictionPolicy="LRU"
-           transactionalMode="off">
-    </cache>
     
     <cache name="augmentationAnnotation"
            maxEntriesLocalHeap="1000"
@@ -76,5 +75,14 @@
            memoryStoreEvictionPolicy="LRU"
            transactionalMode="off">
     </cache>
-    
+
+    <cache name="cvlists"
+           maxEntriesLocalHeap="10"
+           eternal="false"
+           timeToIdleSeconds="120"
+           timeToLiveSeconds="120"
+           memoryStoreEvictionPolicy="LRU"
+           transactionalMode="off">
+    </cache>    
+
 </ehcache>

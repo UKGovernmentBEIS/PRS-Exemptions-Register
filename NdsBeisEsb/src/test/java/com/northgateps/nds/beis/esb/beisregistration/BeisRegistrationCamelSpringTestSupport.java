@@ -145,7 +145,7 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
      * Extract the activation code for use in other tests.
      */
     protected String extractActivationCodeFromBody(String body, String username) {
-        final String emailTextLine2 = ">Activate your account</a><br/><br/>";
+        final String emailTextLine2 = ">Activate your account</a>";
         final String activationCodeText = "activationCode=";
 
         int indexOfCodeLabel = body.indexOf(activationCodeText);

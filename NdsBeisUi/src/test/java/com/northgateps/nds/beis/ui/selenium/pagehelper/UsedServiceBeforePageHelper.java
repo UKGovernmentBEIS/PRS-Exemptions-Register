@@ -37,12 +37,9 @@ public class UsedServiceBeforePageHelper extends BasePageHelper<UsedServiceBefor
         UsedServiceBeforePageObject pageObject = getNewPageObject();   
         
         if (loginOrRegister) {
-            pageObject.clickNdsRadiobuttonUsedServiceBefore_True();
-            pageObject.clickNdsRadiobuttonUsedServiceBefore_True();  /*not clear why first click doesn't always work,
-                                                                     Richard is upgrading Serenity which may fix this sort of quirk*/
+            pageObject.clickNdsRadiobuttonelementUsedServiceBefore("true");            
         } else {
-            pageObject.clickNdsRadiobuttonUsedServiceBefore_False();
-            pageObject.clickNdsRadiobuttonUsedServiceBefore_False();
+            pageObject.clickNdsRadiobuttonelementUsedServiceBefore("false");
         }   
     }
     

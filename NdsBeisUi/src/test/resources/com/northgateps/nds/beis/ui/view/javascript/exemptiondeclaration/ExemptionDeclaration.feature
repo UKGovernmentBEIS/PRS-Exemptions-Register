@@ -3,6 +3,7 @@ Feature: Register Exemption - Exemption declaration details
 Scenario: Navigate back to exemption list of values page 
 	Given I am on the personalised-exemption-declaration page
 	When I select Back
+	When I select Back
 	Then I will be taken to the personalised-exemption-list-of-values page
 	And the details previously entered will be displayed
 	

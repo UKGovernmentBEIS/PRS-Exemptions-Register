@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -22,6 +23,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelp
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedEpcDetailsPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionDocumentUploadPageObject;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
@@ -38,7 +40,7 @@ public class ExemptionDocumentUploadSteps {
 
     private final Map<String, ?> testProperties = JsonPropertiesLoader.load("testProperties.json",
             this.getClass().getClassLoader());
-
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
     private final String loginUsername = (String) testProperties.get("loginUsername");
     private final String loginPassword = (String) testProperties.get("loginPassword");
     private SeleniumCucumberTestHelper testHelper = new SeleniumCucumberTestHelper();
@@ -50,6 +52,7 @@ public class ExemptionDocumentUploadSteps {
     PersonalisedEpcDetailsPageObject PersonalisedEpcDetailsPageObject;
     UsedServiceBeforePageHelper firstPageHelper;
     PersonalisedSelectExemptionTypePageHelper selectExemptionTypePageHelper;
+    private int selectBackCounter;
 
     @Managed
     private WebDriver webDriver;
@@ -122,8 +125,10 @@ public class ExemptionDocumentUploadSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
-        pageObject.clickNext();
-
+    	checkOnPage(pageHelper, "personalised-exemption-document-upload");
+    	WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", nextButton);   
+        pageHelper.getWait().untilElementClickedOK(By.cssSelector("button[value=NEXT]"), webDriver);        
     }
 
     @Then("^I must receive \"(.*?)\" as validation message$")
@@ -140,7 +145,7 @@ public class ExemptionDocumentUploadSteps {
 
     @Given("^I select a file \"(.*?)\" with an incorrect file type$")
     public void i_select_a_file_with_an_incorrect_file_type(String fileName) throws Throwable {
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");        
     }
 
     @Then("^the file will not be uploaded$")
@@ -151,14 +156,14 @@ public class ExemptionDocumentUploadSteps {
     @Given("^I select a file \"(.*?)\" that is larger than the maximum size$")
     public void i_select_a_file_that_is_larger_than_the_maximum_size(String fileName) throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
     }
 
     @Given("^I select a file \"(.*?)\" that is of the correct type and size$")
     public void i_select_a_file_that_is_of_the_correct_type_and_size(String fileName) throws Throwable {
         pageHelper.ClearForm();
         pageObject = pageHelper.getNewPageObject();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
     }
 
     @Then("^the file will be uploaded$")
@@ -190,7 +195,7 @@ public class ExemptionDocumentUploadSteps {
     @When("^I have loaded \"(.*?)\" less than Max Documents$")
     public void i_have_loaded_less_than_Max_Documents(String fileName) throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
     }
 
     @Then("^the Upload button will be enabled$")
@@ -203,7 +208,7 @@ public class ExemptionDocumentUploadSteps {
     @Given("^I have loaded a file \"(.*?)\" with a correct file type$")
     public void i_have_loaded_a_file_with_a_correct_file_type(String fileName) throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
 
     }
 
@@ -230,12 +235,12 @@ public class ExemptionDocumentUploadSteps {
     @Given("^I have loaded \"(.*?)\" with Max Documents$")
     public void i_have_loaded_with_Max_Documents(String fileName) throws Throwable {
         pageObject = pageHelper.getNewPageObject();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
     }
 
     @When("^I upload \"(.*?)\" as one more document$")
     public void i_upload_as_one_more_document(String fileName) throws Throwable {
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(pageHelper.getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-document-upload");   
     }
 
     @Then("^the document \"(.*?)\" is not listed in uploaded files$")
@@ -251,9 +256,10 @@ public class ExemptionDocumentUploadSteps {
         assertTrue("Uploaded file is still listed", !found);
     }
 
-    @Then("^I will be taken to the personalised-exemption-declaration page$")
-    public void i_will_be_taken_to_the_exemption_declaration_page() throws Throwable {
-        checkOnPage(pageHelper, "personalised-exemption-declaration");
+    
+    @Then("^I will be taken to the personalised-further-information page$")
+    public void i_will_be_taken_to_the_personalised_further_information_page() {
+		checkOnPage(pageHelper, "personalised-further-information");
     }
 
     @Then("^the Upload button will be shown$")
@@ -264,6 +270,7 @@ public class ExemptionDocumentUploadSteps {
 
     @Then("^the Upload button will be hidden$")
     public void the_Upload_button_will_be_hidden() throws Throwable {
+    	BasePageHelper.waitUntilPageLoading(webDriver);
         pageObject = pageHelper.getNewPageObject();
         boolean showFileUpload = true;
         try {
@@ -272,7 +279,13 @@ public class ExemptionDocumentUploadSteps {
         } catch (org.openqa.selenium.NoSuchElementException ex) {
             showFileUpload = false;
         }
-        assertFalse("Uploaded file is not shown shown", showFileUpload);
+        assertFalse("Uploaded file is not shown", showFileUpload);
+    }
+    
+    private void selectFile(String filename, String page) {
+    	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
+        checkOnPage(pageHelper, page);
+        beisUtils.selectFile(pageObject.getDriver(), filename);
     }
 
 }

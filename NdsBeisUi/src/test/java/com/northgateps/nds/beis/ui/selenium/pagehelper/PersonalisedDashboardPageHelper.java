@@ -2,15 +2,14 @@ package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.platform.ui.selenium.PageObject;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
 
 import net.serenitybdd.core.annotations.findby.By;
@@ -54,10 +53,8 @@ public class PersonalisedDashboardPageHelper extends BasePageHelper<Personalised
     public PageHelper skipPageToEndExemption() {
         final PersonalisedDashboardPageObject pageObject = getPageObject();
         checkOnPage(this, "personalised-dashboard");
-        pageObject.clickAnchorCurrentExemptions();
-        List<WebElement> divs = getPageObject().getWebElementDivCurrentExemptions().findElements(
-                By.className("exemption-table"));
-        divs.get(0).findElement(By.id("button.endExemption")).click();
+        pageObject.clickSummaryLink();
+        new NdsUiWait(getPageObject().getDriver()).untilElementClickedOK(By.xpath("//div[@id='current-exemptions']//table[1]//tbody[1]//tr[4]//td[3]//button[1]"), getPageObject().getDriver());        
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
     }

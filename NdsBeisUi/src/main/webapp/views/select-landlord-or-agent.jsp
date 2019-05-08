@@ -45,7 +45,7 @@
 						key="Heading_Select_Landlord_Or_Agent" />
 				</h1>
 				<div>
-					<p>
+					<p class="body-text">
 						<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_SelectLandlordOrAgentDetails1" />
 					</p>			
@@ -54,27 +54,11 @@
 			</div>
 		</div>
 		<div class="grid-row divider">
-			<div class="column-full">
-				<div class="form-group">
-					<nds:field
-						path="beisRegistrationDetails.userDetails.userType"
-						labeldecoration="required">
-						<fieldset class="inline radio">
-							<nds:invalid />
-							<legend class="visually-hidden">
-								<fmt:message bundle="${FieldsBundle}"
-									key="Legend_beisRegistrationDetails.userDetails.userType" />
-							</legend>
-							<nds:radiobutton
-								label="Label_beisRegistrationDetails.userDetails.userType.LANDLORD"
-								value="LANDLORD" class="yesno" />
-							<nds:radiobutton
-								label="Label_beisRegistrationDetails.userDetails.userType.AGENT"
-								value="AGENT" class="yesno" />
-							
-						</fieldset>
-					</nds:field>
-				</div>
+			<div class="column-full">				
+				<div class="form-group"> 
+		       		<nds:radiobuttonelement path="beisRegistrationDetails.userDetails.userType"
+						items="${command.uiData.refData.userType}"/>
+		       	</div>
 				<div class="panel panel-border-narrow" id="userDetails">
 						<p>
 							<fmt:message bundle="${FieldsBundle}"

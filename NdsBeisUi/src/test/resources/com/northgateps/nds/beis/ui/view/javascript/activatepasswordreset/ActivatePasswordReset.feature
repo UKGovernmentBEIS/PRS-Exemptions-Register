@@ -1,4 +1,4 @@
-﻿Feature: Activate Password Reset
+Feature: Activate Password Reset
 
 # Test uses pre-seeded data which means this test is LIMITED to only run ONCE!
 # To reset it, run the following LDAP ldif script
@@ -103,6 +103,3 @@ When I choose to reset the password
 Then I must be notified "Username or activation code is invalid.Use the forgotten password option to try again."
 And I must remain on 'activate-password-reset' page
 And new password and repeat password must be set to blank
- 
-
-

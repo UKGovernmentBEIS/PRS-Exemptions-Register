@@ -12,10 +12,11 @@ import com.northgateps.nds.platform.application.api.validation.AbstractValidatab
  * Class to contain all the information for an exemption type
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ExemptionTypeDetails", propOrder = { "code", "service","description", "pwsDescription", "pwsText",
-        "startDateRequired", "startDatePwsLabel", "startDatePwsText", "sequence", "textPwsLabel", "textPwsText",
-        "durationUnit", "duration", "minDocuments", "maxDocuments", "documentsRequired", "documentsPwsLabel",
-        "documentsPwsText", "frvPwsLabel", "frvRequired", "frvPwsText", "frvDomain", "textRequired","ExemptionTypeLovList" })
+@XmlType(name = "ExemptionTypeDetails", propOrder = { "code", "service", "description", "pwsDescription", "pwsText",
+		"startDateRequired", "startDatePwsLabel", "startDatePwsText", "sequence", "textPwsLabel", "textPwsText",
+		"durationUnit", "duration", "minDocuments", "maxDocuments", "documentsRequired", "documentsPwsLabel",
+		"documentsPwsText", "frvPwsLabel", "frvRequired", "frvPwsText", "frvDomain", "textRequired",
+		"ExemptionTypeLovList", "confirmationPagetitle", "confirmationcheckbox", "confirmationwording" })
 public class ExemptionTypeDetails extends AbstractValidatableModel
         implements ExemptionType, Comparable<ExemptionTypeDetails> {
 
@@ -43,6 +44,9 @@ public class ExemptionTypeDetails extends AbstractValidatableModel
     private String frvRequired;
     private String textRequired;
     private List<ExemptionTypeLov> ExemptionTypeLovList;
+    private String confirmationPagetitle;
+    private String confirmationcheckbox;
+    private String confirmationwording;
 
     @Override
     public String getMinDocuments() {
@@ -288,7 +292,29 @@ public class ExemptionTypeDetails extends AbstractValidatableModel
     public void setExemptionTypeLovList(List<ExemptionTypeLov> exemptionTypeLovList) {
         ExemptionTypeLovList = exemptionTypeLovList;
     }
-    
-   
+
+	public String getConfirmationPagetitle() {
+		return confirmationPagetitle;
+	}
+
+	public void setConfirmationPagetitle(String confirmationPagetitle) {
+		this.confirmationPagetitle = confirmationPagetitle;
+	}
+
+	public String getConfirmationcheckbox() {
+		return confirmationcheckbox;
+	}
+
+	public void setConfirmationcheckbox(String confirmationcheckbox) {
+		this.confirmationcheckbox = confirmationcheckbox;
+	}
+
+	public String getConfirmationwording() {
+		return confirmationwording;
+	}
+
+	public void setConfirmationwording(String confirmationwording) {
+		this.confirmationwording = confirmationwording;
+	}      
 
 }

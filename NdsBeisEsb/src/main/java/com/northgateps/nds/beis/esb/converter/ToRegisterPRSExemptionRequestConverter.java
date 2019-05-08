@@ -77,6 +77,9 @@ public class ToRegisterPRSExemptionRequestConverter {
             registerPRSExemptionRequest.setExemptionStartDate(
                     ZonedDateTimeToXMLGregorianCalendarConverter.convert(exemptionDetails.getExemptionStartDate()));
             registerPRSExemptionRequest.setExemptionOptionText(exemptionDetails.getExemptionReasonAdditionalText());
+            
+            registerPRSExemptionRequest.setExemptionConfirmation(exemptionDetails.getExemptionConfirmationText());
+            registerPRSExemptionRequest.setExemptionConfirmationInd(exemptionDetails.getExemptionConfirmationIndicator());
 
             ExemptionDocumentType exemptionDocumentType = new ExemptionDocumentType();
 

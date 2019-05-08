@@ -3,6 +3,7 @@ package com.northgateps.nds.beis.ui.view.javascript.registerpenalties;
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -15,6 +16,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchPenaltiesPa
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterPenaltiesPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchPenaltiesPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.Before;
@@ -58,7 +60,9 @@ public class RegisterPenaltiesSteps extends AlternateUrlBaseSteps{
 
     @When("^I select the property address$")
     public void i_select_the_property_address() throws Throwable {
-        registerSearchPenaltiesPageHelper.click_addresslink();
+    	WebElement addressLink = webDriver.findElement(By.id("button.authority.address"));
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", addressLink);
+        new NdsUiWait(webDriver).untilElementClickedOK(By.id("button.authority.address"), webDriver);
     }
 
     @Then("^I will be taken to the register-penalties page$")

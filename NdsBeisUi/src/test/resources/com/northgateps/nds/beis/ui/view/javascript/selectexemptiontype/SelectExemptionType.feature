@@ -9,7 +9,7 @@ Scenario: Navigate back select property type
 Scenario: Select exemption type
 	Given I am on the 'personalised-select-exemption-type' page
 	
-	Given I have not entered any data
+	Given I have not entered any data and prompt is present
 	When I select Next
 	Then I will receive the message "You must choose an option for What type of exemption are you registering"
 	And I will remain on the 'personalised-select-exemption-type' page

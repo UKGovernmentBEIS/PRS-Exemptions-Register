@@ -1,5 +1,7 @@
 package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
+import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
+
 import java.util.Locale;
 
 import org.openqa.selenium.By;
@@ -36,6 +38,7 @@ public class PersonalisedSelectExemptionTypePageHelper extends BasePageHelper<Pe
     }
     
     public void fillInForm(String code) {
+    	checkOnPage(this, "personalised-select-exemption-type");
         WebDriver driver = getPageObject().getDriver();
         driver.findElement(By.xpath("//input[@value='"+code+"']")).click();   
     }

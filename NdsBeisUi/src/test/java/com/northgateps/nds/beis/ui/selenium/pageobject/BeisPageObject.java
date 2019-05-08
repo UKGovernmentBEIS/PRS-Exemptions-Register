@@ -2,12 +2,14 @@ package com.northgateps.nds.beis.ui.selenium.pageobject;
 
 import java.util.Locale;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.pageobject.NdsSeleniumBasePage;
 
 public class BeisPageObject extends NdsSeleniumBasePage {
@@ -68,15 +70,16 @@ public class BeisPageObject extends NdsSeleniumBasePage {
      * Click the next button to submit the page.
      **/
     public void clickNext() {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", nextButton);
-        nextButton.click();
+    	((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", nextButton);
+        new NdsUiWait(getDriver()).untilElementClickedOK(By.cssSelector("button[value=NEXT]"), getDriver());
     }
 
     /**
      * Click the back button to move previous page.
      **/
     public void clickBack() {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", backLink);
+    	((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", backLink);
+        backLink.sendKeys("");
         backLink.click();
     }
     

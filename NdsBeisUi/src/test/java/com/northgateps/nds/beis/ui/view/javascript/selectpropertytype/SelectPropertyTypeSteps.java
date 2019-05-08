@@ -2,10 +2,13 @@ package com.northgateps.nds.beis.ui.view.javascript.selectpropertytype;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
@@ -156,13 +159,14 @@ public class SelectPropertyTypeSteps {
 
     @Then("^help text will be hidden$")
     public void help_text_will_be_hidden() throws Throwable {
-        assertEquals(false,
-                testHelper.getScenarioWebDriver().findElement(By.id("select_property_name_div")).isDisplayed());
+        pageObject.getDriver().manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        ((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getDriver().findElement(By.xpath("//section[@id='description_about_property']")));
+        assertTrue(pageObject.getDriver().findElement(By.xpath("//section[@id='description_about_property']")).isSelected()==false);
     }
 
     @Given("^I have selected a property type$")
     public void i_have_selected_a_property_type() throws Throwable {
-        pageObject.clickNdsRadiobuttonPropertyType_PRSN();
+        pageObject.clickNdsRadiobuttonelementPropertyType("PRSN");    
     }
 
     @Then("^I will be taken to the 'personalised-select-exemption-type' page$")
@@ -180,9 +184,9 @@ public class SelectPropertyTypeSteps {
     @When("^I select the \"(.*?)\" option$")
     public void i_select_the_option(String option) throws Throwable {
         if (option.equals("PRSN")) {
-            pageObject.clickNdsRadiobuttonPropertyType_PRSN();
+            pageObject.clickNdsRadiobuttonelementPropertyType("PRSN");    
         } else {
-            pageObject.clickNdsRadiobuttonPropertyType_PRSD();
+            pageObject.clickNdsRadiobuttonelementPropertyType("PRSD");    
         }
 
     }

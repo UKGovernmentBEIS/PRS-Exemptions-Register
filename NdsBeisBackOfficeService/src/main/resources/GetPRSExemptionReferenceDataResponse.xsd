@@ -47,6 +47,10 @@
                                                                                      type="xsd:string"/>
                                                                         <xsd:element name="PWSDescription"
                                                                                      type="xsd:string"/>
+																   	    <xsd:element name="DescriptionTranslations"
+                                                                                     type="core:StandardTextTranslationStructure"
+                                                                                     minOccurs="0"
+                                                                                     maxOccurs="1"/>
                                                                         <xsd:element name="PWSDescriptionTranslations"
                                                                                      type="core:StandardTextTranslationStructure"
                                                                                      minOccurs="0"
@@ -179,7 +183,21 @@
                                                                                 </xsd:sequence>
                                                                             </xsd:complexType>
                                                                         </xsd:element>
-                                                                                     
+                                                                        <xsd:element name="ExemptionConfirmation" minOccurs="0" > 
+                                                                           <xsd:complexType>
+                                                                                <xsd:sequence>
+                                                                                    <xsd:element name="ConfirmationPagetitle"
+                                                                                                 type="xsd:string"
+                                                                                                  minOccurs="0"/>
+                                                                                    <xsd:element name="Confirmationcheckbox"
+                                                                                                 type="xsd:string"
+                                                                                                  minOccurs="0"/>
+                                                                                    <xsd:element name="Confirmationwording"
+                                                                                                 type="xsd:string"
+                                                                                                  minOccurs="0"/>
+                                                                                </xsd:sequence>
+                                                                            </xsd:complexType>
+                                                                        </xsd:element> 
                                                                                      
                                                                                      
                                                                     </xsd:sequence>

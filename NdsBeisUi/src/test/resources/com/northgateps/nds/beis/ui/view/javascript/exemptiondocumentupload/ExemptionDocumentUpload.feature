@@ -1,10 +1,11 @@
 Feature: Register Exemption - Exemption document upload 
 
 Scenario: Navigate back to epc details page 
-	Given I am on the personalised-exemption-document-upload page
-	When I select Back
-	Then I will be taken to the personalised-epc-details page
-	And the details previously entered will be displayed
+    Given I am on the personalised-exemption-document-upload page
+    When I select Back
+    Then I will be taken to the personalised-epc-details page
+    And the details previously entered will be displayed
+
 	
 Scenario: Process exemption upload details
 	Given I am on the personalised-exemption-document-upload page
@@ -64,9 +65,9 @@ Scenario: Process exemption upload details
     Then the Upload button will be shown
     And I will remain on the personalised-exemption-document-upload page
     
-    #Happy path, move to personalised-account-summary page
+    #Happy path, move to personalised-further-information page
     When I select Next
-    Then I will be taken to the personalised-exemption-declaration page
+    Then I will be taken to the personalised-further-information page
     
   
     

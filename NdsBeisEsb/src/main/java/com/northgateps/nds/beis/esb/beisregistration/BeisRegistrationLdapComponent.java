@@ -10,6 +10,7 @@ import com.northgateps.nds.beis.api.BeisRegistrationDetails;
 import com.northgateps.nds.beis.api.UserType;
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsRequest;
 import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsResponse;
+import com.northgateps.nds.platform.api.NdsEvent;
 import com.northgateps.nds.platform.application.api.utils.PlatformTokenFactory;
 import com.northgateps.nds.platform.esb.adapter.NdsDirectoryUsernameProcessingComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
@@ -23,6 +24,7 @@ import com.northgateps.nds.platform.esb.directory.ex.DirectoryUnwillingToPerform
 import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
 import com.northgateps.nds.platform.esb.exception.NdsBusinessException;
 import com.northgateps.nds.platform.esb.exception.NdsDirectoryException;
+import com.northgateps.nds.platform.esb.persistence.PersistenceManager;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -34,7 +36,16 @@ public class BeisRegistrationLdapComponent
     @SuppressWarnings("unused")
     private static final NdsLogger logger = NdsLogger.getLogger(BeisRegistrationLdapComponent.class);
  
+    private PersistenceManager persistenceManager = null; 
 
+    public PersistenceManager getPersistenceManager() {
+        return persistenceManager;
+    }
+
+    public void setPersistenceManager(PersistenceManager persistenceManager) {
+        this.persistenceManager = persistenceManager;
+    }
+    
     /**
      * Create a new LDAP user from a template copy and update it with the request data.
      */
@@ -167,6 +178,13 @@ public class BeisRegistrationLdapComponent
 
         BeisRegistrationNdsResponse response = new BeisRegistrationNdsResponse();
         response.setSuccess(true);
+        new AbstractPersistenceAdapter() {
+            @Override
+            public PersistenceManager getPersistenceManager() {
+                return (persistenceManager != null) ? persistenceManager : super.getPersistenceManager();
+            }
+        }.logEvent(ndsExchange, NdsEvent.REGISTRATION);
+
         return response;
     }
 

@@ -4,10 +4,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.northgateps.nds.beis.api.PropertyType;
 import com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsRequest;
 import com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsResponse;
+import com.northgateps.nds.beis.api.statistics.BeisEvent;
 import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.adapter.NdsSoapRequestAdapterExchangeProxy;
+import com.northgateps.nds.platform.esb.adapter.persistence.AbstractPersistenceAdapter;
 import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
 import com.northgateps.nds.platform.esb.directory.DirectoryConnectionConfig;
 import com.northgateps.nds.platform.esb.directory.ServiceAccessDetails;
@@ -29,18 +32,33 @@ public class RegisterPrsExemptionLookupIdComponent extends NdsDirectoryComponent
     public static String EMAIL_ADDRESS = "email";
     public static String AGENT_NAME = "agentName";
     public static String AGENT_ADDRESS = "agentAddress";
+    public static String PROPERTY_TYPE = "propertyType";
 
     @Override
     protected void doProcess(RegisterPrsExemptionNdsRequest request, DirectoryAccessConnection directoryConnection,
             NdsSoapRequestAdapterExchangeProxy ndsExchange, DirectoryConnectionConfig directoryConnectionConfigImpl)
                     throws NdsApplicationException, NdsBusinessException, DirectoryException {
         
+        ndsExchange.setAnExchangeProperty(AbstractPersistenceAdapter.EVENT_REFERENCE_ID,
+                request.getRegisterPrsExemptionDetails().getExemptionDetails().getReferenceId());
+        
         logger.info(" Started setting account id in request and user details in exchange ");
         ConfigurationManager configurationManager = ConfigurationFactory.getConfiguration();
 
         String serviceName = configurationManager.getString("service.foundationLayerPartyService.name");
-        String userDn = getUserDn(configurationManager, request.getUserName(), request.getTenant());
-
+        String userDn = getUserDn(configurationManager, request.getUserName(), request.getTenant());        
+       
+        ndsExchange.setAnExchangeProperty(AbstractPersistenceAdapter.EVENT_USER_DN, userDn);
+                
+        ndsExchange.setAnExchangeProperty(AbstractPersistenceAdapter.EVENT_TYPE, request.getPwsText());
+        
+        PropertyType propertyType = request.getRegisterPrsExemptionDetails().getExemptionDetails().getPropertyType();        
+        if(propertyType == PropertyType.PRSD){
+            ndsExchange.setAnExchangeProperty(PROPERTY_TYPE, BeisEvent.DOMESTIC.toString());
+        }else{
+            ndsExchange.setAnExchangeProperty(PROPERTY_TYPE, BeisEvent.NON_DOMESTIC.toString());
+        }    
+        
         ServiceAccessDetails serviceAccessDetails = getUserManager().serviceLookup(directoryConnection, userDn, serviceName,
                 true, true, false);
 

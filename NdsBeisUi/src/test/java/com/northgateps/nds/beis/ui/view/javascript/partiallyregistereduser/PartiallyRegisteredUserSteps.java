@@ -38,6 +38,9 @@ public class PartiallyRegisteredUserSteps {
 
     private final String loginUsername = (String) testProperties.get("loginPartiallyRegisteredUserName");
     private final String loginPassword = (String) testProperties.get("loginPartiallyRegisteredPassword");
+    private final String loginUsernameWithPartyRef = (String) testProperties.get("loginPartiallyRegisteredWithPartyRefUserName");
+    private final String loginPasswordWithPartyRef = (String) testProperties.get("loginPartiallyRegisteredWithPartyRefPassword");
+    
     private final String firstName = (String) testProperties.get("loginPartiallyRegisteredFirstName");
     private final String surname = (String) testProperties.get("loginPartiallyRegisteredSurname");
     private final String email = (String) testProperties.get("loginPartiallyRegisteredEmail");
@@ -117,7 +120,7 @@ public class PartiallyRegisteredUserSteps {
 
     @Given("^I have selected landlord$")
     public void i_have_selected_landlord() throws Throwable {
-        landlordOrAgentPageObject.clickNdsRadiobuttonUserType_LANDLORD();
+        landlordOrAgentPageObject.clickNdsRadiobuttonelementUserType("LANDLORD");
     }
 
     @When("^I select Next$")
@@ -168,7 +171,7 @@ public class PartiallyRegisteredUserSteps {
     @Then("^landlord type details held in LDAP will be displayed$")
     public void landlord_type_details_held_in_LDAP_will_be_displayed() throws Throwable {
         //Check the person is selected
-        assertTrue("Expected landlord type should be person", landlordTypePageObject.getWebElementNdsRadiobuttonAccountType_PERSON().isSelected());
+        assertTrue("Expected landlord type should be person", landlordTypePageObject.isSelectedNdsRadiobuttonelementAccountType("PERSON"));
     }
 
     @Then("^I have selected person as landlord type$")
@@ -225,7 +228,7 @@ public class PartiallyRegisteredUserSteps {
     @Then("^landlord type details held in LDAP for organisation will be displayed$")
     public void landlord_type_details_held_in_LDAP_for_organisation_will_be_displayed() throws Throwable {
         // Check the organisation is selected
-        assertTrue("Expected landlord type should be organsiation", landlordTypePageObject.getWebElementNdsRadiobuttonAccountType_ORGANISATION().isSelected());
+        assertTrue("Expected landlord type should be organsiation", landlordTypePageObject.isSelectedNdsRadiobuttonelementAccountType("ORGANISATION"));
     }
 
     @Then("^I have selected organisation as landlord type$")
@@ -268,7 +271,7 @@ public class PartiallyRegisteredUserSteps {
 
     @Given("^I have selected agent$")
     public void i_have_selected_agent() throws Throwable {
-        landlordOrAgentPageObject.clickNdsRadiobuttonUserType_AGENT();
+        landlordOrAgentPageObject.clickNdsRadiobuttonelementUserType("AGENT");
     }
 
     @Then("^Agent name will be available for input$")
@@ -289,5 +292,22 @@ public class PartiallyRegisteredUserSteps {
     public void i_select_Next_on_account_details_page() throws Throwable {
         accountDetailsPageObject.clickNext();
     }
+    
+    @Given("^I am on the 'select-landlord-or agent' page for partially registered user with party ref$")
+    public void i_am_on_the_select_landlord_or_agent_page_for_partially_registered_user_with_party_ref() throws Throwable {
+        // Register a custom form filler for login page
+        LoginPageHelper loginPageHelper = new LoginPageHelper(webDriver);
+
+        PageHelperFactory.registerFormFiller("login-form", loginPageHelper.createFormFiller(loginUsernameWithPartyRef, loginPasswordWithPartyRef));
+        
+        try {
+            landlordOrAgentPageHelper = PageHelperFactory.visit(firstPageHelper, SelectLandlordOrAgentPageHelper.class);
+            checkOnPage(landlordOrAgentPageHelper, "select-landlord-or-agent");
+            landlordOrAgentPageObject = landlordOrAgentPageHelper.getPageObject();
+        } finally {
+            PageHelperFactory.unregisterFormFiller("login-form");
+        }
+    }
+
 
 }

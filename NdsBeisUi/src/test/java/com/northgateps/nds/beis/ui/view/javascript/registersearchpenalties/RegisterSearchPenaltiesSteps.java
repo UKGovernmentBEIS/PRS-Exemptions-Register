@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,6 +18,8 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchPenaltiesPa
 import com.northgateps.nds.beis.ui.selenium.pageobject.FailoverLandingPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchPenaltiesPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
+import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;
@@ -74,7 +77,7 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
        assertTrue("check town box is hidden",
                pageObject.getWebElementNdsInputTown().isDisplayed()==false);
        assertTrue("check property type dropdown is hidden",
-               pageHelper.getPropertyTypeSelectList().isDisplayed()==false);
+               pageObject.getWebElementNdsInputPanelDisplayed().isDisplayed()==false);
        assertTrue("check domestic penalty type drop down is hidden",
                pageHelper.getDomesticPenaltyTypeSelectList().isDisplayed()==false);
        assertTrue("check non-domestic penalty type drop down is hidden",
@@ -100,15 +103,17 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
     public void i_select_What_is_a_penalty_notice() throws Throwable {
       pageObject.clickSummaryNotice();
       parentHandle = webDriver.getWindowHandle();
-      pageObject.clickAnchorUrl();
+      pageObject.clickAnchorUrl();      
+      BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver()); 
     }
 
     @Then("^I will be taken to the 'What is a penalty notice information page'$")
     public void i_will_be_taken_to_the_What_is_a_penalty_notice_information_page() throws Throwable {
+        
         for (String winHandle : webDriver.getWindowHandles()) {
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)
-        }
+        }        
         assertEquals("Checking the current url", "https://www.gov.uk/government/publications/the-private-rented-property-minimum-standard-landlord-guidance-documents", webDriver.getCurrentUrl());
         webDriver.close(); // close newly opened window when done with it
         webDriver.switchTo().window(parentHandle);
@@ -397,30 +402,34 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
     }
     
     @When("^I select 'Other ways to search for penalties' again$")
-    public void i_select_Other_ways_to_search_for_penalties_again() throws Throwable {
-        pageObject.clickSummaryPenalties();
+    public void i_select_Other_ways_to_search_for_penalties_again() throws Throwable {    	
+    	new NdsUiWait(pageObject.getDriver()).untilElementClickedOK(By.xpath("//span[contains(text(),'Other ways to search for penalties')]"), pageObject.getDriver());      
     }
 
     @Then("^the Landlord’s name box will be hidden$")
     public void the_Landlord_s_name_box_will_be_hidden() throws Throwable {
+    	((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementNdsInputPenaltyLandlordsNameCriteria());
         assertTrue("check landlord name box is hidden",
                 pageObject.getWebElementNdsInputPenaltyLandlordsNameCriteria().isDisplayed()==false);
     }
 
     @Then("^the Rental property details box will be hidden$")
     public void the_Rental_property_details_box_will_be_hidden() throws Throwable {
+    ((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementNdsInputRentalPropertyDetails());
        assertTrue("check rental property details box is hidden",
                pageObject.getWebElementNdsInputRentalPropertyDetails().isDisplayed()==false);
     }
 
     @Then("^the Town box will be hidden$")
     public void the_Town_box_will_be_hidden() throws Throwable {
+    ((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementNdsInputTown());
        assertTrue("check town box will be hidden",pageObject.getWebElementNdsInputTown().isDisplayed()==false);
     }
 
     @Then("^the Property type box will be hidden$")
     public void the_Property_type_box_will_be_hidden() throws Throwable {
+    	((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementNdsInputPanelDisplayed());
         assertTrue("check property type box is hidden",
-                pageHelper.getPropertyTypeSelectList().isDisplayed()==false);
+        		pageObject.getWebElementNdsInputPanelDisplayed().isDisplayed()==false);
     }
 }

@@ -158,7 +158,18 @@ public class ToGetPrsExemptionRefDataNdsResponseConverter {
                             
                             exemptionTypeDetails.setExemptionTypeLovList(exemptionTypeLovList);
                         }
+                        
+						if (exemptionType.getExemptionConfirmation() != null) {
+							exemptionTypeDetails.setConfirmationPagetitle(
+									exemptionType.getExemptionConfirmation().getConfirmationPagetitle());
+							exemptionTypeDetails.setConfirmationcheckbox(
+									exemptionType.getExemptionConfirmation().getConfirmationcheckbox());
+							exemptionTypeDetails.setConfirmationwording(
+									exemptionType.getExemptionConfirmation().getConfirmationwording());
+						}
+                        
                         exemptionTypeTextList.add(exemptionTypeDetails);
+
                     }
                 }
 

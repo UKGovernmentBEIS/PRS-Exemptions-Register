@@ -63,11 +63,12 @@ public class RetrieveRegisteredDetailsSoapAdapter extends
             retrieveRegisteredDetailsNdsResponse = converter.convertTo(RetrieveRegisteredDetailsNdsResponse.class,
                     externalResponse);
             String username = retrieveUsernameFromDn((String) ndsExchange.getAnExchangeProperty("USERNAME"));
-            retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().setUsername(username);
-            if(retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType() != null){
-                ndsExchange.setAnExchangeProperty(USER_TYPE,retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType());
-            }                    
-            
+            if (retrieveRegisteredDetailsNdsResponse.isSuccess()){
+                retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().setUsername(username);
+                if(retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType() != null){
+                    ndsExchange.setAnExchangeProperty(USER_TYPE,retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType());
+                }                    
+            }
         } catch (Exception e) {
             throw new NdsApplicationException("Error occured during response conversion process:  " + e.getMessage(),
                     e);

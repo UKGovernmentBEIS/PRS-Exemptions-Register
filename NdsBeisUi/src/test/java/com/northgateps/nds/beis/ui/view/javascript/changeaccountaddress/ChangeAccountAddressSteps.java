@@ -26,7 +26,9 @@ import cucumber.api.java.en.When;
 import net.thucydides.core.annotations.Managed;
 
 public class ChangeAccountAddressSteps {
-
+	private static final String username = "changeaddresstest";
+	private static final String password = "passwordw!11OK";
+	
     private SeleniumCucumberTestHelper testHelper = new SeleniumCucumberTestHelper();
     PersonalisedAccountSummaryPageHelper summaryPageHelper;
     PersonalisedChangeAccountAddressPageHelper pageHelper;
@@ -56,7 +58,7 @@ public class ChangeAccountAddressSteps {
 		LoginPageHelper loginPageHelper = new LoginPageHelper(webDriver);
 
 		PageHelperFactory.registerFormFiller("login-form",
-				loginPageHelper.createFormFiller("changeaddresstest", "passwordw!11"));
+				loginPageHelper.createFormFiller(username, password));
 
 		try {
 			summaryPageHelper = PageHelperFactory.visit(firstPageHelper, PersonalisedAccountSummaryPageHelper.class);
@@ -100,7 +102,7 @@ public class ChangeAccountAddressSteps {
 		LoginPageHelper loginPageHelper = new LoginPageHelper(webDriver);
 
 		PageHelperFactory.registerFormFiller("login-form",
-				loginPageHelper.createFormFiller("changeaddresstest", "passwordw!11"));
+				loginPageHelper.createFormFiller(username, password));
 
 		try {
 			pageHelper = PageHelperFactory.visitNew(firstPageHelper, PersonalisedChangeAccountAddressPageHelper.class);

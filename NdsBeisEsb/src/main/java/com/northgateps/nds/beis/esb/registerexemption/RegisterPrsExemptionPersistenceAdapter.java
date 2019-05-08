@@ -54,7 +54,7 @@ public class RegisterPrsExemptionPersistenceAdapter extends
         ndsExchange.setOperationName("RegisterPRSExemptionWSDL");
 
         RegisterPRSExemptionRequest registerPRSExemptionRequest = new RegisterPRSExemptionRequest();
-
+       
         try {
             request = readFile(ndsExchange, request);
             ndsExchange.setRequestMessageBody(request);
@@ -85,6 +85,14 @@ public class RegisterPrsExemptionPersistenceAdapter extends
             registerPrsExemptionNdsResponse = converter.convertTo(RegisterPrsExemptionNdsResponse.class,
                     externalResponse);
             ndsExchange.setAnExchangeProperty(EXEMPTION_REGISTERED_SUCCESSFULLY, registerPrsExemptionNdsResponse.isSuccess());
+
+            RegisterPrsExemptionPersistenceNestedAdapter persistenceAdapter = new RegisterPrsExemptionPersistenceNestedAdapter() {
+                @Override
+                public PersistenceManager getPersistenceManager() {
+                    return (persistenceManager != null) ? persistenceManager : super.getPersistenceManager();
+                }
+            };       
+            persistenceAdapter.logEvent(ndsExchange,(String) ndsExchange.getAnExchangeProperty(RegisterPrsExemptionLookupIdComponent.PROPERTY_TYPE));
         } catch (TypeConversionException e) {
             throw new NdsApplicationException("Error occured during response conversion process:  " + e.getMessage(),
                     e);

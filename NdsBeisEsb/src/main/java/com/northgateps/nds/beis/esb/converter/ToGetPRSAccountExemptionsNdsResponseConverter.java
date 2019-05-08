@@ -48,6 +48,8 @@ public final class ToGetPRSAccountExemptionsNdsResponseConverter {
 				
 				RegisteredExemptionDetail registeredExemption = new RegisteredExemptionDetail();
                 
+				registeredExemption.setLandlord(exemption.getLandlord());
+				registeredExemption.setExemptionReference(exemption.getExemptionReference());
                 registeredExemption.setReferenceId(exemption.getExemptionRefNo() == null ? null :exemption.getExemptionRefNo().toString());
                 registeredExemption.setDescription(exemption.getPWSDescription());
                 registeredExemption.setStartDate(XMLGregorianCalendarToZonedDateTimeConverter.convert(exemption.getRegisteredDate()));

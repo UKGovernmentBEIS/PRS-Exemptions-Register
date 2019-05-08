@@ -5,6 +5,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.component.cxf.CxfPayload;
 import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringTestSupport;
@@ -71,6 +72,8 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody(CreateGetReferenceValuesTestData.createGetReferenceValuesResponse());
+                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
+                        exchange.getIn().setBody(payload);
                     }
                 });
             }
@@ -80,8 +83,7 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
         context.start();
 
         MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
-        getSysParametersServiceMock.expectedMessageCount(1);
-         getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
+        getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
 
         MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);
         gspsRouteResponseMock.expectedMessageCount(1);
@@ -121,6 +123,8 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody(CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesResponse());
+                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
+                        exchange.getIn().setBody(payload);
                     }
                 });
             }
@@ -129,7 +133,6 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
         // manually start the camel context.
         context.start();
         MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
-        getSysParametersServiceMock.expectedMessageCount(1);
         getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
         
         MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);
@@ -167,6 +170,8 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody(CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesResponse());
+                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
+                        exchange.getIn().setBody(payload);
                     }
                 });
             }
@@ -175,7 +180,6 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
         // manually start the camel context.
         context.start();
         MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
-        getSysParametersServiceMock.expectedMessageCount(1);
         getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
         
         MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);
@@ -212,6 +216,8 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody(CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesResponse());
+                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
+                        exchange.getIn().setBody(payload);
                     }
                 });
             }
@@ -220,7 +226,6 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
         // manually start the camel context.
         context.start();
         MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
-        getSysParametersServiceMock.expectedMessageCount(1);
         getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
         
         MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);

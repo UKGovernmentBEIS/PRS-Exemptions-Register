@@ -136,6 +136,9 @@ public class ExemptionTypeTextComponent implements FieldComponent, NamedEnumerat
         exemptionTypeText.setFrvDomain(exemptionTypeDetails.getFrvDomain());
         exemptionTypeText.setFrvRequired(exemptionTypeDetails.getFrvRequired());
         exemptionTypeText.setExemptionTypeLovList(exemptionTypeDetails.getExemptionTypeLovList());
+        exemptionTypeText.setConfirmationPagetitle(exemptionTypeDetails.getConfirmationPagetitle());
+        exemptionTypeText.setConfirmationcheckbox(exemptionTypeDetails.getConfirmationcheckbox());
+        exemptionTypeText.setConfirmationwording(exemptionTypeDetails.getConfirmationwording());
         return exemptionTypeText;
     }
 

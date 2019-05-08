@@ -113,7 +113,7 @@ public class SelectLandlordTypeAgentSteps {
 
     @Given("^I have selected person as landlord type$")
     public void i_have_selected_person_as_landlord_type() throws Throwable {
-        pageObject.clickNdsRadiobuttonAccountType_PERSON();
+        pageObject.clickNdsRadiobuttonelementAccountType("PERSON");
     }    
     
     @Then("^I will be taken to the 'personalised-landloard-details' page$")
@@ -131,7 +131,7 @@ public class SelectLandlordTypeAgentSteps {
 
     @Given("^I have selected organisation as landlord type$")
     public void i_have_selected_organisation_as_landlord_type() throws Throwable {
-        pageObject.clickNdsRadiobuttonAccountType_ORGANISATION();
+        pageObject.clickNdsRadiobuttonelementAccountType("ORGANISATION"); 
     }
 
     @Then("^Organisation name will be available for input$")

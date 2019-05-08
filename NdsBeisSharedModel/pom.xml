@@ -26,14 +26,14 @@
 	</distributionManagement>
 
 	<parent>
-		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<groupId>com.northgateps.nds.sharedpoms</groupId>
 		<artifactId>sharedpoms</artifactId>
-		<version>(,1.0.0]</version>
-		<relativePath>../NdsSharedPoms/</relativePath>
+		<version>0.0.0-SNAPSHOT</version>
+        <relativePath />
 	</parent>
 
 	<properties>
-		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
+		<nds.platform.version>0.0.0-SNAPSHOT</nds.platform.version>
 		<nds.bbis.externalApiPath>com/northgateps/nds/beis/api/</nds.bbis.externalApiPath>
 	</properties>
 
@@ -44,6 +44,7 @@
 			<version>${nds.platform.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -161,15 +162,9 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.apache.cxf
-										</groupId>
-										<artifactId>
-											cxf-java2wadl-plugin
-										</artifactId>
-										<versionRange>
-											[3.0.4,)
-										</versionRange>
+										<groupId>org.apache.cxf</groupId>
+										<artifactId>cxf-java2wadl-plugin</artifactId>
+										<versionRange>[3.0.4,)</versionRange>
 										<goals>
 											<goal>java2wadl</goal>
 											<goal>parsejavadoc</goal>
@@ -179,6 +174,34 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
+								
+                                <!-- 
+                                    Tells Eclipse to run the AspectJ weaving as part of its builds so the logging system 
+                                    will still work in Tomcat after a Maven Update (Alt+F5 in Eclipse) 
+                                -->
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>aspectj-maven-plugin</artifactId>
+                                        <versionRange>[${aspectj.maven.plugin.version},)</versionRange>
+                                        <goals>
+                                            <goal>compile</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <!-- 
+                                                If this plugin is causing performance issues on Eclipse, set this to false.
+                                                However you may then need to run the plugin manually (
+                                                eg build from the command line) to ensure the logging 
+                                                system is weaved in. 
+                                              -->
+                                            <runOnIncremental>false</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                            								
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>

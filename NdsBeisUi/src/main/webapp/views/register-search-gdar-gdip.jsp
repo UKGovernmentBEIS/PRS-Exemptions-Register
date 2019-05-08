@@ -46,14 +46,13 @@
 					<div class="form-group">				
 						<nds:field path="uiData.gdarGdipSearch.searchTerm" labeldecoration="none" hints="Hint_uiData.gdarGdipSearch.searchTerm">													
 							<div>
-								<p>
+								<p class="body-text">
 									<fmt:message bundle="${FieldsBundle}"
 										key="Paragraph_RegisterSearchGdarGdip" />
 								</p>
 								<nds:hint />						
 								<span> 
-									<nds:input class="form-control" placeholder="false"
-										autofocus="true" />
+									<nds:input class="form-control" placeholder="false"/>										
 								</span>
 							</div>
 							<nds:invalid />

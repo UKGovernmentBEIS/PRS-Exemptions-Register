@@ -162,6 +162,15 @@ public class ExemptionConfirmationSteps {
         checkOnPage(pageHelper, "personalised-exemption-confirmation");
     }
     
+	@Given("^I can see the correct guidance text$")
+	public void i_can_see_the_correct_guidance_text() {
+		pageObject = pageHelper.getPageObject();
+		assertTrue(
+				"As this is a self-certification register, you do not need to do anything else. The Enforcing Authority will only, is not present ",
+				pageObject.getTextMainContent().contains(
+						"As this is a self-certification register, you do not need to do anything else. The Enforcing Authority will only"));
+	}
+    
     @Then("^the exemptions region will be expanded$")
     public void the_exemptions_region_will_be_expanded() throws Throwable {
         dashboardPageHelper = new PersonalisedDashboardPageHelper(webDriver);

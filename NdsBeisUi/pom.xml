@@ -24,15 +24,15 @@
 	</distributionManagement>
 
 	<parent>
-		<groupId>com.northgateps.beis.sharedpoms</groupId>
+		<groupId>com.northgateps.nds.sharedpoms</groupId>
 		<artifactId>sharedpoms-ui</artifactId>
-		<version>(,1.0.0]</version>
-		<relativePath>../NdsSharedPoms/NdsSharedPomUi/pom.xml</relativePath>
+		<version>0.0.0-SNAPSHOT</version>
+        <relativePath />
 	</parent>
 	
 	<properties>
 		<nds.beis.version>[0.0.0,1.0.0)</nds.beis.version>
-		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
+		<nds.platform.version>0.0.0-SNAPSHOT</nds.platform.version>
 
         <!-- 
         	Autotest properties to run tests on developer machines.  
@@ -82,11 +82,23 @@
 			<version>${nds.platform.version}</version>
 			<scope>test</scope>
 		</dependency>
-		 <!-- Apache Commons FileUpload --> 
+		
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+		 
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-cucumber</artifactId>
+            <scope>test</scope>
+        </dependency>
+ 
         <dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.1</version>
+			<version>${commons.fileupload.version}</version>
 		</dependency>
 
 		<dependency>
@@ -94,11 +106,13 @@
 		    <artifactId>joda-time-jsptags</artifactId>
 		    <version>1.1.1</version>
 		</dependency>
+		
 	</dependencies>
 
 	<build>
 		<plugins>
-		  <!-- indicates where to find generated sources -->
+    		
+    		<!-- indicates where to find generated sources -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -153,7 +167,7 @@
             <plugin>
                 <groupId>nl.geodienstencentrum.maven</groupId>
                 <artifactId>sass-maven-plugin</artifactId>
-                <version>${geodienstencentrum.sass.version}</version>
+                 <version>${geodienstencentrum.sass.version}</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>
@@ -176,7 +190,7 @@
             <plugin>
                 <groupId>com.northgateps.nds.plugins</groupId>
                 <artifactId>plugins-generatepageobjects</artifactId>
-                <version>${nds.generatepageobjects.version}</version>
+                <version>${nds.platform.version}</version>
                 <configuration>
                     <!-- this pom may be run from NdsBeis but want to get jsps in NdsBeisUi project -->
                     <scanDirectory>${basedir}/src/main/webapp/views/</scanDirectory>
@@ -275,22 +289,42 @@
 				</executions>
 			</plugin>
             
-            <!-- Copy resources from the platformUI -->
+            <!-- Copy resources from the platformUI (Do not commit them!) -->
             <plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>com.northgateps.nds.platform</groupId>
+                            <artifactId>platform-ui</artifactId>
+                            <overWrite>true</overWrite>
+                            <includes>*.tld</includes>
+                            <outputDirectory>src/main/webapp/WEB-INF/</outputDirectory>
+                        </artifactItem>
+                        <artifactItem>
+                            <groupId>com.northgateps.nds.platform</groupId>
+                            <artifactId>platform-ui</artifactId>
+                            <overWrite>true</overWrite>
+                            <includes>**/assets/</includes>
+                            <outputDirectory>target/generated-sources/</outputDirectory>
+                        </artifactItem>
+                        <artifactItem>
+                            <groupId>com.northgateps.nds.platform</groupId>
+                            <artifactId>platform-shared</artifactId>
+                            <overWrite>true</overWrite>
+                            <includes>**/assets/</includes>
+                            <outputDirectory>target/generated-sources/</outputDirectory>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>rename-file</id>
-                        <phase>generate-resources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>unpack</goal>
                         </goals>
-                        <configuration>
-                            <sourceFile>../NdsShared/nds-form-tags.template.tld</sourceFile>
-                            <destinationFile>${project.basedir}/src/main/webapp/WEB-INF/nds-form-tags.tld</destinationFile>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -359,7 +393,7 @@
                         <configuration>
                             <webappSourceDir>${project.basedir}</webappSourceDir>
                             <webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-                            <jsSourceDir>../NdsShared/javascripts</jsSourceDir>
+                            <jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
                             <jsSourceFiles>
                                 <jsSourceFile>head.platform.js</jsSourceFile>                                
                             </jsSourceFiles>
@@ -414,7 +448,7 @@
                         <configuration>                            
                             <webappSourceDir>${project.basedir}</webappSourceDir>
                             <webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-                            <jsSourceDir>../NdsShared/javascripts</jsSourceDir>
+                            <jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
                             <jsSourceFiles>
                                 <jsSourceFile>metadata.platform.js</jsSourceFile>
                             </jsSourceFiles>
@@ -448,7 +482,7 @@
 						<configuration>
 							<webappSourceDir>${project.basedir}</webappSourceDir>
 							<webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-							<jsSourceDir>../NdsShared/javascripts</jsSourceDir>
+							<jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
 							<jsSourceFiles>
 								<jsSourceFile>nds-google-analytics.platform.js</jsSourceFile>
 							</jsSourceFiles>
@@ -466,7 +500,7 @@
 						<configuration>
 							<webappSourceDir>${project.basedir}</webappSourceDir>
 							<webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-							<jsSourceDir>../NdsShared/javascripts</jsSourceDir>
+							<jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
 							<jsSourceFiles>
 								<jsSourceFile>geographic-address.platform.js</jsSourceFile>
 							</jsSourceFiles>
@@ -485,7 +519,7 @@
                             <skipMinify>true</skipMinify>
                             <webappSourceDir>${project.basedir}</webappSourceDir>
                             <webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-                            <jsSourceDir>../NdsShared/javascripts</jsSourceDir>
+                            <jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
                             <jsSourceFiles>
                                 <jsSourceFile>spin.platform.js</jsSourceFile>
                                 <jsSourceFile>validation.platform.js</jsSourceFile>
@@ -529,39 +563,8 @@
                 </executions>
             </plugin>
 		</plugins>
-		 <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>com.northgateps.nds.plugins</groupId>
-                                        <artifactId>plugins-generatepageobjects</artifactId>
-                                        <versionRange>[${nds.generatepageobjects.version},)</versionRange>
-                                        <goals>
-                                            <goal>
-                                                generatePageObjects
-                                            </goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 	</build>
-<profiles>
+    <profiles>
         <profile>
             <id>JavascriptTests</id>
             <activation>
@@ -606,7 +609,7 @@
                                             <pluginExecutionFilter>
                                                 <groupId>nl.geodienstencentrum.maven</groupId>
                                                 <artifactId>sass-maven-plugin</artifactId>
-                                                <versionRange>[${geodienstencentrum.sass.version},)</versionRange>
+                                                <versionRange>${geodienstencentrum.sass.version}</versionRange>
                                                 <goals>
                                                     <goal>scss2css</goal>
                                                     <goal>update-stylesheets</goal>
@@ -620,7 +623,7 @@
                                             <pluginExecutionFilter>
                                                 <groupId>com.northgateps.nds.plugins</groupId>
                                                 <artifactId>plugins-generatepageobjects</artifactId>
-                                                <versionRange>[${nds.generatepageobjects.version},)</versionRange>
+                                                <versionRange>${nds.platform.version}</versionRange>
                                                 <goals>
                                                     <goal>generatePageObjects</goal>
                                                 </goals>
@@ -629,7 +632,53 @@
                                                 <ignore />
                                             </action>
                                         </pluginExecution>
+                                        <!-- 
+                                            Tells Eclipse to run the AspectJ weaving as part of its builds so the logging system 
+                                            will still work in Tomcat after a Maven Update (Alt+F5 in Eclipse) 
+                                        -->
+                                        <pluginExecution>
+                                            <pluginExecutionFilter>
+                                                <groupId>org.codehaus.mojo</groupId>
+                                                <artifactId>aspectj-maven-plugin</artifactId>
+                                                <versionRange>[${aspectj.maven.plugin.version},)</versionRange>
+                                                <goals>
+                                                    <goal>compile</goal>
+                                                </goals>
+                                            </pluginExecutionFilter>
+                                            <action>
+                                                <execute>
+                                                    <!-- 
+                                                        If this plugin is causing performance issues on Eclipse, set this to false.
+                                                        However you may then need to run the plugin manually (
+                                                        eg build from the command line) to ensure the logging 
+                                                        system is weaved in. 
+                                                      -->
+                                                    <runOnIncremental>false</runOnIncremental>
+                                                    <runOnConfiguration>true</runOnConfiguration>
+                                                </execute>
+                                            </action>
+                                        </pluginExecution>
+                                        
+                                        <!-- Copies assets from platform dependencies-->
+	                                    <pluginExecution>
+		                                    <pluginExecutionFilter>
+		                                        <groupId>org.apache.maven.plugins</groupId>
+		                                        <artifactId>maven-dependency-plugin</artifactId>
+                                                <versionRange>${maven.dependency.plugin.version}</versionRange>
+		                                        <goals>
+		                                            <goal>unpack</goal>
+		                                        </goals>
+		                                    </pluginExecutionFilter>
+		                                    <action>
+		                                        <execute>
+                                                    <runOnIncremental>false</runOnIncremental>
+                                                    <runOnConfiguration>true</runOnConfiguration>
+                                                </execute>
+		                                    </action>
+		                                </pluginExecution>
+	                                
                                     </pluginExecutions>
+                                    
                                 </lifecycleMappingMetadata>
                             </configuration>
                         </plugin>

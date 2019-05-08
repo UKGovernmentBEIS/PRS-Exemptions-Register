@@ -2,6 +2,7 @@ Feature: Dashboard test
 
 Scenario: Landlord dashboard
     Given I am on the personalised-dashboard page 
+    And I can see the correct guidance text   
     And I have signed in as a landlord
     When the page is displayed
     Then I will see a summary of exemptions for the landlord
@@ -21,43 +22,37 @@ Scenario: View exemption
 	And I will have an option to end each exemption
 	And I will remain on the 'personalised-dashboard' page
 
-#View current exemptions
-	Given no exemptions are displayed
-	When I select 'View exemptions'
-	And I select 'Current exemptions'
-	Then I will see a list of my current exemptions
-	And I will have an option to end each exemption
+#View current exemptions	
+	And I will see a list of my current exemptions
+    And I can see the exemption reference displayed
+    And I can see the landlord displayed
+	And I will have an option to end each exemption	
 	And I will remain on the 'personalised-dashboard' page
 
-#View expired exemptions 
-	Given no exemptions are displayed
-	When I select 'View exemptions'
-	And I select 'Expired exemptions'
+#View expired exemptions		
+	Given I select 'Expired exemptions'
 	Then I will see a list of my expired exemptions
 	And I will remain on the 'personalised-dashboard' page
 
-#Switch to expired exemptions
-	Given current exemptions are displayed
-	When I select 'Expired exemptions'
-	Then I will see a list of my expired exemptions
-	And I will remain on the 'personalised-dashboard' page
-
-#Switch to current exemptions
-	Given expired exemptions are displayed
+#Switch to current exemptions	
 	When I select 'Current exemptions'
 	Then I will see a list of my current exemptions
 	And I will have an option to end each exemption
 	And I will remain on the 'personalised-dashboard' page
 
-#Hide exemptions
-	Given exemptions are displayed
+#Switch to expired exemptions	
+	When I select 'Expired exemptions'
+	Then I will see a list of my expired exemptions
+    And I can see the exemption reference displayed
+    And I can see the landlord displayed
+	And I will remain on the 'personalised-dashboard' page
+
+#Hide exemptions	
 	When I select 'View exemptions'
 	Then the exemptions will be hidden
-	And I will remain on the 'personalised-dashboard' page	
+	And I will remain on the 'personalised-dashboard' page
 
-#Re-display expired exemptions
-	Given expired exemptions are displayed
-	And I select 'View exemptions'
+#Re-display expired exemptions	
 	When I select 'View exemptions' again
 	Then I will see a list of my expired exemptions
 	And I will remain on the 'personalised-dashboard' page
@@ -70,14 +65,9 @@ Scenario: View exemption
 	And I will have an option to end each exemption
 	And I will remain on the 'personalised-dashboard' page
 
-#Move to end exemption page 
-	Given current exemptions are displayed
-	And I select 'View exemptions'
-	When I select 'View exemptions' again
-	Then I will see a list of my current exemptions
-	And I will have an option to end each exemption	
+#Move to end exemption page	
 	When I select 'End exemption'
-	Then I will be taken to the 'personalised-end-exemption' page	
+	Then I will be taken to the 'personalised-end-exemption' page
 	
 Scenario: Agent dashboard
     Given I am on the personalised-dashboard page with signed as agent

@@ -36,26 +36,10 @@
 			</div>			
 			<div class="grid-row divider">
 				<div class="column-full">
-					<div class="form-group">
-						<nds:field
-							path="exemptionDetails.landlordDetails.accountType"
-							labeldecoration="required">
-							<fieldset class="inline radio">
-								<nds:invalid />
-								<legend class="visually-hidden">
-									<fmt:message bundle="${FieldsBundle}"
-										key="Legend_beisRegistrationDetails.accountDetails.accountType" />
-								</legend>
-								<nds:radiobutton
-									label="Label_exemptionDetails.landlordDetails.accountType.ORGANISATION"
-									value="ORGANISATION" class="yesno" />
-								<nds:radiobutton
-									label="Label_exemptionDetails.landlordDetails.accountType.PERSON"
-									value="PERSON" class="yesno" />
-								
-							</fieldset>
-						</nds:field>
-					</div>
+					<div class="form-group"> 
+		       			<nds:radiobuttonelement path="exemptionDetails.landlordDetails.accountType"
+						items="${command.uiData.refData.accountType}" cssClass="accountType"/>
+		    	   	</div>
 					<div class="form-group">
 						<section class="submit">
 							<div class="form-group">

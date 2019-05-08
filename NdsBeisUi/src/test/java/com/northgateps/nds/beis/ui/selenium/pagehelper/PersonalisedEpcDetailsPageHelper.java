@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedEpcDetailsPageObject;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.PageObject;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
@@ -17,16 +18,14 @@ import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
 public class PersonalisedEpcDetailsPageHelper extends BasePageHelper<PersonalisedEpcDetailsPageObject>
         implements PageHelper {
 
-    // Example files used this test are require to store in below location and same folder is used on build server to
-    // run the auto test
-    private static final String fileGridLocation = "file:/C:/grid/beis/uploadfiles/";
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
 
     //set default FormFiller
     {
         setFormFiller(new FormFiller() {
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
-                getPageObject().getDriver().findElement(By.id("resource")).sendKeys(getFilePath("test.docx"));
+                beisUtils.selectFile(getPageObject().getDriver(), "test.docx");              
             }
         });
     }
@@ -38,11 +37,7 @@ public class PersonalisedEpcDetailsPageHelper extends BasePageHelper<Personalise
     public PersonalisedEpcDetailsPageHelper(WebDriver driver, Locale locale) {
         super(driver, locale);
     }
-
-    private String getFilePath(String fileName) {
-        return fileGridLocation + fileName;
-    }
-
+    
     public boolean isFileFoundInGrid() {
         final PersonalisedEpcDetailsPageObject pageObject = getPageObject();
         List<WebElement> fileNameCells = pageObject.getDriver().findElements(By.className("filename"));
@@ -76,7 +71,7 @@ public class PersonalisedEpcDetailsPageHelper extends BasePageHelper<Personalise
     public PageHelper skipPage() {
         final PersonalisedEpcDetailsPageObject pageObject = getPageObject();
         fillInForm();
-        pageObject.invalidateDcId();
+        BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());        
         pageObject.clickNext();
         BasePageHelper.waitUntilPageLoading(getPageObject().getDriver());
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());

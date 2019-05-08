@@ -28,10 +28,12 @@ cas.sso.missingService=false
 cas.tgc.secure=false
 
 # The encryption secret keys
-cas.tgc.encryptionKey=
-cas.tgc.signingKey=
-cas.webflow.encryption.key=
-cas.webflow.signing.key=
+cas.tgc.crypto.encryption.key=
+cas.tgc.crypto.signing.key=
+cas.webflow.crypto.encryption.key=
+cas.webflow.crypto.signing.key=
+cas.authn.pm.reset.crypto.encryption.key=
+cas.authn.pm.reset.crypto.signing.key=
 
 # Blank out the demo feature
 # IMPORTANT - THIS MUST BE __EMPTY__ ON ALL SYSTEMS.
@@ -47,20 +49,43 @@ cas.authn.accept.users=
 # cas.authn.throttle.failure.code=AUTHENTICATION_FAILED
 # cas.authn.throttle.failure.rangeSeconds=60
 
+
+#Password Management
 # Password policy for picking up expired accounts
 cas.authn.pm.enabled=true
+cas.authn.pm.autoLogin=false
+cas.authn.pm.reset.expirationMinutes=1
+cas.authn.pm.reset.emailAttribute=mail
+cas.authn.pm.reset.securityQuestionsEnabled=false
+cas.authn.pm.ldap.type=GENERIC
+cas.authn.pm.ldap.ldapUrl=
+cas.authn.pm.ldap.useSsl=false
+cas.authn.pm.ldap.useStartTls=false
+cas.authn.pm.ldap.connectTimeout=5000
+cas.authn.pm.ldap.baseDn=ou=Tenants,ou=NDS,dc=northgateps,dc=com
+cas.authn.pm.ldap.userFilter=userid=%s,ou=Users,ou=%s,ou=Tenants,ou=NDS,dc=northgateps,dc=com
+cas.authn.pm.ldap.subtreeSearch=true
+cas.authn.pm.ldap.bindDn=uid=nds,ou=Administrators,dc=northgateps,dc=com
+cas.authn.pm.ldap.bindCredential=
+cas.authn.pm.ldap.minPoolSize=3
+cas.authn.pm.ldap.maxPoolSize=10
+cas.authn.pm.ldap.validateOnCheckout=true
+cas.authn.pm.ldap.validatePeriodically=true
+cas.authn.pm.ldap.validatePeriod=600
+cas.authn.pm.ldap.validateTimeout=5000
+cas.authn.pm.ldap.failFast=true
+cas.authn.pm.ldap.idleTime=500
+cas.authn.pm.ldap.prunePeriod=600
+cas.authn.pm.ldap.blockWaitTime=5000
+cas.authn.pm.ldap.providerClass=org.ldaptive.provider.unboundid.UnboundIDProvider
+nds.accountLock=pwdAccountLockedTime
+nds.pwdPolicySubentry=pwdPolicySubentry
 
-# auto-reload Spring Web Flow config, set to false for production, true for development
-cas.webflow.refresh=true
-
-#
 # LDAP
 nds.authn.ldap[0].name=NdsLdapTenantAuthentication
 nds.authn.ldap[0].ldapUrl=ldap://vm-nds-tst02:1389
 nds.authn.ldap[0].useSsl=false
 nds.authn.ldap[0].useStartTls=false
-#nds.authn.ldap[0].trustCertificates=file:C:/git/nds-env/NdsEnvironment/environment/apps/certs/ca/vm-nds-bld02/ca-truststore.p12
-#nds.authn.ldap[0].trustStorePassword=a8a9ca74d4f0c143
 nds.authn.ldap[0].connectTimeout=5000
 nds.authn.ldap[0].baseDn=ou=Tenants,ou=NDS,dc=northgateps,dc=com
 nds.authn.ldap[0].enhanceWithEntryResolver=false
@@ -79,7 +104,14 @@ nds.authn.ldap[0].blockWaitTime=5000
 nds.authn.ldap[0].principalAttributeList=cn:NDS_CN,sn:NDS_SN,ndsRoleDN:NDS_ROLE_DN,o:NDS_o
 nds.authn.ldap[0].tenantAttributeName=NDS_TENANT
 # LDAP
-#
+
+
+
+nds.authn.ldap[0].usePasswordPolicy=true
+nds.authn.ldap[0].passwordPolicy.loginFailures=5
+nds.authn.ldap[0].passwordPolicy.displayWarningOnMatch=true
+nds.authn.ldap[0].passwordPolicy.warnAll=true
+nds.authn.ldap[0].passwordPolicy.warningDays=30
 
 # For back-channel connections to the UI 
 nds.httpClient.truststore.file=file:C:/git/beis/NdsBeisEsb/src/main/resources/config/certs/server-keystore.p12
@@ -125,3 +157,13 @@ nds.applicationPhase=TEST
 
 #Feedback email address
 nds.feedbackEmail = beis@northgateps.com
+
+cas.authn.pm.reset.crypto.encryption.key=
+cas.authn.pm.reset.crypto.signing.key=
+cas.tgc.crypto.encryption.key=
+cas.tgc.crypto.signing.key=
+cas.webflow.crypto.signing.key=
+cas.webflow.crypto.encryption.key=
+
+# auto-reload Spring Web Flow config, set to false for production, true for development
+cas.webflow.refresh=true

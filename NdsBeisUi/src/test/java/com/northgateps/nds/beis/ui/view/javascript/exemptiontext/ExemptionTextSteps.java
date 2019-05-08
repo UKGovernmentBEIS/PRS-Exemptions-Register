@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -21,6 +22,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelp
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionDocumentUploadPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedExemptionTextPageObject;
+import com.northgateps.nds.beis.ui.view.helper.BeisTestUtilities;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.FormFiller;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
@@ -37,7 +39,7 @@ public class ExemptionTextSteps {
 
     private final Map<String, ?> testProperties = JsonPropertiesLoader.load("testProperties.json",
             this.getClass().getClassLoader());
-
+    BeisTestUtilities beisUtils= new BeisTestUtilities();
     private final String loginUsername = (String) testProperties.get("loginUsername");
     private final String loginPassword = (String) testProperties.get("loginPassword");
     private SeleniumCucumberTestHelper testHelper = new SeleniumCucumberTestHelper();
@@ -48,8 +50,7 @@ public class ExemptionTextSteps {
     UsedServiceBeforePageHelper firstPageHelper;
     PersonalisedExemptionDocumentUploadPageHelper exemptionDocumentUploadPageHelper;
     PersonalisedExemptionDocumentUploadPageObject PersonalisedExemptionDocumentUploadPageObject;
-    private static final String fileGridLocation = "file:/C:/grid/beis/uploadfiles/";
-
+    
     WebElement element;
     @Managed
     private WebDriver webDriver;
@@ -65,13 +66,7 @@ public class ExemptionTextSteps {
     @After
     public void afterScenario() {
         testHelper.afterScenario();
-    }
-
-    private String getFilePath(String fileName) {
-
-        return fileGridLocation + fileName;
-
-    }
+    }    
 
     @Given("^I am on the personalised-exemption-text page$")
     public void i_am_on_the_exemption_text_page() throws Throwable {
@@ -129,12 +124,16 @@ public class ExemptionTextSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
+    	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
+        pageObject = pageHelper.getNewPageObject();
+        JavascriptExecutor jse = (JavascriptExecutor)pageObject.getDriver();
+        jse.executeScript("scroll(0, 250)");       
         pageObject.clickNext();
-
     }
 
     @Then("^I will receive \"(.*?)\" as validation message$")
     public void i_will_receive_as_validation_message(String validationMessage) throws Throwable {
+    	checkOnPage(pageHelper, "personalised-exemption-text");
         assertEquals("check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
 
     }
@@ -147,6 +146,7 @@ public class ExemptionTextSteps {
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String message) throws Throwable {
+    	checkOnPage(pageHelper, "personalised-exemption-text");
         assertEquals("Check custom validation message", message,
                 pageObject.getDriver().findElement(By.className("validationMessage")).getText());
 
@@ -176,9 +176,9 @@ public class ExemptionTextSteps {
         pageObject.setTextNdsTextareaExemptionText("Exemption text");
     }
 
-    @Then("^I will be taken to the personalised-exemption-declaration page$")
-    public void i_will_be_taken_to_the_exemption_declaration_page() throws Throwable {
-        checkOnPage(pageHelper, "personalised-exemption-declaration");
+    @Then("^I will be taken to the personalised-further-information page$")
+    public void i_will_be_taken_to_the_personalised_further_information_page() throws Throwable {    	
+        checkOnPage(pageHelper, "personalised-further-information");
     }
 
     @When("^I select Remove file$")
@@ -188,25 +188,26 @@ public class ExemptionTextSteps {
 
     @Given("^I select a file \"(.*?)\" with an incorrect file type$")
     public void i_select_a_file_with_an_incorrect_file_type(String fileName) throws Throwable {
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath(fileName));
+    	checkOnPage(pageHelper, "personalised-exemption-text");
+        selectFile(fileName, "personalised-exemption-text");        
     }
 
     @Given("^I select a file \"(.*?)\" that is larger than the maximum size$")
     public void i_select_a_file_that_is_larger_than_the_maximum_size(String fileName) throws Throwable {
         pageHelper.ClearForm();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-text");
     }
 
     @Given("^I select a file \"(.*?)\" that is of the correct type and size$")
     public void i_select_a_file_that_is_of_the_correct_type_and_size(String fileName) throws Throwable {
         pageHelper.ClearForm();
         pageObject = pageHelper.getNewPageObject();
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-text");
     }
 
     @When("^I upload \"(.*?)\" as one more document$")
     public void i_upload_as_one_more_document(String fileName) throws Throwable {
-        pageObject.getDriver().findElement(By.id("resource")).sendKeys(getFilePath(fileName));
+        selectFile(fileName, "personalised-exemption-text");
         pageObject.getDriver().findElement(By.id("button.uploadresource")).click();
     }
 
@@ -223,5 +224,9 @@ public class ExemptionTextSteps {
     @Given("^I have not loaded a document$")
     public void i_have_not_loaded_a_document() throws Throwable {
     }
-
+    
+    private void selectFile(String filename, String page) {
+        checkOnPage(pageHelper, page);
+        beisUtils.selectFile(pageObject.getDriver(), filename);
+    }
 }

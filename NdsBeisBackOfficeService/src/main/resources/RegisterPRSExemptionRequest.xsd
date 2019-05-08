@@ -58,6 +58,11 @@
 					minOccurs="0" />
 				<xsd:element name="ExemptionDocuments" type="ExemptionDocumentType"
 					minOccurs="0" />
+                                <xsd:element name="ExemptionConfirmation" type="xsd:string" 
+                                        minOccurs="0" />        
+                                <xsd:element name="ExemptionConfirmationInd" type="xsd:string" 
+                                        minOccurs="0" />        
+
 			</xsd:sequence>
 			</xsd:extension>
             </xsd:complexContent>

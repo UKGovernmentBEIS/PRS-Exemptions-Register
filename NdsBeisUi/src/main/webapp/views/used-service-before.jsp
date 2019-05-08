@@ -28,38 +28,27 @@
 					<h1 class="form-title heading-large" role="banner">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_UsedServiceBefore" />
 					</h1>
-					<p>
+					<p class="body-text">
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_UsedServiceBefore1" />
 						<a href="${usedBeforeMinStandardUrl}" id="link.navigation.minstandards" target="_blank"><fmt:message bundle="${FieldsBundle}" key="Paragraph_MinStandardsLinkText" /></a>
 					</p>
-					<p>
+					<p  class="body-text">
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_UsedServiceBefore2_A" />
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_ExemptionReasonsLinkText" />
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_UsedServiceBefore2_B" />
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_ExemptionProofLinkText" />
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_UsedServiceBefore2_C" />
 					</p>				
-					<p>
+					<p class="body-text">
 						<fmt:message bundle="${FieldsBundle}" key="Paragraph_UsedServiceBefore3" />
 					</p>
 				</div>
 			</div>	
 			<div class="grid-row">
-				<div class="column-full">
-					<div class="form-group">										
-						<nds:field path="uiData.usedServiceBefore">
-							<fieldset class="radio">
-								<legend class="form-label-bold"><fmt:message bundle="${FieldsBundle}" key="Label_uiData.usedServiceBefore" /></legend>
-								<nds:invalid />
-								<nds:radiobutton
-									label="Label_UsedServiceBefore.Yes"
-									value="true" />
-								<nds:radiobutton
-									label="Label_UsedServiceBefore.No"
-									value="false"  />
-							</fieldset>
-						</nds:field>
-					</div>
+				<div class="column-full">					
+					<div class="form-group"> 
+			       		<nds:radiobuttonelement path="uiData.usedServiceBefore" items="${command.uiData.refData.yesNoValues}"/>
+			       	</div>
 					<div class="form-group">
 						<section class="submit">
 							<div>

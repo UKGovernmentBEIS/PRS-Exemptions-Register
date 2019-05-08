@@ -74,6 +74,13 @@ public class BeisController extends PlatformApplicationController {
         //GOV UK site
         attributes.put("govUkUrl", ConfigurationFactory.getConfiguration().getString("govUk.url"));
         attributes.put("contactInfoEmailAddress", ConfigurationFactory.getConfiguration().getString("contactInfoEmail.address"));
+        
+       	// put the support url in the controller attributes
+        attributes.put("supportEmail", ConfigurationFactory.getConfiguration().getString("support.email"));
+         
+       	// put the support phone number in the controller attributes
+        attributes.put("supportNumber", ConfigurationFactory.getConfiguration().getString("support.number"));
+ 
     }
     
     /**

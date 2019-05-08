@@ -30,7 +30,6 @@
 			<value>gdar-gdip-terms-and-conditions</value>
 			<value>privacy-policy</value>
 			<value>terms-and-conditions</value>
-			<value>expired-password</value>
 			<value>activatepasswordreset</value>
 			<value>password-reset-confirmation</value>
 			<value>select-landlord-or-agent</value>
@@ -300,6 +299,10 @@
 				</bean>
 
 
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="personalised-further-information" />
+					<property name="security" value="personalised" />
+				</bean>
 
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 					<property name="name" value="personalised-exemption-declaration" />
@@ -375,6 +378,22 @@
 										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 											<property name="name" value="personalised-change-password" />
 											<property name="aliasNavigationalState" value="siteMap/personalised-change-password" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+							<bean class="com.northgateps.nds.platform.ui.controller.flow.Division">
+								<property name="name" value="NEXT_DELETEMYACCOUNT" />
+								<property name="value">
+									<bean class="com.northgateps.nds.platform.ui.controller.value.NdsActionValue">
+										<property name="value" value="NEXT:DeleteMyAccount" />
+									</bean>
+								</property>
+								<property name="flow">
+									<list>
+										<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+											<property name="name" value="personalised-delete-account" />
+											<property name="aliasNavigationalState" value="siteMap/personalised-delete-account" />
 										</bean>
 									</list>
 								</property>
@@ -469,22 +488,16 @@
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 					<property name="name" value="end" />
 				</bean>
-
-				<!-- Expired password detected by CAS -->
+				
+				<!-- Delete account -->
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-					<property name="name" value="expired-password" />
+					<property name="name" value="personalised-delete-account" />
+					<property name="security" value="personalised" />
 				</bean>
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-					<property name="name" value="expired-password-confirmation" />
-				</bean>
-                <!-- back to start page -->
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 					<property name="name" value="failover-landing" />
 				</bean>
-				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-					<property name="name" value="end" />
-				</bean>
-
+ 
 				<!-- Change Address -->
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 					<property name="name" value="personalised-change-account-address" />

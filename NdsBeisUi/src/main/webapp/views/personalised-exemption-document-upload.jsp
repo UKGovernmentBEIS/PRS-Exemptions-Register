@@ -41,7 +41,7 @@
 		<div class="grid-row">
 			<div class="column-full">
 				<div class="text">
-					<p>
+					<p id="pwstext">
 						<c:out
 							value="${command.uiData.selectedExemptionTypeText.documentsPwsText}"
 							escapeXml="false"></c:out>

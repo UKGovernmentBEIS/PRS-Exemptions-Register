@@ -1,7 +1,6 @@
 package com.northgateps.nds.beis.ui.selenium.pagehelper;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -62,9 +61,9 @@ public class PersonalisedExemptionStartDatePageHelper extends BasePageHelper<Per
         return getPageObject().getWebElementNdsFormPageForm().findElement(By.id(id));
     }
 
-    public String getFutureDate() {
-        LocalDateTime currentTime = LocalDateTime.now().plusDays(1);
-        return currentTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/YYYY"));
+    public String getFutureDate() {       
+        LocalDate currentDate = LocalDate.now().plusYears(2);
+        return currentDate.format(DateTimeFormatter.ofPattern("dd/MM/YYYY"));
     }
 
 }

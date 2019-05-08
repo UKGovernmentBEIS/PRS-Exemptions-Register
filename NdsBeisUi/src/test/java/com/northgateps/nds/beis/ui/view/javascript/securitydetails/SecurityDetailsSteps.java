@@ -2,6 +2,7 @@ package com.northgateps.nds.beis.ui.view.javascript.securitydetails;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.openqa.selenium.WebDriver;
 
@@ -137,7 +138,11 @@ public class SecurityDetailsSteps {
 
     @Then("^I will receive the validation message \"(.*?)\"$")
     public void i_will_receive_the_validation_message(String validationMessage) throws Throwable {
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());
+    	pageObject = pageHelper.getNewPageObject();
+    	if (!pageObject.getWebElementInputIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
+    		pageObject.clickInputIsAgreeRegistrationTermsConditions_AgreeTerms();
+        }    	
+        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());        
         assertEquals("checking message",validationMessage, pageHelper.getFirstSummaryFaultMessage());
     }
 
@@ -169,11 +174,15 @@ public class SecurityDetailsSteps {
         checkOnPage(pageHelper, "account-confirmation");
     }
 
-    @Given("^I am on the account-confirmation page$")
-    public void i_am_on_the_account_confirmation_page() throws Throwable {
+    @Then("^I will be taken to the account-confirmation page with the correct signposting$")
+    public void i_will_be_taken_to_the_account_confirmation_page_with_the_correct_signposting() {
         accountConfirmationPageHelper = new AccountConfirmationPageHelper(webDriver);
         accountConfirmationPageObject = accountConfirmationPageHelper.getPageObject();
         checkOnPage(accountConfirmationPageHelper, "account-confirmation");
+        assertTrue("It may take up to 12 hours for the email to arrive. is not present ", pageObject.getTextMainContent().contains(
+                "It may take up to 12 hours for the email to arrive."));
+        assertTrue("use the forgotten password link to request another one is not present ", pageObject.getTextMainContent().contains(
+                "use the forgotten password link to request another one"));
     }
 
     @Then("^I will receive the custom message \"(.*?)\"$")

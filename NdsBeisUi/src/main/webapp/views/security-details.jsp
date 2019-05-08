@@ -71,14 +71,18 @@
 							labeldecoration="required" class="form-checkbox">
 							<nds:invalid />
 							<fieldset>
-								<label class="block-label selection-button-checkbox"
-								for="uiData.isAgreeRegistrationTermsConditions">								 
-									<nds:checkbox value="agreeTerms" autofocus="true" autolabel="false" /> 
-									<fmt:message bundle="${FieldsBundle}" key="Label_uiData.isAgreeRegistrationTermsConditions" /> 
-									<a	href="terms-and-conditions" id="term-condition-link" target="_blank"> 
-										<fmt:message bundle="${FieldsBundle}" key="Label_termsconditions_text" />
-									</a>
-								</label>
+							    <div class="multiple-choice">
+							        <!--  Can't use the NDS CheckBoxTag - see comment on the CheckBoxTag  -->
+								    <input id="uiData.isAgreeRegistrationTermsConditions" name="uiData.isAgreeRegistrationTermsConditions" autolabel="false" type="checkbox" value="agreeTerms">
+									<label class="block-label selection-button-checkbox"
+									for="uiData.isAgreeRegistrationTermsConditions">								 									
+										<fmt:message bundle="${FieldsBundle}" key="Label_uiData.isAgreeRegistrationTermsConditions" /> 
+										<a	href="terms-and-conditions" id="term-condition-link" target="_blank"> 
+											<fmt:message bundle="${FieldsBundle}" key="Label_termsconditions_text" />
+										</a>
+									</label>
+									<input type="hidden" name="_uiData.isAgreeRegistrationTermsConditions" value="on">
+								</div>
 							</fieldset>							
 						</nds:field>
 					</div>

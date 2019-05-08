@@ -7,16 +7,40 @@
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Account activation</subject>
-		<body>Thank-you for creating an account for the PRS exemptions register.<![CDATA[<br/><br/>]]> Your account has been created and your username is <![CDATA[<b>]]>{name}<![CDATA[</b>]]> <![CDATA[<br/><br/>]]> You now need to complete your registration and activate your account. <![CDATA[<br/><br/>]]>{registrationActivation}<![CDATA[<br/><br/>]]>If the link does not work, copy the text below and paste it into the address bar of your web browser.This will take you to the account activation page.<![CDATA[<br/><br/>]]>{activationText}<![CDATA[<br/><br/>]]>Next, copy the reference below and paste it into the box on the account activation page.<![CDATA[<br/><br/>]]>{activationCode}<![CDATA[<br><br>]]>This email is only valid for 24 hours from the time that you first registered.  If you don&apos;t activate your account in that time you can <![CDATA[<a href="{registration.forgottenPasswordUrl}?tenant={tenant}">get a new activation email</a>]]> using the &apos;Forgotten password&apos; option. <![CDATA[<br/><br/>]]>Please note that <![CDATA[<a href="{registration.termsConditionsUrl}?tenant={tenant}">terms and conditions</a>]]> apply to your account.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
-	</template>
-    
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>Thank-you for creating an account for the PRS exemptions register.</p>
+                       <p>Your account has been created and your username is <b>{name}</b> </p>
+                       <p>You now need to complete your registration and activate your account.</p>
+                       <p>{registrationActivation}</p>
+                       <p>If the link does not work, copy the text below and paste it into the address bar of your web browser. This will take you to the account activation page.</p>
+                       <p>{activationText}</p>
+                       <p>Next, copy the reference below and paste it into the box on the account activation page.</p>
+                       <p>{activationCode}</p>
+                       <p>This email is only valid for 24 hours from the time that you first registered.  If you don&apos;t activate your account in that time you can <a href="{registration.forgottenPasswordUrl}?tenant={tenant}">get a new activation email</a> using the &apos;Forgotten password&apos; option. </p>
+                       <p>Please note that <a href="{registration.termsConditionsUrl}?tenant={tenant}">terms and conditions</a> apply to your account.</p>
+                       <p>This email was sent from the <a href="{signin.url}?tenant={tenant}">{website}</a>.</p>
+                ]]>
+        </body>		
+	</template>    
     <template type="PasswordResetEmailTemplate" language="en">
         <from>noreply@beis.gov.uk</from>
         <to>dummy@northgateps.com</to>
         <cc></cc>
         <bcc></bcc>
         <subject>Password reset</subject>
-       <body><![CDATA[<br/><br/>]]>You asked for your PRS exemptions account password to be reset. You now need to set a new password.<![CDATA[<br/><br/>]]><![CDATA[<a href="{webAddress}?tenant={tenant}&amp;activatePasswordResetDetails.resetCode={activationCode}&amp;activatePasswordResetDetails.username={username}">Set a new password</a>]]><![CDATA[<br/><br/>]]>If the link does not work, copy the text below and paste it into the address bar of your web browser.  This will take you to the account activation page.<![CDATA[<br/><br/>]]> {webAddress}<![CDATA[<br/><br/>]]>Next, copy the reference below and paste it into the box on the account activation page.<![CDATA[<br/><br/>]]>{activationCode}<![CDATA[<br/><br/>]]>This email is only valid for 24 hours.  If you don&apos;t activate your account in that time you can <![CDATA[<a href="{webAddress}?tenant={tenant}">get a new activation email</a>]]> using the &apos;Forgotten password&apos; option.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>You asked for your PRS exemptions account password to be reset. You now need to set a new password.</p>
+                       <p><a href="{webAddress}?tenant={tenant}&amp;activatePasswordResetDetails.resetCode={activationCode}&amp;activatePasswordResetDetails.username={username}">Set a new password</a></p>
+                       <p>If the link does not work, copy the text below and paste it into the address bar of your web browser.  This will take you to the account activation page.</p>
+                       <p>{webAddress}</p>
+                       <p>Next, copy the reference below and paste it into the box on the account activation page.</p>
+                       <p>{activationCode}</p>
+                       <p>This email is only valid for 24 hours.  If you don&apos;t activate your account in that time you can <a href="{webAddress}?tenant={tenant}">get a new activation email</a> using the &apos;Forgotten password&apos; option.</a></p>
+                       <p>This email was sent from the <a href="{signin.url}?tenant={tenant}">{website}</a>.</p>
+                ]]>
+        </body>		
     </template>
 	    
 	<template type="UpdateEmailTemplate" language="en">
@@ -25,7 +49,13 @@
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Email address changed</subject>
-		<body>Thank-you for updating your PRS exemptions register account details.<![CDATA[<br/><br/>]]>The email address for your account has been changed to {updatedEmail}.<![CDATA[<br/><br/>]]>This email was sent from the {url}. </body>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>Thank-you for updating your PRS exemptions register account details.</p>
+                       <p>The email address for your account has been changed to {updatedEmail}.</p>
+                       <p>This email was sent from the {url}.</p>
+                ]]>
+        </body>		
 	</template>
 	
 	<template type="ReceivedIncidentTemplate" language="en">
@@ -53,7 +83,14 @@
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Username reminder</subject>
-		<body>You asked for a reminder of your PRS exemptions register username.<![CDATA[<br/><br/>]]> The username linked to this email address is <![CDATA[<b>]]>{usernames}<![CDATA[</b>]]><![CDATA[<br/><br/>]]>You can <![CDATA[<a href="{signin.url}?tenant={tenant}">log in to your account here</a>]]>.<![CDATA[<br/><br/>]]>This email was sent from the <![CDATA[<a href="{signin.url}?tenant={tenant}">{website}</a>]]>.</body>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>You asked for a reminder of your PRS exemptions register username.</p>
+                       <p>The username linked to this email address is <b>{usernames}</b></p>
+                       <p>You can <a href="{signin.url}?tenant={tenant}">log in to your account here</a>.</p>
+                       <p>This email was sent from the <a href="{signin.url}?tenant={tenant}">{website}</a>.</p>
+                ]]>
+        </body>
 	</template>
 	<template type="RegisterExemptionEmailTemplate" language="en">
 		<from>noreply@northgateps.com</from>
@@ -61,16 +98,79 @@
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Exemption registration</subject>
-		<body>Your exemption has been registered successfully.<![CDATA[<br/><br/>]]>{propertyAddress}<![CDATA[<br/><br/>]]>{exemptionType}<![CDATA[<br/><br/>]]>The exemption reference is {exemptionReference}.<![CDATA[<br/><br/>]]>This email was sent from the {url}</body>
-	</template>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>Your exemption has been registered successfully.</p>
+                       <p>{propertyAddress}</p>
+                       <p>{exemptionType}</p>
+                       <p>The exemption reference is {exemptionReference}.</p>
+                       <p>As this is a self-certification register, you do not need to do anything else, and now you can rely on your registered exemption to let your property.</p>
+                       <p>The Enforcing Authority will not contact you to validate this exemption and will only contact you if they have a query about the information you have registered.</p>
+                       <p>This email was sent from the {url}</p>
+                ]]>
+        </body>
+    </template>
 	<template type="RegisterAgentExemptionEmailTemplate" language="en">
 		<from>noreply@northgateps.com</from>
 		<to></to>
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Exemption registration</subject>
-		<body>You are the landlord of {propertyAddress}<![CDATA[<br/><br/>]]>An exemption has been registered for this property on {url}<![CDATA[<br/><br/>]]> The reason for the exemption is:<![CDATA[<br/><br/>]]>{exemptionType}<![CDATA[<br/><br/>]]>The exemption reference is {exemptionReference}.<![CDATA[<br/><br/>]]>The exemption was registered on your behalf by {agentName}, {agentAddress}<![CDATA[<br/><br/>]]>As the landlord, it is your responsibility to make sure that the exemption is correct. You can be fined up to {maxValueForExemptionType} if the information is false or misleading.<![CDATA[<br/><br/>]]>You should contact {agentName} if you have any queries.<![CDATA[<br/><br/>]]>This email was sent from the {url}</body>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>You are the landlord of {propertyAddress}</p>
+                       <p>An exemption has been registered for this property on {url}</p>
+                       <p>The reason for the exemption is:</p>
+                       <p>{exemptionType}</p>
+                       <p>The exemption reference is {exemptionReference}.</p>
+                       <p>The exemption was registered on your behalf by {agentName}, {agentAddress}</p>
+                       <p>As the landlord, it is your responsibility to make sure that the exemption is correct. You can be fined up to {maxValueForExemptionType} if the information is false or misleading.</p>
+                       <p>As this is a self-certification register, you do not need to do anything else, and the landlord can now rely on the registered exemption to let the property.</p>
+                       <p>The Enforcing Authority will not contact you or the landlord to validate this exemption and will only contact you if they have a query about the exemption information you have registered.</p>
+                       <p>You should contact {agentName} if you have any queries.</p>
+                       <p>This email was sent from the {url}</p>
+                ]]>
+        </body>
 	</template>
+	<template type="StatisticsTemplate" language="en">
+        <from>noreply@northgateps.com</from>
+        <to></to>
+        <cc></cc>
+        <bcc></bcc>
+        <subject>Statistics</subject>
+        <body>           
+            Period: {fromDateTime} to {toDateTime}<![CDATA[<br/><br/>]]>
+            Total Registration : {registrationCount}<![CDATA[<br/><br/>]]>               
+            Successful Logins : {successfulLoginsCount}<![CDATA[<br/><br/>]]>
+            Failed Logins : {failedLoginsCount}<![CDATA[<br/><br/>]]>
+            Successfully Changed Password : {changePasswordCount} <![CDATA[<br/><br/>]]>
+            Successfully Reset Password : {resetPasswordCount} <![CDATA[<br/><br/>]]>
+            Submitted Exemptions : {submittedExemptionsCount}<![CDATA[<br/><br/>]]>            
+            Number of Domestic Exemptions : {domesticExemptionCount}<![CDATA[<br/><br/>]]>
+            Number of Nondomestic Exemptions : {nonDomesticExemptionCount}<![CDATA[<br/><br/>]]>
+            Domestic Exemptions References and Type<![CDATA[<br>]]>   
+            {domesticExemptions}<![CDATA[<br/><br/>]]> 
+            Nondomestic Exemptions References and Type<![CDATA[<br/>]]>
+            {nonDomesticExemptions}   
+        </body>
+    </template>
+    
+    <template type="DeleteUserAccountEmailTemplate" language="en">
+		<from>noreply@northgateps.com</from>
+		<to></to>
+		<cc></cc>
+		<bcc></bcc>
+		<subject>Account Details Deleted</subject>
+        <body><![CDATA[
+                       {emailLogo} 
+                       <p>Your account with a username of {userName} has been deleted.</p>
+                       <p>The deletion of your account cannot be reversed.</p>
+                       <p>Any exemptions you have already registered will not be deleted.</p>                       
+                ]]>
+        </body>
+	</template>
+    
+    
 </emailTemplate>
 
 <!-- 	NOTE:ensure email is dummy@northgateps.com when pushing code -->

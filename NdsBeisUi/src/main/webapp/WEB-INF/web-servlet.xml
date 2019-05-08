@@ -22,6 +22,10 @@
 		<mvc:async-support default-timeout="30000" task-executor="asyncTaskExecutor" />
 	</mvc:annotation-driven>
 
+    <cache:annotation-driven />
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache" />
+    
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/assets/**" />
@@ -31,11 +35,6 @@
 		<bean class="com.northgateps.nds.platform.ui.controller.ContentSecurityPolicyInterceptor" />
 		<bean class="com.northgateps.nds.platform.ui.controller.IeXUaCompatiibleHeaderInterceptor" />
 	</mvc:interceptors>
-
-	<cache:annotation-driven />
-
-	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
-		p:cache-manager-ref="ehcache" />
 
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -287,6 +286,18 @@
 						</property>
 					</bean>
 				</entry>
+                <entry key="personalised-delete-account">
+                    <bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
+                        <property name="viewEventHandlers">
+                            <map>
+                               <entry key="NEXT:DeleteUserAccount">
+									<bean
+										class="com.northgateps.nds.platform.ui.controller.handler.DeleteUserAccountEventHandler" />
+								</entry>
+                            </map>
+                        </property>
+                    </bean>
+                </entry>
 				<entry key="account-activation">
 					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
 						<property name="viewEventHandlers">
@@ -653,20 +664,7 @@
 					</bean>
 				</entry>
 				
-				<entry key="expired-password">
-					<bean class="com.northgateps.nds.platform.ui.view.ViewEventProfile">
-						<property name="viewEventHandlers">
-							<map>
-								<entry key="{any}">
-									<bean class="com.northgateps.nds.platform.ui.controller.handler.ChangeExpiredPasswordEventHandler" >
-								         <property name="ndsServiceProperties" ref="ndsServiceProperties"/>
-								     </bean>
-								</entry>
-							</map>
-						</property>
-					</bean>
-				</entry>
-
+				
 			</map>
 		</property>
 		

@@ -9,7 +9,6 @@ import org.openqa.selenium.WebDriver;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchGdarGdipPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchGdarGdipPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
-import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;
@@ -44,6 +43,7 @@ public class RegisterSearchGdarGdipSteps extends AlternateUrlBaseSteps {
 
     @Given("^I am on the 'register-search-gdar-gdip' page$")
     public void i_am_on_the_register_search_gdar_gdip_page() throws Throwable {
+        pageHelper = new RegisterSearchGdarGdipPageHelper(pageObject.getDriver());
         checkOnPage(pageHelper, "register-search-gdar-gdip");
     }
 
@@ -59,9 +59,7 @@ public class RegisterSearchGdarGdipSteps extends AlternateUrlBaseSteps {
 
     @When("^I select 'Download'$")
     public void i_select_Download() throws Throwable {
-        pageObject.clickButtonSearch_SearchGdarGdip();
-        BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
-        pageObject = pageHelper.getNewPageObject();
+        pageObject.clickButtonSearch_SearchGdarGdip();       
     }
 
     @Then("^I will receive the error \"(.*?)\"$")
@@ -83,12 +81,12 @@ public class RegisterSearchGdarGdipSteps extends AlternateUrlBaseSteps {
 
     @Then("^I will remain on the 'register-search-gdar-gdip' page$")
     public void i_will_remain_on_the_register_search_gdar_gdip_page() throws Throwable {
-        checkOnPage(pageHelper, "register-search-gdar-gdip");
-        pageObject = pageHelper.getNewPageObject();
+        checkOnPage(pageHelper, "register-search-gdar-gdip");        
     }    
 
     @Given("^I have supplied a valid reference$")
-    public void i_have_supplied_a_valid_reference() throws Throwable {
+    public void i_have_supplied_a_valid_reference() throws Throwable { 
+        pageObject=pageHelper.getNewPageObject();
         pageObject.setTextNdsInputSearchTerm("0000-1111-2222-3333-6666");
     }
 

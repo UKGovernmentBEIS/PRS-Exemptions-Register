@@ -35,21 +35,11 @@
 		</div>
 	
 		<div class="grid-row">
-			<div class="column-full">
-				<div class="form-group">
-					<nds:field path="exemptionDetails.propertyType">
-						<fieldset class="inline radio">
-							<nds:invalid />
-							<nds:radiobutton
-								label="Label_exemptionDetails.propertyType.domestic"
-								value="PRSD" class="propertyType" />
-							<nds:radiobutton
-								label="Label_exemptionDetails.propertyType.nondomestic"
-								value="PRSN" class="propertyType" />
-						</fieldset>
-					</nds:field>
-				</div>
-				
+			<div class="column-full">				
+				<div class="form-group"> 
+		       		<nds:radiobuttonelement path="exemptionDetails.propertyType"
+						items="${command.uiData.refData.propertyType}" cssClass="propertyType"/>
+		       	</div>				
 				<div>
 					<details role="group">
 						<summary role="button" aria-controls="select_property_name_div"
@@ -57,25 +47,27 @@
 							<span class="summary"><fmt:message
 									bundle="${FieldsBundle}" key="link_property_type" /></span>
 						</summary>
-						<div class="panel panel-border-narrow"
-							id="select_property_name_div" aria-hidden="true">
-							<p id="more_about_property_type">
-								<fmt:message bundle="${FieldsBundle}"
-									key="paragraph_more_about_property_type" />
-							</p>
-							<p id="more_about_property_type1">
-								<fmt:message bundle="${FieldsBundle}"
-									key="paragraph_more_about_property_type1" />
-							</p>
-							<p id="more_about_property_type2">
-								<fmt:message bundle="${FieldsBundle}"
-									key="paragraph_more_about_property_type2" />
-							</p>
-							<p id="more_about_property_type3">
-								<fmt:message bundle="${FieldsBundle}"
-									key="paragraph_more_about_property_type3" />
-							</p>
-						</div>
+						<section id="description_about_property">
+							<div class="panel panel-border-narrow"
+								id="select_property_name_div" >
+								<p id="more_about_property_type" aria-hidden="true">
+									<fmt:message bundle="${FieldsBundle}"
+										key="paragraph_more_about_property_type" />
+								</p>
+								<p id="more_about_property_type1" aria-hidden="true">
+									<fmt:message bundle="${FieldsBundle}"
+										key="paragraph_more_about_property_type1" />
+								</p>
+								<p id="more_about_property_type2" aria-hidden="true">
+									<fmt:message bundle="${FieldsBundle}"
+										key="paragraph_more_about_property_type2" />
+								</p>
+								<p id="more_about_property_type3" aria-hidden="true">
+									<fmt:message bundle="${FieldsBundle}"
+										key="paragraph_more_about_property_type3" />
+								</p>
+							</div>
+						</section>
 					</details>
 				</div>
 				<div class="form-group">

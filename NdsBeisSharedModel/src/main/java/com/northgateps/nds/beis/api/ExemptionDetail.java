@@ -29,7 +29,7 @@ import com.northgateps.nds.platform.application.api.format.js.PreserveFieldForma
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ExemptionDetail", propOrder = { "referenceId", "propertyType", "exemptionType", "epc",
         "epcEvidenceFiles", "startDate", "exemptionReason", "exemptionReasonAdditionalText", "exemptionText",
-        "exemptionTextFile", "exemptionStartDate","landlordDetails" })
+        "exemptionTextFile", "exemptionStartDate","landlordDetails", "exemptionConfirmationText", "exemptionConfirmationIndicator" })
 public class ExemptionDetail extends AbstractValidatableModel {
 
     public final static String EXEMPTION_TYPE_TEXT = "exemptionTypeText";
@@ -75,7 +75,14 @@ public class ExemptionDetail extends AbstractValidatableModel {
             @FieldDependency(path = "~.exemptionText", comparator = "empty") }, invalidMessage = "Validation_Field_must_be_a_LoadedEntered")
     private Upload exemptionTextFile = new Upload();
     
-    private LandlordDetails landlordDetails;    
+    private LandlordDetails landlordDetails;  
+    
+    @StringLengthFieldMetadata(maxLength = 4000, formatter = PreserveFieldFormatter.class)   
+    private String exemptionConfirmationText;
+    
+    @RequiredFieldMetadata(invalidMessage = "Validation_Confirm_Field_should_be_selected")
+    private String exemptionConfirmationIndicator;
+
   
     /**
      * Clears the data capture state fields, to reset the inputs after e.g. the data has been submitted
@@ -91,6 +98,8 @@ public class ExemptionDetail extends AbstractValidatableModel {
         this.exemptionReason = null;
         this.exemptionReasonAdditionalText = null;
         this.exemptionText = null;
+        this.exemptionConfirmationText = null;
+        this.exemptionConfirmationIndicator = null;
         exemptionTextFile = new Upload();        
     }
 
@@ -190,5 +199,20 @@ public class ExemptionDetail extends AbstractValidatableModel {
         this.landlordDetails = landlordDetails;
     }
 
+	public String getExemptionConfirmationText() {
+		return exemptionConfirmationText;
+	}
+
+	public void setExemptionConfirmationText(String exemptionConfirmationText) {
+		this.exemptionConfirmationText = exemptionConfirmationText;
+	}
+
+	public String getExemptionConfirmationIndicator() {
+		return exemptionConfirmationIndicator;
+	}
+
+	public void setExemptionConfirmationIndicator(String exemptionConfirmationIndicator) {
+		this.exemptionConfirmationIndicator = exemptionConfirmationIndicator;
+	}
 
 }

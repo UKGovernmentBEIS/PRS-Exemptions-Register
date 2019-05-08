@@ -14,20 +14,25 @@ import com.northgateps.nds.platform.application.api.validation.AbstractValidatab
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RegisteredExemptionDetail", propOrder = { "referenceId", "startDate", "endDate", "address", "description" })
+@XmlType(name = "RegisteredExemptionDetail", propOrder = { "referenceId", "startDate", "endDate", "address",
+		"description", "landlord", "exemptionReference" })
 public class RegisteredExemptionDetail extends AbstractValidatableModel {
 
 	private String referenceId;
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	private ZonedDateTime startDate;
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	private ZonedDateTime endDate;
-	
+
 	private String address;
-	
+
 	private String description;
+
+	private String landlord;
+
+	private String exemptionReference;
 
 	public String getReferenceId() {
 		return referenceId;
@@ -68,4 +73,21 @@ public class RegisteredExemptionDetail extends AbstractValidatableModel {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public String getLandlord() {
+		return landlord;
+	}
+
+	public void setLandlord(String landlord) {
+		this.landlord = landlord;
+	}
+
+	public String getExemptionReference() {
+		return exemptionReference;
+	}
+
+	public void setExemptionReference(String exemptionReference) {
+		this.exemptionReference = exemptionReference;
+	}
+
 }

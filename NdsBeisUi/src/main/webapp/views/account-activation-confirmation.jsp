@@ -31,7 +31,7 @@
 						<fmt:message bundle="${FieldsBundle}"
 							key="Paragraph_activationRegistrationDetails.confirmActivation" />
 					</h1>
-					<p id="confirmSuccessLoginNotice">
+					<p class="body-text" id="confirmSuccessLoginNotice">
 						<fmt:message bundle="${FieldsBundle}"
 							key="Paragraph_activationRegistrationDetails.confirmSuccessLogin" />
 					</p>

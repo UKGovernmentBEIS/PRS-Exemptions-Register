@@ -175,6 +175,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
         landlordDetails.setPhoneNumber("0123456789");        
         exemptionDetails.setLandlordDetails(landlordDetails);
         registerPrsExemptionDetails.setExemptionDetails(exemptionDetails);
+        request.setPwsText("You have recently become a landlord under circumstances that qualify the property for an exemption.<br>This is regulation 33(1)");
         request.setRegisterPrsExemptionDetails(registerPrsExemptionDetails);
         return request;
     }
@@ -187,7 +188,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
         RegisterPrsExemptionDetails registerPrsExemptionDetails = new RegisterPrsExemptionDetails();
         ExemptionDetail exemptionDetails = new ExemptionDetail();
         exemptionDetails.setReferenceId("10");
-        exemptionDetails.setPropertyType(PropertyType.PRSN);
+        exemptionDetails.setPropertyType(PropertyType.PRSD);
         exemptionDetails.setExemptionType("NOIMP");
         exemptionDetails.setExemptionReason("");
         EnergyPerformanceCertificate epc = new EnergyPerformanceCertificate();
@@ -203,6 +204,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
         propertyAddress.setCountry("GB");
         exemptionDetails.setEpc(epc);
         registerPrsExemptionDetails.setExemptionDetails(exemptionDetails);
+        request.setPwsText("No suitable funding can be obtained to pay for a recommended energy efficiency improvement.<br>This is regulation 25");
         request.setRegisterPrsExemptionDetails(registerPrsExemptionDetails);
         return request;
     }
@@ -231,6 +233,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
         propertyAddress.setCountry("GB");
         exemptionDetails.setEpc(epc);
         registerPrsExemptionDetails.setExemptionDetails(exemptionDetails);
+        request.setPwsText("No suitable funding can be obtained to pay for a recommended energy efficiency improvement.<br>This is regulation 25");
         request.setRegisterPrsExemptionDetails(registerPrsExemptionDetails);
         return request;
     }

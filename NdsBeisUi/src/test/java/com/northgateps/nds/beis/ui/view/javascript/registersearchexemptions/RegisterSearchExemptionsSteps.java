@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,7 @@ import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterExemptionsPageObj
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchExemptionsPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
+import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;
@@ -189,7 +191,7 @@ public class RegisterSearchExemptionsSteps extends AlternateUrlBaseSteps{
         WebElement selectElement = pageHelper.getDomesticExemptionTypeSelectList();
         assertEquals("check short descriptions","Devaluation of more than 5%",
                 new Select(selectElement).getOptions().get(1).getText().trim());
-        assertEquals("check short descriptions","No suitable funding",
+        assertEquals("check short descriptions","Cost to landlord exceeds cap",
                 new Select(selectElement).getOptions().get(2).getText().trim());
         assertEquals("check short descriptions","All relevant improvements have been made",
                 new Select(selectElement).getOptions().get(3).getText().trim());
@@ -500,7 +502,12 @@ public class RegisterSearchExemptionsSteps extends AlternateUrlBaseSteps{
     
     @When("^I select 'Other ways to search for exemptions' again$")
     public void i_select_Other_ways_to_search_for_exemptions_again() throws Throwable {
-        pageObject.clickSummaryExemptions();
+    	((JavascriptExecutor)pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementSummaryExemptions());
+        new NdsUiWait(pageObject.getDriver()).untilElementClickedOK(pageObject.getBySummaryExemptions(), pageObject.getDriver());
+        if(pageObject.getWebElementNdsInputExemptionLandlordsNameCriteria().isDisplayed())
+        {
+        	pageObject.clickSummaryExemptions();
+        }       
     }
 
     @Then("^the Landlord’s name box will be hidden$")
@@ -524,7 +531,7 @@ public class RegisterSearchExemptionsSteps extends AlternateUrlBaseSteps{
     @Then("^the Property type box will be hidden$")
     public void the_Property_type_box_will_be_hidden() throws Throwable {
         assertTrue("check property type box is hidden",
-                pageHelper.getPropertyTypeSelectList().isDisplayed()==false);
+                pageHelper.getPropertyTypeSelectList().isDisplayed());
     }
     
     @When("^I select Finish$")

@@ -59,7 +59,7 @@ public class UsedServiceBeforeSteps {
 
     @When("^I select 'No, I need to register'$")
     public void i_select_No_I_need_to_register() throws Throwable {
-    	pageObject.clickNdsRadiobuttonUsedServiceBefore_False();
+        pageObject.clickNdsRadiobuttonelementUsedServiceBefore("false"); 
     }
 
     @When("^I select Next$")
@@ -79,7 +79,7 @@ public class UsedServiceBeforeSteps {
     
     @When("^I select 'Yes, I already have an account'$")
     public void i_select_Yes_I_already_have_an_account() throws Throwable {
-    	pageObject.clickNdsRadiobuttonUsedServiceBefore_True();
+        pageObject.clickNdsRadiobuttonelementUsedServiceBefore("true"); 
     }
 
     @Then("^I will be taken to the sign-on page$")

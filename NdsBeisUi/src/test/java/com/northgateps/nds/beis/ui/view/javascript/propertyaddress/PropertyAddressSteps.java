@@ -20,6 +20,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedPropertyAddre
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedPropertyAddressPageObject;
+import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 
@@ -158,6 +159,7 @@ public class PropertyAddressSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
+    	checkOnPage(pageHelper, "personalised-property-address");
         pageObject = pageHelper.getNewPageObject();
         pageObject.clickNext();
 
@@ -166,6 +168,7 @@ public class PropertyAddressSteps {
     @Then("^I must receive \"(.*?)\" as validation message$")
     public void i_must_receive_as_validation_message(String validationMessage) throws Throwable {
 
+    	checkOnPage(pageHelper, "personalised-property-address");
         assertEquals("check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
 
     }
@@ -195,6 +198,7 @@ public class PropertyAddressSteps {
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String message) throws Throwable {
+    	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
         assertEquals("check message", message, pageHelper.findFaultMessage(message));
 
     }
@@ -388,6 +392,12 @@ public class PropertyAddressSteps {
     @Then("^I must move to the personalised-epc-details page$")
     public void i_must_move_to_the_epc_details_page() throws Throwable {
         checkOnPage(pageHelper, "personalised-epc-details");
+    }
+    
+    @Then("^I will receive the validation message \"(.*?)\"$")
+    public void i_will_receive_the_validation_message(String message) throws Throwable {
+    	String validationMessage =pageObject.getDriver().findElement(By.xpath("//span[@class='error-message sticky-error']")).getText();
+    	 assertEquals("check message", message, validationMessage);
     }
 
 }

@@ -60,11 +60,22 @@ a:focus {
   outline: 3px solid $focus-colour;
 }
 
+/* Make links slightly darker when focused to improve contrast. */
+a:link:focus {
+  color: darken( $link-colour, 2.5%)
+}
+
 /* Make skiplinks visible when they are tabbed to */
 
 .skiplink {
   position: absolute;
   left: -9999em;
+
+  /* Default link colour doesn't have enough contrast against $focus-colour */
+  &:focus,
+  &:visited {
+    color: $text-colour;
+  }
 }
 
 .skiplink:focus {

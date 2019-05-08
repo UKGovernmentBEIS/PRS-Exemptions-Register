@@ -41,13 +41,21 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<section id="formwrap">
-						<p>
+						<p class="body-text">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_AccountConfirmation" />
 						</p>
-						<p>
+						<p class="body-text">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Paragraph_AccountConfirmationInstructions" />
+						</p>
+						<p class="body-text">
+							<fmt:message bundle="${FieldsBundle}"
+								key="Paragraph_AccountConfirmationInstructionsWaitHours" />
+						</p>
+						<p>
+							<fmt:message bundle="${FieldsBundle}"
+								key="Paragraph_AccountConfirmationInstructionsCodeNotReceived" />
 						</p>
 					</section>
 				</div>

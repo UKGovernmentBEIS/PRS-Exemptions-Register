@@ -130,13 +130,18 @@ public class AccountAddressSteps {
     public void i_select_Find_address() throws Throwable {
         pageObject = pageHelper.getNewPageObject();
         pageObject.clickButtonFindPostcode();
-
     }
 
     @Then("^I will receive the message \"(.*?)\"$")
     public void i_will_receive_the_message(String message) throws Throwable {
+    	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
         assertEquals("check message", message, pageHelper.findFaultMessage(message));
-
+    }
+    
+    @Then("^I will receive the validation message \"(.*?)\"$")
+    public void i_will_receive_the_validation_message(String message) throws Throwable {
+    	String validationMessage =pageObject.getDriver().findElement(By.xpath("//span[@class='error-message sticky-error']")).getText();
+    	 assertEquals("check message", message, validationMessage);
     }
 
     @Given("^I have supplied an invalid postcode as \"(.*?)\"$")

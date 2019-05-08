@@ -26,8 +26,8 @@ public class SecurityDetailsPageHelper extends BasePageHelper<SecurityDetailsPag
                 getPageObject().setTextNdsInputUsername("PeSelTest-" + System.currentTimeMillis());
                 getPageObject().setTextNdsInputPassword("Randompassword11");
                 getPageObject().setTextNdsInputConfirmPassword("Randompassword11");
-                if (!getPageObject().getWebElementNdsCheckboxIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
-                    getPageObject().clickNdsCheckboxIsAgreeRegistrationTermsConditions_AgreeTerms();
+                if (!getPageObject().getWebElementInputIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
+                    getPageObject().clickInputIsAgreeRegistrationTermsConditions_AgreeTerms();
                 }
             }
         });

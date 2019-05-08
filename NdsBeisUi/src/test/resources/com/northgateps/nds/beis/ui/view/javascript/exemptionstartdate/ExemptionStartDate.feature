@@ -5,7 +5,7 @@ Scenario: Date validation
 	
 	Given I have not entered a date
 	When I select Next
-	Then I will receive the error message "You must enter the Date" as validation message
+	Then I will receive the error message "Date must be entered" as validation message
 	And I will remain on the 'personalised-exemption-start-date' page
 	
 	Given I have supplied a date in the future

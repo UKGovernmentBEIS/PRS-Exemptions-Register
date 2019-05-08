@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout" lang="en">
+
+<head>
+    <title th:text="#{screen.expiredpass.heading}"></title>
+    <meta id="springViewName" name="dcterms.identifier" content="expired-password" />
+</head>
+
+<body id="cas">
+	<main layout:fragment="content">
+		<div class="phase-banner-beta"  th:if=${@extractPhaseAction.getPhase()=="TEST"}>
+			<p>
+				<strong class="phase-tag" th:text="${@extractPhaseAction.getPhase()}"></strong> <span
+					th:text="#{'screen.welcome.applicationphase.' + ${@extractPhaseAction.getPhase()}}"></span>
+			</p>
+		</div>		
+	    <div th:replace="fragments/pwdupdateform(expiredPass='true')"/>
+	</main>
+</body>
+</html>

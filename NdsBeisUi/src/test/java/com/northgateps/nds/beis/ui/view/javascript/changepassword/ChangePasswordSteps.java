@@ -129,10 +129,9 @@ public class ChangePasswordSteps {
 	}
 
 	@When("^I select 'Change password'$")
-	public void i_select_Change_password() throws Throwable {
-	    pageObject.clickButtonNext_NEXT();
-	    pageHelper.getNewPageObject();
-        pageObject = pageHelper.getPageObject();
+	public void i_select_Change_password() throws Throwable {		
+        pageObject.clickNext();	    
+        pageObject = pageHelper.getNewPageObject();
 	}
 
 	@Then("^I will receive the error message \"(.*?)\"$")
