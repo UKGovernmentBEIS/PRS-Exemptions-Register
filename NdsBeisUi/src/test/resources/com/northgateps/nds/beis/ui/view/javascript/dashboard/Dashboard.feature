@@ -20,13 +20,10 @@ Scenario: View exemption
 	When I select 'View exemptions'
 	Then I will see a list of my current exemptions
 	And I will have an option to end each exemption
-	And I will remain on the 'personalised-dashboard' page
 
 #View current exemptions	
-	And I will see a list of my current exemptions
     And I can see the exemption reference displayed
     And I can see the landlord displayed
-	And I will have an option to end each exemption	
 	And I will remain on the 'personalised-dashboard' page
 
 #View expired exemptions		
@@ -58,8 +55,9 @@ Scenario: View exemption
 	And I will remain on the 'personalised-dashboard' page
 	
 #Re-display current exemptions
-	Given current exemptions are displayed
+	When I select 'Current exemptions'
 	And I select 'View exemptions'
+    Then the exemptions will be hidden
 	When I select 'View exemptions' again
 	Then I will see a list of my current exemptions
 	And I will have an option to end each exemption

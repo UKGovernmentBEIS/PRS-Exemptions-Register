@@ -1230,6 +1230,13 @@
 				<bean id="statisticsAdapter.purgeAuditRecords" ref="statisticsAdapter" method="purgeAuditRecords" />
 			</when>						
 		</route>
-	</camelContext>
+    
+        <!-- Simple SMTP send without retries. Remove this route if adding the userComms-routeContext.xml to the imports -->        
+        <route id="noRetrySmtpSendSubRoute">
+            <from uri="direct:resilientSmtpSendEndpoint" />
+            <to uri="smtp://{{smtp.host.server}}" />
+        </route>
+    
+    </camelContext>
 
 </beans>

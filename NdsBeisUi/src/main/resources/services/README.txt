@@ -40,7 +40,9 @@ EXPLAINATION OF EXAMPLE
 "loginUrl" :
 	Location of the CAS server for redirecting the user's browser for login.
 "logoutUrl" :
-	Location of the CAS server for redirecting the user's browser for SLO (Single Log Out).
+	Location of the _CAS server_ for redirecting the user's browser for SLO (Single Log Out).
+	Do not change this to send the user to anywhere else (as that will allow login without password if they're
+	quick enough, autotest will fail).  Instead see the CAS service json file and look for logoutRedirectUrl.
 "logBackInLocation" :
 	Path relative to "serviceId" to allow the user to log back in (ie rather than going to the start page
 	and clicking the login link)

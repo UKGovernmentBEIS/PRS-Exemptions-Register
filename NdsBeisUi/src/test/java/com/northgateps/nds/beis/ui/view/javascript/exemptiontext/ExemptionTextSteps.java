@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -133,9 +134,10 @@ public class ExemptionTextSteps {
 
     @Then("^I will receive \"(.*?)\" as validation message$")
     public void i_will_receive_as_validation_message(String validationMessage) throws Throwable {
+    	// There's a redirect from this page to this page that we need to wait for to get the validation message
+    	Thread.sleep(500);
     	checkOnPage(pageHelper, "personalised-exemption-text");
         assertEquals("check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
-
     }
 
     @Then("^I will remain on the personalised-exemption-text page$")
@@ -229,4 +231,5 @@ public class ExemptionTextSteps {
         checkOnPage(pageHelper, page);
         beisUtils.selectFile(pageObject.getDriver(), filename);
     }
+    
 }

@@ -187,6 +187,11 @@ public class ChangePasswordSteps {
 		
 	}
 	
+	/*
+	 * NB this test may not run on dev if the password rules are such that an upper case character is required.
+	 * Please do not 'fix' this, the lower case password is what the test should check for.  (Should run fine on
+	 * the autotest system).
+	 */
 	@Given("^I have supplied a valid new password$")
 	public void i_have_supplied_a_valid_new_password() throws Throwable {
 		pageObject.setTextNdsInputNewPassword("red999streets");

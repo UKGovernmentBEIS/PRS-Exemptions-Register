@@ -23,7 +23,6 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
  * Unit test for the GetReferenceValues Service route
- * 
  * In previous versions of Camel the cache data seems to have been cleared between tests.  That doesn't
  * appear to be happening and after much effort, the easiest thing to do seems to be to split up the
  * tests into separate files.
@@ -31,9 +30,9 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  */
 @UseAdviceWith(true)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
+public class GetReferenceValuesServiceRouteTest2 extends CamelSpringTestSupport {
 
-    private static final NdsLogger LOGGER = NdsLogger.getLogger(GetReferenceValuesServiceRouteTest.class);
+    private static final NdsLogger LOGGER = NdsLogger.getLogger(GetReferenceValuesServiceRouteTest2.class);
     
     private static final String routeNameUnderTest = "GetReferenceValuesRoute";
     private static final String MOCK_GSPS_RESPONSE_CHECK = "mock:gsps-response-check";
@@ -53,17 +52,23 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
 
       return RouteTestUtils.createApplicationContext(routeNameUnderTest);
     }
+        
+    private final static String getOperationName() {
+        return "GetReferenceValuesWSDL";
+    }
     
-     /**
-     * Runs the Get Reference Values Service camel route expecting a successful outcome
+    /**
+     * Invoke service and filter the response using filter criteria, returns single matching record
+     * 
+     * @throws Exception
      */
     @Test
-    public void successPathTest() throws Exception {
-        LOGGER.info("Starting success path test");
-        LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiGetReferenceValuesEndpoint}}") + " to run unit tests");
+    public void filterTestSingleRecord() throws Exception {
 
-        // mock out bits of the route to test that we are sending the right content to BEIS
-        // and that we simulate the response from BEIS, and finally so that we can check
+        LOGGER.info("Starting filter path test");
+        LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiGetReferenceValuesEndpoint}}") + " to run unit tests");
+        // mock out bits of the route to test that we are sending the right content to BBIS
+        // and that we simulate the response from BBIS, and finally so that we can check
         // that the response back to the caller is correct
         context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
@@ -75,7 +80,7 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
                         MOCK_GSPS_REQUEST_CHECK).process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setBody(CreateGetReferenceValuesTestData.createGetReferenceValuesResponse());
+                        exchange.getIn().setBody(CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesResponse());
                         CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
                         exchange.getIn().setBody(payload);
                     }
@@ -85,21 +90,17 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
 
         // manually start the camel context.
         context.start();
-
         MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
         getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
-
+        
         MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);
         gspsRouteResponseMock.expectedMessageCount(1);
-  
+        
         gspsRouteResponseMock.expectedBodiesReceived(JaxbXmlMarshaller.convertToPrettyPrintXml(
                 CreateGetReferenceValuesTestData.createGetReferenceValuesNdsResponse(), GetReferenceValuesNdsResponse.class));
         
         apiEndpoint.sendBody(CreateGetReferenceValuesTestData.createGetReferenceValuesNdsRequest());
         assertMockEndpointsSatisfied();
-    }
-    
-    private final static String getOperationName() {
-        return "GetReferenceValuesWSDL";
+        
     }
 }

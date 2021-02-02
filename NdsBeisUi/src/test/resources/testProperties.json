@@ -11,8 +11,6 @@
     "loginPartiallyRegisteredWithPartyRefPassword" : "Donotchangethis01",
     "loginPartiallyRegisteredUserName" : "partiallyregistereduser",
     "loginPartiallyRegisteredPassword" : "Donotchangethis01",
-    "loginPartiallyRegisteredUserName" : "partiallyregistereduser",
-    "loginPartiallyRegisteredPassword" : "Donotchangethis01",
     "loginPartiallyRegisteredFirstName" : "Partially",
     "loginPartiallyRegisteredSurname" : "Registereduser",
     "loginPartiallyRegisteredEmail" : "partiallyregistereduser@northgateps.com",
@@ -31,6 +29,4 @@
     "loginPartiallyRegisteredAgentEmail" : "partiallyregisteredagentuser@northgateps.com",
     "loginPartiallyRegisteredAgentConfirmEmail" : "partiallyregisteredagentuser@northgateps.com",
     "loginPartiallyRegisteredAgentTelephoneNumber" : "01234567890"
-    
-    
-};
+}

@@ -18,7 +18,7 @@ Scenario: Process exemption text details
 	And I will remain on the personalised-exemption-text page	
 	
     #Select file of wrong type
-     Given I select a file "testProperties.json" with an incorrect file type
+    Given I select a file "testProperties.json" with an incorrect file type
     Then I will receive "You must upload a file that is one of the listed types" as validation message
     And the document "testProperties.json" is not listed as uploaded
     And I will remain on the personalised-exemption-text page

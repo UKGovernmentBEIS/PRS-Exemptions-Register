@@ -91,6 +91,35 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		
+		<!--
+		<plugins>
+          
+            To run the Dependency Check report locally, see the How To document then uncomment below and run :
+            mvn org.owasp:dependency-check-maven:5.2.2:aggregate -f pom.xml assemblyAnalyzerEnabled=false failBuildOnAnyVulnerability=true
+            The report (if it runs) will be under the target directory.
+            
+            <plugin>
+              <groupId>org.owasp</groupId>
+              <artifactId>dependency-check-maven</artifactId>
+              <version>5.2.2</version>
+              <configuration>
+                  <cveUrlModified>http://localhost/owasp/nvdcve-1.1-modified.json.gz</cveUrlModified>
+                  <cveUrlBase>http://localhost/owasp/nvdcve-1.1-%d.json.gz</cveUrlBase>
+                  <suppressionFiles>
+                    <suppressionFile>owasp-dep-suppression.xml</suppressionFile>
+                  </suppressionFiles>
+              </configuration>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+            </plugin> 
+		</plugins>
+		-->
 	</build>
 	
 	<reporting>

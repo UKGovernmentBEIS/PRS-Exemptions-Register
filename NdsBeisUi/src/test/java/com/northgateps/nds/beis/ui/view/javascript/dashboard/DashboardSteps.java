@@ -8,10 +8,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.HelloUserPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
@@ -24,6 +27,7 @@ import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedAccountSummar
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedDashboardPageObject;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
+import com.northgateps.nds.platform.ui.selenium.core.WaitLifecycle;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 import com.northgateps.nds.platform.ui.utils.JsonPropertiesLoader;
 
@@ -32,7 +36,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import net.serenitybdd.core.annotations.findby.By;
 import net.thucydides.core.annotations.Managed;
 
 /** Test steps for the ChangeEmailAddressConfirmation.feature BDD file. */
@@ -190,9 +193,8 @@ public class DashboardSteps {
 
     @When("^I select 'View exemptions'$")
     public void i_select_View_exemptions() throws Throwable {
-    	WebElement exemption = webDriver.findElement(By.id("exemption-details-link"));
-        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", exemption);
-        new NdsUiWait(webDriver).untilElementClickedOK(By.id("exemption-details-link"), webDriver);       
+    	WebElement exemptionDisclosure = webDriver.findElement(By.id("exemption-details-link"));
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", exemptionDisclosure);
     }
 
     @When("^I select 'View exemptions' again$")
@@ -243,59 +245,38 @@ public class DashboardSteps {
     public void i_select_Expired_exemptions() throws Throwable {
     	WebElement expiredExemption = webDriver.findElement(By.id("tab-expired-exemptions"));
         ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", expiredExemption);
-        
-        try {
-        	new NdsUiWait(webDriver).untilElementClickedOK(By.id("tab-expired-exemptions"), webDriver);
-        } catch (TimeoutException e) {
-        	i_select_View_exemptions();
-        	new NdsUiWait(webDriver).untilElementClickedOK(By.id("tab-expired-exemptions"), webDriver);        	
-        }
+    	new NdsUiWait(webDriver).untilElementClickedOK(By.id("tab-expired-exemptions"), webDriver);
     }
 
     @Then("^I will see a list of my expired exemptions$")
     public void i_will_see_a_list_of_my_expired_exemptions() throws Throwable {     
-    	 try {
-    		pageHelper.getPageObject().getWebElementDivExpiredExemptions().isDisplayed();
-         } catch (Exception e) {
-         	i_select_View_exemptions();
-         	new NdsUiWait(webDriver).untilElementClickedOK(By.id("tab-expired-exemptions"), webDriver);        	
-         }
-    	 assertTrue(pageHelper.getPageObject().getWebElementDivExpiredExemptions().isDisplayed());
-    }
-
-    @Given("^current exemptions are displayed$")
-    public void current_exemptions_are_displayed() throws Throwable {
-    	WebElement expiredExemption = webDriver.findElement(By.id("tab-current-exemptions"));
-        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", expiredExemption);
-        new NdsUiWait(webDriver).untilElementClickedOK(By.id("tab-current-exemptions"), webDriver);
-    }
-
-    @Given("^expired exemptions are displayed$")
-    public void expired_exemptions_are_displayed() throws Throwable {
-    	i_select_View_exemptions();
-    	i_select_Expired_exemptions();
-    }
-
-    @Given("^exemptions are displayed$")
-    public void exemptions_are_displayed() throws Throwable {
-
-        if (!pageHelper.getPageObject().getWebElementSectionContent().isDisplayed()) {
-            pageHelper.getPageObject().clickSummaryLink();
-        }
-
-        assertTrue(pageHelper.getPageObject().getWebElementSectionContent().isDisplayed());
+  	    new NdsUiWait(webDriver).untilElementVisible(pageHelper.getPageObject().getByDivExpiredExemptions());
+    	assertTrue(pageHelper.getPageObject().getWebElementDivExpiredExemptions().isDisplayed());
     }
 
     @Then("^the exemptions will be hidden$")
     public void the_exemptions_will_be_hidden() throws Throwable {
-    	 boolean assumption= false;
-         try
-         {
-         	webDriver.findElement(By.id("exemptions-contents"));
-         }catch (Exception e) {
-         	assumption=true;
-         	assertTrue("No exemption found", assumption);
-     	}       
+        By by = By.id("exemptions-content");
+        new NdsUiWait(webDriver).until("Waiting until found and not visible " + by.toString(), new ExpectedCondition<WebElement>() {
+
+            @Override
+            public WebElement apply(WebDriver webDriver) {
+                List<WebElement> elems = webDriver.findElements(by);
+                if (elems.isEmpty())
+                    return null;
+                for (WebElement elem : elems)
+                    if (elem.isDisplayed() && hasHeight(elem))
+                        return null;
+                return elems.get(0);
+            }
+        });
+    }
+    
+    /* In Firefox at least, when a details element is not open, the non-summmry content is still "displayed"
+     * as far as Selenium is concerned, but it;s height is 0px, so the height needs to be tested.
+     */
+    private boolean hasHeight(WebElement elem) {
+        return elem.getRect().height > 0;
     }
 
     @When("^I click on 'Find out more about exemptions'$")

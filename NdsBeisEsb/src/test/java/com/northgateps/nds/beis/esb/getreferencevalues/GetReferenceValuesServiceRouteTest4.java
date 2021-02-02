@@ -23,7 +23,6 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
  * Unit test for the GetReferenceValues Service route
- * 
  * In previous versions of Camel the cache data seems to have been cleared between tests.  That doesn't
  * appear to be happening and after much effort, the easiest thing to do seems to be to split up the
  * tests into separate files.
@@ -31,7 +30,7 @@ import com.northgateps.nds.platform.logger.NdsLogger;
  */
 @UseAdviceWith(true)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
+public class GetReferenceValuesServiceRouteTest4 extends CamelSpringTestSupport {
 
     private static final NdsLogger LOGGER = NdsLogger.getLogger(GetReferenceValuesServiceRouteTest.class);
     
@@ -102,4 +101,52 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
     private final static String getOperationName() {
         return "GetReferenceValuesWSDL";
     }
+    
+
+    /**
+     * Invoke service and return only matched records in response amongst multiple records
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void filterTestwithCriteria() throws Exception {
+
+        LOGGER.info("Starting filter path test");
+        LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiGetReferenceValuesEndpoint}}") + " to run unit tests");
+     // mock out bits of the route to test that we are sending the right content to BBIS
+        // and that we simulate the response from BBIS, and finally so that we can check
+        // that the response back to the caller is correct
+        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
+
+            @Override
+            public void configure() throws Exception {
+                weaveAddLast().to(MOCK_GSPS_RESPONSE_CHECK);
+                replaceFromWith("direct:start");
+                interceptSendToEndpoint("cxf:bean:beisGetReferenceValuesService").skipSendToOriginalEndpoint().to(
+                        MOCK_GSPS_REQUEST_CHECK).process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setBody(CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesResponse());
+                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
+                        exchange.getIn().setBody(payload);
+                    }
+                });
+            }
+        });
+
+        // manually start the camel context.
+        context.start();
+        MockEndpoint getSysParametersServiceMock = getMockEndpoint(MOCK_GSPS_REQUEST_CHECK);
+        getSysParametersServiceMock.expectedHeaderReceived(CxfConstants.OPERATION_NAME, getOperationName());
+        
+        MockEndpoint gspsRouteResponseMock = getMockEndpoint(MOCK_GSPS_RESPONSE_CHECK);
+        gspsRouteResponseMock.expectedMessageCount(1);
+        
+        gspsRouteResponseMock.expectedBodiesReceived(JaxbXmlMarshaller.convertToPrettyPrintXml(
+                CreateGetReferenceValuesTestData.createMultipleGetReferenceValuesNdsResponse(), GetReferenceValuesNdsResponse.class));
+        
+        apiEndpoint.sendBody(CreateGetReferenceValuesTestData.createWithCriteriaGetReferenceValuesNdsRequest());
+        assertMockEndpointsSatisfied();
+    }
+
 }

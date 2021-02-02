@@ -114,7 +114,7 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)
         }        
-        assertEquals("Checking the current url", "https://www.gov.uk/government/publications/the-private-rented-property-minimum-standard-landlord-guidance-documents", webDriver.getCurrentUrl());
+        assertEquals("Checking the current url", "https://www.gov.uk/guidance/domestic-private-rented-property-minimum-energy-efficiency-standard-landlord-guidance", webDriver.getCurrentUrl());
         webDriver.close(); // close newly opened window when done with it
         webDriver.switchTo().window(parentHandle);
     }
@@ -402,13 +402,17 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
     }
     
     @When("^I select 'Other ways to search for penalties' again$")
-    public void i_select_Other_ways_to_search_for_penalties_again() throws Throwable {    	
-    	new NdsUiWait(pageObject.getDriver()).untilElementClickedOK(By.xpath("//span[contains(text(),'Other ways to search for penalties')]"), pageObject.getDriver());      
+    public void i_select_Other_ways_to_search_for_penalties_again() throws Throwable {
+        By by = By.xpath("//span[contains(text(),'Other ways to search for penalties')]");
+        ((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getDriver().findElement(by));
+    	new NdsUiWait(pageObject.getDriver()).untilElementClickedOK(by, pageObject.getDriver());      
     }
 
     @Then("^the Landlord’s name box will be hidden$")
     public void the_Landlord_s_name_box_will_be_hidden() throws Throwable {
+    	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
     	((JavascriptExecutor) pageObject.getDriver()).executeScript("arguments[0].scrollIntoView(true);", pageObject.getWebElementNdsInputPenaltyLandlordsNameCriteria());
+    	new NdsUiWait(pageObject.getDriver()).untilElementNotVisible(pageObject.getByNdsInputPenaltyLandlordsNameCriteria());
         assertTrue("check landlord name box is hidden",
                 pageObject.getWebElementNdsInputPenaltyLandlordsNameCriteria().isDisplayed()==false);
     }

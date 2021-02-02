@@ -127,8 +127,8 @@ public class ExemptionDocumentUploadSteps {
     public void i_select_Next() throws Throwable {
     	checkOnPage(pageHelper, "personalised-exemption-document-upload");
     	WebElement nextButton = webDriver.findElement(By.cssSelector("button[value=NEXT]"));
-        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView(true);", nextButton);   
-        pageHelper.getWait().untilElementClickedOK(By.cssSelector("button[value=NEXT]"), webDriver);        
+    	// Use a JS click because the animation of the uploaded files table might still be going on
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", nextButton);   
     }
 
     @Then("^I must receive \"(.*?)\" as validation message$")

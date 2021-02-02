@@ -8,13 +8,16 @@ import net.serenitybdd.cucumber.CucumberWithSerenity;
  * That means this test is LIMITED to only run ONCE!
  * To reset it, run the following LDAP ldif script
  * 
- *    dn: uid=newpasswordtest,ou=Users,ou=BEIS,ou=Tenants,ou=NDS,dc=northgateps,dc=com
- *    changetype: modify
- *    replace: userPassword
- *    userPassword: passwordw!11bechangedbytest
+dn: uid=newpasswordtest,ou=Users,ou=BEIS,ou=Tenants,ou=NDS,dc=northgateps,dc=com
+changetype: modify
+replace: userPassword
+userPassword: passwordw!11bechangedbytest
  *    
  * Do not change the initial password of passwordw!11bechangedbytest until we change this hacky way of testing
  * because it will break the auto tests which always run on fresh LDAP data. 
+ * 
+ * NB this test may not run on dev if the password rules are such that an upper case character is required.
+ * Please do not 'fix' this, the lower case password is what the test should check for.
  */
 @RunWith(CucumberWithSerenity.class)
 public class ChangePasswordTest {

@@ -76,7 +76,8 @@ public class RegisterSearchExemptionsSteps extends AlternateUrlBaseSteps{
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)
         }
-        assertEquals("Checking the current url", "https://www.gov.uk/government/publications/the-private-rented-property-minimum-standard-landlord-guidance-documents", webDriver.getCurrentUrl());
+        String guidancePage = "https://www.gov.uk/guidance/domestic-private-rented-property-minimum-energy-efficiency-standard-landlord-guidance";
+        assertEquals("Checking the current url", guidancePage, webDriver.getCurrentUrl());
         webDriver.close(); // close newly opened window when done with it
         webDriver.switchTo().window(parentHandle);
     }

@@ -15,4 +15,7 @@ health.config.enabled=true
 # CAS recommends not changing this line and specifying this as a -D VM argument.
 # You can do that if you really want to but since this file is for dev only we just
 # update the config location
-cas.standalone.config=C:/git/beis/NdsBeisCas/etc/cas/config
+#
+# Previously, property was cas.standalone.config
+# cas.standalone.config=C:/git/beis/NdsBeisCas/etc/cas/config
+cas.standalone.configurationDirectory=C:/git/beis/NdsBeisCas/etc/cas/config

@@ -11,6 +11,7 @@ import com.northgateps.nds.platform.application.api.depend.FieldDependency;
 import com.northgateps.nds.platform.application.api.format.js.FieldFormatter;
 import com.northgateps.nds.platform.application.api.metadata.FieldMetadata;
 import com.northgateps.nds.platform.application.api.metadata.FieldMetadataTagApplicator;
+import com.northgateps.nds.platform.application.api.metadata.UserAgentEvent;
 import com.northgateps.nds.platform.application.api.validation.js.AllElementsFilter;
 import com.northgateps.nds.platform.application.api.validation.js.FieldValidator;
 import com.northgateps.nds.platform.application.api.validation.js.FieldValidatorListFilter;
@@ -42,4 +43,6 @@ public @interface EPCReferenceNumberFieldMetadata {
     public String invalidMessage() default EPCReferenceNumberFieldValidator.DEFAULT_MESSAGE;
 
     public FieldDependency[] dependencies() default {};
+    
+    public UserAgentEvent[] userAgentValidateEvents() default {};
 }

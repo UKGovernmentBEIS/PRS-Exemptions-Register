@@ -67,10 +67,10 @@ Scenario Outline: Upload Only for Domestic category
     |CONSENT|
     |DEVAL	|
     
-Scenario Outline: Document Upload and Text for domestic category
+Scenario: Document Upload and Text for domestic category
   
 	#Go To Upload
-	Given I have selected a domestic exemption code of "<code>"
+	Given I have selected a domestic exemption code of "ALLIMP"
 	And I am on the personalised-epc-details page
     And I have uploaded "test.docx" as EPC 
     When I select Next
@@ -101,15 +101,10 @@ Scenario Outline: Document Upload and Text for domestic category
 	#Back to EPC Details
 	When Pressing Back I will be navigated to the personalised-epc-details page
     And previous epc details will be displayed
-Examples:
-    |code	  |
-    |ALLIMP	  |
     
-    
-Scenario Outline: Document Upload and Text for domestic category
-  
+Scenario: Document Upload and Text for domestic category
 	#Go To Upload
-	Given I have selected a domestic exemption code of "<code>"
+	Given I have selected a domestic exemption code of "HIGHCOST"
 	And I am on the personalised-epc-details page
     And I have uploaded "test.docx" as EPC 
     When I select Next
@@ -118,26 +113,22 @@ Scenario Outline: Document Upload and Text for domestic category
 	#Go To further information
 	
 	Given I have loaded greater than or equal to Min Documents
-	When I select Next button
-	Then I will be taken to the personalised-further-information page
+	When pressing Next button I will be taken to the personalised-further-information page
 
 	#Back to Upload
-	When I click Back
+	When I select Back
 	Then I will be taken to the personalised-exemption-document-upload page
 	And previous exemption document details will be displayed.
 
 	#Back to EPC Details
 	When Pressing Back I will be navigated to the personalised-epc-details page
     And previous epc details will be displayed
-Examples:
-    |code	  |
-    |HIGHCOST |        
+
     
-    
-Scenario Outline: Start Date and Select Option  
+Scenario: Start Date and Select Option  
 
 	#Go To Start
-	Given I have selected a domestic exemption code of "<code>"
+	Given I have selected a domestic exemption code of "NEW"
 	And I am on the personalised-epc-details page
     And I have uploaded "test.docx" as EPC 
     When I select Next
@@ -169,6 +160,3 @@ Scenario Outline: Start Date and Select Option
     Then I will be taken to personalised-epc-details page
     And previous epc details will be displayed	
 	
-	Examples:
-	    |code |
-	    |NEW  |

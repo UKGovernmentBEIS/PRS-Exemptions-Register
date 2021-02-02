@@ -10,14 +10,14 @@ import java.lang.annotation.Target;
 import com.northgateps.nds.platform.application.api.depend.FieldDependency;
 import com.northgateps.nds.platform.application.api.format.js.FieldFormatter;
 import com.northgateps.nds.platform.application.api.format.js.UpperCaseFieldFormatter;
+import com.northgateps.nds.platform.application.api.metadata.FieldMetadata;
+import com.northgateps.nds.platform.application.api.metadata.FieldMetadataTagApplicator;
+import com.northgateps.nds.platform.application.api.metadata.UserAgentEvent;
 import com.northgateps.nds.platform.application.api.validation.js.AllElementsFilter;
 import com.northgateps.nds.platform.application.api.validation.js.FieldValidator;
 import com.northgateps.nds.platform.application.api.validation.js.FieldValidatorListFilter;
 import com.northgateps.nds.platform.application.api.validation.js.ValidatorJoiner;
 import com.northgateps.nds.platform.application.api.validation.js.VoidJoiner;
-
-import com.northgateps.nds.platform.application.api.metadata.FieldMetadata;
-import com.northgateps.nds.platform.application.api.metadata.FieldMetadataTagApplicator;
 
 /**
   * Annotation to mark a field as a GDIP / GDAR filed field
@@ -43,4 +43,7 @@ public @interface GdipGdarReferenceNumberFieldMetaData {
     public String invalidMessage() default GdipGdarReferenceNumberFieldValidator.DEFAULT_MESSAGE;
 
     public FieldDependency[] dependencies() default {};
+    
+    public UserAgentEvent[] userAgentValidateEvents() default {};
+
 }

@@ -24,7 +24,7 @@
 		},
 		"logoutRedirectUrl" : {
 			"@class" : "org.apereo.cas.services.DefaultRegisteredServiceProperty",
-			"values" : [ "java.util.HashSet", [ "http://localhost/NdsBeisUi/" ] ]
+			"values" : [ "java.util.HashSet", [ "https://goo.gl/forms/Td0wDqPV9OoZI9Ei2" ] ]
 		}
 	},
 	

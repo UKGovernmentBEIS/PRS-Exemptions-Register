@@ -72,15 +72,14 @@ public class LoginLogoutSteps {
     public void i_m_taken_to_the_done_page() throws Throwable {
         final String currentPage = webDriver.getCurrentUrl();
         
-        /* 
-         * We currently set this to be the site landing page.
-         * In future this will be set to a specific GDS done page. 
-         */     
+        // dev versions and final version, depending on config; any are valid
         String expectedPattern1 = "NdsBeisUi/failover-landing";
         String expectedPattern2 = "NdsBeisUi/";
         String expectedPattern3 = "NdsBeisUi/failover-landing.htm";
+        String expectedPattern4 = "https://docs.google.com/forms";
         
-        if (! ((currentPage.endsWith(expectedPattern1)) || (currentPage.endsWith(expectedPattern2)) || (currentPage.endsWith(expectedPattern3)))) {
+        if (! ((currentPage.endsWith(expectedPattern1)) || (currentPage.endsWith(expectedPattern2)) || (currentPage.endsWith(expectedPattern3)) ||
+        		(currentPage.startsWith(expectedPattern4)))) {
             fail("Current page " + currentPage + " does not ends with " + expectedPattern1 + " or " + expectedPattern2);
         }
     }

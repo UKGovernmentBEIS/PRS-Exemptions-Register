@@ -14,15 +14,17 @@ cas.server.prefix: ${server.name}/NdsBeisCas
 cas.adminPagesSecurity.ip=127\.0\.0\.1
 
 logging.config: file:D:/source/beis/NdsBeisCas/etc/cas/config/log4j2.xml
+cas.serviceRegistry.initFromJson=false
+cas.serviceRegistry.json.location=file:C:/git/beis/NdsBeisCas/src/main/resources/services
 
 ##
 # Single Sign-On Session
 #
 # Indicates whether an SSO session should be created for renewed authentication requests.
-# create.sso.renewed.authn=true
+# create.sso.createSsoCookieOnRenewAuthn=true
 #
 # Indicates whether an SSO session can be created if no service is present.
-cas.sso.missingService=false
+cas.sso.allowMissingServiceParameter=false
 
 # Decides whether SSO cookie should be created only under secure connections.
 cas.tgc.secure=false
@@ -55,7 +57,7 @@ cas.authn.accept.users=
 cas.authn.pm.enabled=true
 cas.authn.pm.autoLogin=false
 cas.authn.pm.reset.expirationMinutes=1
-cas.authn.pm.reset.emailAttribute=mail
+cas.authn.pm.reset.mail.attributeName=mail
 cas.authn.pm.reset.securityQuestionsEnabled=false
 cas.authn.pm.ldap.type=GENERIC
 cas.authn.pm.ldap.ldapUrl=
@@ -63,7 +65,7 @@ cas.authn.pm.ldap.useSsl=false
 cas.authn.pm.ldap.useStartTls=false
 cas.authn.pm.ldap.connectTimeout=5000
 cas.authn.pm.ldap.baseDn=ou=Tenants,ou=NDS,dc=northgateps,dc=com
-cas.authn.pm.ldap.userFilter=userid=%s,ou=Users,ou=%s,ou=Tenants,ou=NDS,dc=northgateps,dc=com
+cas.authn.pm.ldap.searchFilter=userid=%s,ou=Users,ou=%s,ou=Tenants,ou=NDS,dc=northgateps,dc=com
 cas.authn.pm.ldap.subtreeSearch=true
 cas.authn.pm.ldap.bindDn=uid=nds,ou=Administrators,dc=northgateps,dc=com
 cas.authn.pm.ldap.bindCredential=
@@ -86,6 +88,7 @@ nds.authn.ldap[0].name=NdsLdapTenantAuthentication
 nds.authn.ldap[0].ldapUrl=ldap://vm-nds-tst02:1389
 nds.authn.ldap[0].useSsl=false
 nds.authn.ldap[0].useStartTls=false
+#nds.authn.ldap[0].trustCertificates=file:c:/scratch/vm-nds-tst02_ldap.der
 nds.authn.ldap[0].connectTimeout=5000
 nds.authn.ldap[0].baseDn=ou=Tenants,ou=NDS,dc=northgateps,dc=com
 nds.authn.ldap[0].enhanceWithEntryResolver=false
