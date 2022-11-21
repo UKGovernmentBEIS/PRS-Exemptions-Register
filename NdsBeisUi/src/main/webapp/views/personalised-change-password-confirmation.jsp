@@ -28,10 +28,9 @@
 
 				<section id="formwrap">
 					<div class="form-group">
-						<h2 class="heading-large">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Paragraph_changePasswordDetails.passwordUpdated" />
-						</h2>
+						<h1 class="heading-large">
+							<fmt:message bundle="${FieldsBundle}" key="Paragraph_changePasswordDetails.passwordUpdated" />
+						</h1>
 					</div>
 				</section>
 				<section class="submit">

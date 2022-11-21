@@ -15,9 +15,9 @@ public class ValidatePrsExemptionUpdateRequest extends ValidateCamelRouteBean {
     /**
      * Validates Update Exemption Details
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation     
-     * @throws NdsApplicationException 
+     * @throws NdsApplicationException if any of the following data are missing: username, tenant, exemption details id, and end date
      */
     public UpdateExemptionDetailsNdsRequest validate(final UpdateExemptionDetailsNdsRequest request)
             throws NdsApplicationException {

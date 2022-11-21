@@ -4,14 +4,13 @@ import com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.
 import com.northgateps.nds.platform.esb.camel.NdsCacheHandler;
 
 /**
- * Cache adapter class for getPrsExemptionRefData route
+ * Cache adapter class for getPrsExemptionRefData route using the default cache.
  */
 public class GetPrsExemptionRefDataCacheAdapter extends NdsCacheHandler {
 
     public GetPrsExemptionRefDataCacheAdapter() {
         super("GetPRSExemptionReferenceDataWSDL", "prsExemptionRefData", "cxf:bean:getPrsExemptionRefDataEndPoint", 
                 "com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDataNdsResponse", "defaultCache");
-        
     }
 
     @Override
@@ -33,5 +32,4 @@ public class GetPrsExemptionRefDataCacheAdapter extends NdsCacheHandler {
     protected boolean isCallToSubRouteRequired() {
         return false;
     }
-
 }

@@ -6,7 +6,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Test;
@@ -52,6 +54,8 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
 
     /**
      * Runs the BEIS camel route expecting a successful outcome
+     *
+     * @throws Exception if an error occurs
      */
 
     @Test
@@ -118,8 +122,7 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
         LOGGER.info("Starting success path test");
         LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSPenaltySearchEndpoint}}")
                 + " to run unit tests");
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_BEIS_RESPONSE_CHECK);
@@ -136,7 +139,6 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
                         exchange.getIn().setBody(appResponse);
                     }
                 });
-
             }
         });
 
@@ -187,8 +189,7 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
         LOGGER.info("Starting success path test");
         LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSPenaltySearchEndpoint}}")
                 + " to run unit tests");
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_BEIS_RESPONSE_CHECK);
@@ -205,7 +206,6 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
                         exchange.getIn().setBody(appResponse);
                     }
                 });
-
             }
         });
 
@@ -223,8 +223,7 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
         LOGGER.info("Starting success path test");
         LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSPenaltySearchEndpoint}}")
                 + " to run unit tests");
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_BEIS_RESPONSE_CHECK);
@@ -241,7 +240,6 @@ public class PRSPenaltySearchRouteTest extends CamelSpringTestSupport {
                         exchange.getIn().setBody(appResponse);
                     }
                 });
-
             }
         });
 

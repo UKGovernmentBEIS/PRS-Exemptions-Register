@@ -14,11 +14,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Convert the passed in GetReferenceValuesResponse to the passed out GetReferenceValuesNdsResponse
- * 
- * @param com.northgateps.nds.beis.api.getreferencevalues.GetReferenceValuesNdsResponse
- * @return class com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferenceValuesResponse
- * 
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From GetReferenceValuesResponse to GetReferenceValuesNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem

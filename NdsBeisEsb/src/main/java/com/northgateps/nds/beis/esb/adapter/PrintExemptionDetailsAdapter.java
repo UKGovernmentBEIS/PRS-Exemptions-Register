@@ -5,7 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +17,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
@@ -23,8 +27,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.StringSource;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.camel.util.xml.StringSource;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.w3c.dom.Document;
@@ -54,17 +58,19 @@ public class PrintExemptionDetailsAdapter {
      * without this, the mark-up will appear as text in the output.
      *
      * The exact formatting transforms can be found in replace-html-with-fo.xslt.
+     *
+     * @param exchange - found exchange to be modified
+     * @throws NdsApplicationException if error is found
      */
-    public void unescapeHtml(Exchange exchange) throws NdsApplicationException {
-        NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);
-
+    public void unescapeHtml(Exchange exchange) throws NdsApplicationException, ClassNotFoundException, UnsupportedEncodingException {
+    	NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);
+    	
         try {
             Document body = (Document) ndsExchange.getRequestMessageBody(Document.class);
             NodeList evaluate = findInlineTextNodes(body);
 
             // Template is based on documentation at http://www.ibm.com/developerworks/xml/library/x-xslfo2app/
-            try (InputStream templateIs = getClass().getClassLoader().getResourceAsStream(
-                    "replace-html-with-fo.xslt")) {
+            try (InputStream templateIs = getClass().getClassLoader().getResourceAsStream("replace-html-with-fo.xslt")) {
                 StreamSource templateSource = new StreamSource(templateIs);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer(templateSource);
                 transformHtmlToXslFo(body, evaluate, transformer);
@@ -78,6 +84,9 @@ public class PrintExemptionDetailsAdapter {
         } catch (ClassNotFoundException | XPathExpressionException | TransformerException | SAXException | IOException e) {
             throw new NdsApplicationException("Request failed due to : " + e.getMessage(), e);
         }
+        
+        // fix unicode characters
+        hackPoundSign(exchange);
     }
 
     private void transformHtmlToXslFo(Document body, NodeList evaluate, Transformer transformer) throws IOException, TransformerException, SAXException {
@@ -106,6 +115,7 @@ public class PrintExemptionDetailsAdapter {
         // enforce a single top-level element as required for XML, so that we can transform it.
         formattedText = "<root>" + formattedText + "</root>";
         StringSource pwsTextSource = new StringSource(formattedText);
+        
         try (StringWriter writer = new StringWriter()) {
             Result pwsTextResult = new StreamResult(writer);
             transformer.transform(pwsTextSource, pwsTextResult);
@@ -118,6 +128,7 @@ public class PrintExemptionDetailsAdapter {
 
     private String cleanUpNodeText(Node n) {
         String escapedPwsText = n.getTextContent();
+
         // Unescape HTML tags that are encoded in the source XML, e.g. '&lt;' to '<'
         String unescapedPwsText = StringEscapeUtils.unescapeHtml4(escapedPwsText);
 
@@ -127,6 +138,25 @@ public class PrintExemptionDetailsAdapter {
                         org.jsoup.nodes.Document.OutputSettings.Syntax.xml).prettyPrint(false));
     }
 
+    /** 
+     * No matter what we do there seems to be a conversion to some character encoding other than utf-8
+     * when we call <to uri="fop:application/pdf"/>, this causes pound signs to provoke an exception saying 
+     * "Invalid byte 1 of 1-byte UTF-8 sequence" ie not utf-8.
+     * Since we specifically need pound signs, replace them here (and not in the cleanUpNodeText method, that
+     * either fails too with same message or actually prints &#163; depending on where you put the replacement).
+     */
+    public void hackPoundSign(Exchange exchange) throws ClassNotFoundException, UnsupportedEncodingException {
+    	NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);
+    	String body = (String) ndsExchange.getRequestMessageBody(String.class);
+    	
+    	String poundString = "&#163;";
+    	body = body.replaceAll("£", poundString);
+    	body = body.replaceAll(":pound;", poundString);
+    	    	
+    	logger.debug("Pounds replaced, body is now " + body);
+    	ndsExchange.setResponseMessageBody(body);
+    }
+    
     private void replaceNodeContentWithText(Document body, Node n, String formattedPwsText)
             throws IOException, SAXException {
        
@@ -150,9 +180,7 @@ public class PrintExemptionDetailsAdapter {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dBuilder = dbFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            logger.error(
-                    "Unable to create default XML Document builder, generating exemption details PDFs will not work",
-                    e);
+            logger.error("Unable to create default XML Document builder, generating exemption details PDFs will not work", e);
         }
         return dBuilder;       
     }
@@ -164,7 +192,7 @@ public class PrintExemptionDetailsAdapter {
         XPathExpression expr = pwsTextPath.compile("//*[local-name()='inline']/text()");
         return (NodeList) expr.evaluate(body.getDocumentElement(), XPathConstants.NODESET);
     }
-
+    
     /**
      * Set up the response details for the produced file, including content type, name and content.
      *
@@ -176,10 +204,8 @@ public class PrintExemptionDetailsAdapter {
 
         PrintExemptionDetailsNdsResponse response = new PrintExemptionDetailsNdsResponse();
 
-        try
-        {
-            ByteArrayOutputStream baos = (ByteArrayOutputStream) ndsExchange.getRequestMessageBody(
-                    ByteArrayOutputStream.class);
+        try {
+            ByteArrayOutputStream baos = (ByteArrayOutputStream) ndsExchange.getRequestMessageBody(ByteArrayOutputStream.class);
 
             response.setContentType("application/pdf");
             response.setFileName("exemption-details.pdf");

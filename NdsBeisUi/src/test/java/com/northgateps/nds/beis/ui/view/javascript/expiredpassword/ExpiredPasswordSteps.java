@@ -29,7 +29,7 @@ import net.thucydides.core.annotations.Managed;
  * 
  * Since this test will be run many times on dev and since we don't want to re-set the password
  * each time, the test will toggle the password between two options.
- * @See ExpiredPasswordPageHelper
+ * @see ExpiredPasswordPageHelper
  */
 public class ExpiredPasswordSteps {
 	protected final NdsLogger logger = NdsLogger.getLogger(getClass());
@@ -74,7 +74,7 @@ public class ExpiredPasswordSteps {
     @Then("^I must see the expired password page$")
     public void i_must_see_the_expired_password_page() throws Throwable {  
         checkOnPage(pageHelper, "expired-password");
-        pageObject = pageHelper.getNewPageObject();       
+        pageObject = pageHelper.getPageObject();
         assertTrue("checking on expired password page", pageObject.getTextNdsFormTitleHeading().contains("Your password has expired"));
     }
 

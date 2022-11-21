@@ -7,7 +7,7 @@ import com.northgateps.nds.platform.ui.utils.PlatformServletTest;
 /**
  * Check the servlet xml file for programming errors.
  * 
- * @See PlatformServletTest for more details.
+ * @see PlatformServletTest for more details.
  */
 public class ServletTest extends PlatformServletTest {
 

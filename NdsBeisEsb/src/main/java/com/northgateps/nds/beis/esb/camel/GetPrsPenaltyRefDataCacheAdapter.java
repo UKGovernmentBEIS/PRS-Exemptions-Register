@@ -4,14 +4,14 @@ import com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata.Ge
 import com.northgateps.nds.platform.esb.camel.NdsCacheHandler;
 
 /**
- * Cache adapter class for getPrsPenaltyRefData route
+ * Cache adapter class for getPrsPenaltyRefData route using the default cache.
  */
 public class GetPrsPenaltyRefDataCacheAdapter extends NdsCacheHandler {
 
     public GetPrsPenaltyRefDataCacheAdapter() {
         super("GetPRSPenaltyReferenceDataWSDL", "prsPenaltyRefData", "cxf:bean:getPrsPenaltyRefDataEndPoint",
-                   "com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataNdsResponse", "defaultCache");
-       
+                "com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataNdsResponse",
+                "defaultCache");
     }
 
     @Override

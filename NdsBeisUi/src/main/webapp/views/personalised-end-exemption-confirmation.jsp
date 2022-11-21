@@ -27,10 +27,9 @@
 				</div>
 				<div class="column-two-thirds">
 					<div class="govuk-box-highlight">
-						<h2 class="bold-large">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_EndExemptionConfirmation" />
-						</h2>
+						<h1 class="bold-large">
+							<fmt:message bundle="${FieldsBundle}" key="Heading_EndExemptionConfirmation" />
+						</h1>
 						<p>
 							<fmt:message bundle="${FieldsBundle}"
 								key="SubHeading_EndExemptionConfirmation" />

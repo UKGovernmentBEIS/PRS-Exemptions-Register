@@ -35,14 +35,15 @@
 	<properties>
 		<nds.beis.version>[0.0.0,1.0.0)</nds.beis.version>
 		<nds.platform.version>0.0.0-SNAPSHOT</nds.platform.version>
+		<jsoup.version>1.14.3</jsoup.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.northgateps.nds.platform</groupId>
+	       	<groupId>com.northgateps.nds.platform</groupId>
 			<artifactId>platform-shared</artifactId>
 			<version>${nds.platform.version}</version>
-			<scope>compile</scope>
+<!-- 			<scope>compile</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>com.northgateps.nds.platform</groupId>
@@ -54,6 +55,16 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-fop</artifactId>
 			<version>${camel.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.media</groupId>
+					<artifactId>jai-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.media</groupId>
+		            <artifactId>jai-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -79,7 +90,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.9.2</version>
+			<version>${jsoup.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -99,7 +110,7 @@
     	<dependency>
         	<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
         	<artifactId>owasp-java-html-sanitizer</artifactId>
-        	<version>20160924.1</version>
+        	<version>20200713.1</version>
     	</dependency>
 
         <!-- probably ought to be in the platform esb -->
@@ -120,7 +131,7 @@
 				<configuration>
 					<webXml>src\main\webapp\WEB-INF\web.xml</webXml>
 					
-					<!-- The dev properties files are excluded so that they get to the test/live servers where they can be confusing. -->
+					<!-- The dev properties files are excluded so that they don't get to the test/live servers where they can be confusing. -->
 					<!-- If you need to run the war file locally outside of Eclipse, you'll need to add the properties file manually. -->
 					<packagingExcludes>**/*.p12, **/*.dev.properties, **/*.pem</packagingExcludes>
 				</configuration>

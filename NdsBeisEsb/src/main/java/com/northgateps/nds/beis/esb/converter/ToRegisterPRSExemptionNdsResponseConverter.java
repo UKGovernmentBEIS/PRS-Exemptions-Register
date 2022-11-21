@@ -8,12 +8,9 @@ import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem
 
 
 /**
- * Convert the passed in RegisterPRSExemptionResponse to the passed out RegisterPrsExemptionNdsResponse
- * 
- * @param com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsResponse
- * @return class com.northgateps.nds.beis.backoffice.service.registerprsexemption.RegisterPRSExemptionResponse
- * 
-*/
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From RegisterPRSExemptionResponse to RegisterPrsExemptionNdsResponse.
+ */
 @Converter
 @DoNotWeaveLoggingSystem
 public class ToRegisterPRSExemptionNdsResponseConverter {

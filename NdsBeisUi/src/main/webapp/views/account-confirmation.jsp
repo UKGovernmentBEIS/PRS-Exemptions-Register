@@ -31,7 +31,7 @@
 							<div class="custommessage" id="custommessage">${validmessage}</div>
 						</c:if>
 					</section>
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 							key="Heading_AccountConfirmation" />
 					</h1>

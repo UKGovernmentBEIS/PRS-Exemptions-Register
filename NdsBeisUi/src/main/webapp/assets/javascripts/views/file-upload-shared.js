@@ -1,17 +1,17 @@
 $(function() {
 	
-	 $(".file").each(function() {
+	$(".file").each(function() {
 	        var file = $(this);
 	        // to adjust spinner position
 	        var opts = {
 	            'top' : '20px',
 	            'left' : '22px',
 	            'scale' : 0.5
-	        }
+		}
 
-	        file.find("#resource").on('change',function() {
-				 file.find("button[value^='AddResource']").click();
-			});
+		file.find("input[type='file']").on('change',function() {
+				file.find("button[value^='AddResource']").click();
+		});
 	        
 	        var maxUploadSize = file.attr('data-maxsize') - 0;
 

@@ -28,13 +28,12 @@
 		<div class="grid-row">
 			<div class="column-full">
 				<jsp:include page="form-error.jsp"/>
-				
 				<section id="forminfowrap">
-					<h2 class="form-title heading-large" role="banner">
-						<c:out
-							value="${command.uiData.selectedExemptionTypeText.documentsPwsLabel}"
-							escapeXml="false"></c:out>
-					</h2>
+					<h1>
+						<label class="form-title heading-large" for="exemptionDetails.epcEvidenceFiles">
+							<c:out value="${command.uiData.selectedExemptionTypeText.documentsPwsLabel}" escapeXml="false"></c:out>
+						</label>						
+					</h1>
 				</section>
 			</div>
 		</div>
@@ -101,7 +100,7 @@
 									varStatus="res">
 									<tr>
 										<td class="filename"><a id="${res.index}"
-											href="${contextUi}/download-document/${command.exemptionDetails.epcEvidenceFiles.resources[res.index].fileId}.do"
+											href="${contextUi}/download-document/${command.exemptionDetails.epcEvidenceFiles.resources[res.index].fileId}"
 											target="_blank">
 												${command.exemptionDetails.epcEvidenceFiles.resources[res.index].fileName}
 										</a></td>

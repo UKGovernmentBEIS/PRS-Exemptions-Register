@@ -73,6 +73,8 @@ public class ChangeEmailAddressSteps {
     @Then("^I will be taken to the personalised-change-email-address page$")
     public void i_will_be_taken_to_the_change_email_address_page() throws Throwable {
         checkOnPage(pageHelper, "personalised-change-email-address");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
 
@@ -82,7 +84,6 @@ public class ChangeEmailAddressSteps {
         pageHelper = PageHelperFactory.visitNew(firstPageHelper, PersonalisedChangeEmailAddressPageHelper.class);
         checkOnPage(pageHelper, "personalised-change-email-address");
         pageObject = pageHelper.getPageObject();
-    
     }
 
     @When("^I select Back$")
@@ -93,6 +94,8 @@ public class ChangeEmailAddressSteps {
     @Then("^I will be taken to the personalised-account-summary page$")
     public void i_will_be_taken_to_the_account_summary_page() throws Throwable {
         checkOnPage(pageHelper, "personalised-account-summary");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
    
@@ -103,7 +106,7 @@ public class ChangeEmailAddressSteps {
 
     @When("^I select Submit email address change$")
     public void i_select_Submit_email_address_change() throws Throwable {
-        pageObject.clickButtonNext_NEXT();;
+        pageObject.clickButtonNext_NEXT();
     }   
 
     @When("^I will receive the message \"(.*?)\"$")
@@ -113,7 +116,9 @@ public class ChangeEmailAddressSteps {
 
     @When("^I will remain on the personalised-change-email-address page$")
     public void i_will_remain_on_the_change_email_address_page() throws Throwable {
-        checkOnPage(firstPageHelper, "personalised-change-email-address");
+        checkOnPage(pageHelper, "personalised-change-email-address");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Given("^I have supplied an invalid email address$")
@@ -138,7 +143,7 @@ public class ChangeEmailAddressSteps {
 
     @Given("^I have supplied a different confirm email address$")
     public void i_have_supplied_a_different_confirm_email_address() throws Throwable {
-        pageObject.setTextNdsInputConfirmEmail("pqr@gmail.com");
+        pageObject.setTextNdsInputConfirmEmail("valid-but-different@gmail.com");
     }
 
 

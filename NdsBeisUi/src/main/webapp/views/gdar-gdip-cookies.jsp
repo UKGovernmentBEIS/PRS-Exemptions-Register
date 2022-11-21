@@ -10,6 +10,7 @@
 <fmt:message bundle="${FieldsBundle}" key="Title_Cookies" var="title" />
 <jsp:include page="head.jsp">
 	<jsp:param name="title" value="${title}" />
+	<jsp:param name="isTitleGdarGdipSuffix" value="true" />
 </jsp:include>
 <body>
 	<nds:form id="pageForm" method="post">
@@ -22,7 +23,7 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>			
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_Cookies" />
 					</h1>
 				</div>

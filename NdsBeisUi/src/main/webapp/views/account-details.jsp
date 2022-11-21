@@ -40,7 +40,7 @@
 		<div class="grid-row">
 			<div class="column-full">
 				<jsp:include page="form-error.jsp"/>
-				<h1 class="form-title heading-large" role="banner">
+				<h1 class="form-title heading-large">
 					<c:choose>
 						<c:when
 							test="${command.beisRegistrationDetails.userDetails.userType == 'AGENT'}">
@@ -68,8 +68,7 @@
 									labeldecoration="required">
 									<nds:label />
 									<nds:invalid />
-									<nds:input class="form-control" placeholder="false"
-										autofocus="true" />
+									<nds:input class="form-control" placeholder="false" />
 								</nds:field>
 							</div>
 						</c:when>
@@ -84,8 +83,7 @@
 											labeldecoration="required">
 											<nds:label />
 											<nds:invalid />
-											<nds:input class="form-control" placeholder="false"
-												autofocus="true" />
+											<nds:input class="form-control" placeholder="false" />
 										</nds:field>
 									</div>
 									<div class="form-group">
@@ -94,8 +92,7 @@
 											labeldecoration="required">
 											<nds:label />
 											<nds:invalid />
-											<nds:input class="form-control" placeholder="false"
-												autofocus="false" />
+											<nds:input class="form-control" placeholder="false" />
 										</nds:field>
 									</div>
 								</c:when>
@@ -106,8 +103,7 @@
 											labeldecoration="required">
 											<nds:label />
 											<nds:invalid />
-											<nds:input class="form-control" placeholder="false"
-												autofocus="true" />
+											<nds:input class="form-control" placeholder="false" />
 										</nds:field>
 									</div>
 								</c:otherwise>
@@ -119,7 +115,7 @@
 							labeldecoration="required">
 							<nds:label/>
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"	autofocus="false" />							
+							<nds:input class="form-control" placeholder="false"	 />							
 						</nds:field>
 					</div>
 					<div class="form-group">
@@ -127,16 +123,14 @@
 							labeldecoration="required">							
 							<nds:label/>
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"
-									autofocus="false" />							
+							<nds:input class="form-control" placeholder="false" />							
 						</nds:field>
 					</div>
 					<div class="form-group">
 						<nds:field path="beisRegistrationDetails.accountDetails.telNumber">							
 							<nds:label/>
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"
-									autofocus="false" />							
+							<nds:input class="form-control" placeholder="false" />							
 						</nds:field>
 					</div>
 					<div class="form-group">

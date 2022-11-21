@@ -17,6 +17,7 @@
 	var="title" />
 <jsp:include page="head.jsp">
 	<jsp:param name="title" value="${title}" />
+	<jsp:param name="noTitleSuffix" value="true" />
 </jsp:include>
 
 <body>	
@@ -33,10 +34,9 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp" />		
 					<section id="forminfowrap">
-						<h2 class="form-title heading-large" role="banner">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_RegisterSearchGdarGdip" />
-						</h2>
+						<h1 class="form-title heading-large">
+							<fmt:message bundle="${FieldsBundle}" key="Heading_RegisterSearchGdarGdip" />
+						</h1>
 					</section>			
 				</div>
 			</div>
@@ -81,7 +81,7 @@
 									</thead>
 									<tbody>
 										<tr>
-											<td><a id="file-download-link" href="${contextUi}/download-gdip-gdar/${command.uiData.gdarGdipSearch.searchTerm}.do">${command.uiData.gdarGdipSearch.fileName}</a></td>
+											<td><a id="file-download-link" href="${contextUi}/download-gdip-gdar/${command.uiData.gdarGdipSearch.searchTerm}">${command.uiData.gdarGdipSearch.fileName}</a></td>
 										</tr>
 									</tbody>
 								</table>

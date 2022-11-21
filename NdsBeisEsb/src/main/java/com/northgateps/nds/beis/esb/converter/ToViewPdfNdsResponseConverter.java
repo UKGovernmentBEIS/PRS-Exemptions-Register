@@ -15,8 +15,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converts between a NDS object and an external back office object
- * 
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From ViewPdfResponse to ViewPdfNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem

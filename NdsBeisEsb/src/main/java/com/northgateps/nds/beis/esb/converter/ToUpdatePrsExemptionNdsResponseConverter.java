@@ -9,8 +9,8 @@ import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem
 
 
 /**
- * Converts between a NDS object and an external back office object
- * 
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From UpdatePRSExemptionResponse to UpdateExemptionDetailsNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem

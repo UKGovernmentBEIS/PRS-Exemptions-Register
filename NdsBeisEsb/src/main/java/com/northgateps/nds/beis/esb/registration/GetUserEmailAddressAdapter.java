@@ -35,6 +35,10 @@ public class GetUserEmailAddressAdapter {
 
     /** Method which compares the email address from backoffice with the one in ldap and if different then it
      *  sets in the exchange and later updates it in ldap 
+     *
+     * @param exchange consists of email address and other related data to be compared with
+     * @return PasswordResetNdsRequest
+     * @throws NdsApplicationException if an error occured during the retrieval of data
      */
     public PasswordResetNdsRequest getEmailAddress(Exchange exchange) throws NdsApplicationException {
         NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);

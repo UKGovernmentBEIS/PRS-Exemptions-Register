@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!--<Server port="8005" shutdown="SHUTDOWN">-->
+<Server port="8010" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+
+  <GlobalNamingResources>
+    <Resource name="UserDatabase" auth="Container"
+              type="org.apache.catalina.UserDatabase"
+              description="User database that can be updated and saved"
+              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+              pathname="conf/tomcat-users.xml" />
+  </GlobalNamingResources>
+
+  <Service name="Catalina">
+  <!--
+    <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443"/>
+-->
+    <!--
+		NDS-51 connector - secure ESB comms 
+		Note the keystore is specific per project.
+		Note that password matches the one in Ui properties file and the parameter to generate-certificates.ps1
+		server-keystore - used to provide server side of encrypted communications
+		ca-truststore - trusted client certificates. 
+		
+stops local site from working	
+				socket.soLingerOn="true"
+ 				socket.soLingerTime="25000"
+				
+to add :
+				executorTerminationTimeoutMillis="10000"
+ 				keepAliveTimeout="25000"
+ 				socket.soKeepAlive="true"
+ 				socket.soTimeout="25000"
+
+    -->
+<!--
+		<Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+            maxThreads="150" SSLEnabled="true" scheme="https" secure="true" server="Apache" maxPostSize="100000"
+ 				connectionTimeout="25000"
+ 				asyncTimeout="25000"
+-->
+
+	<Connector port="8090" protocol="HTTP/1.1" />
+		
+	<Connector port="8091" protocol="org.apache.coyote.http11.Http11NioProtocol" maxThreads="150" SSLEnabled="true" scheme="https" secure="true">
+		<SSLHostConfig certificateVerification="required" protocols="TLSv1.2"
+               caCertificateFile="C:\git\beis\NdsBeisEsb\src\main\resources\config\certs\ca-cert.pem" honorCipherOrder="true"
+               ciphers="TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+                        TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
+                        TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                        TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
+                        TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+                        TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+                        TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
+                        TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
+                        TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+                        TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+                        TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
+                        TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA">
+                <Certificate certificateFile="C:\git\beis\NdsBeisEsb\src\main\resources\config\certs\server-cert.pem"
+                        certificateKeyFile="C:\git\beis\NdsBeisEsb\src\main\resources\config\certs\server-key.pem" certificateKeyPassword="password">
+                </Certificate>
+        </SSLHostConfig>
+	</Connector>
+
+<!--
+	<Connector port="8091" protocol="org.apache.coyote.http11.Http11NioProtocol" maxThreads="150" SSLEnabled="true" scheme="https" secure="true">
+		<SSLHostConfig certificateVerification="required" protocols="TLSv1.2"
+               caCertificateFile="C:\git\pe_own_repo\pendspublicengagement\NdsPublicEngagementEsb\src\main\resources\config\certs\ca-cert.pem" honorCipherOrder="true"
+               ciphers="TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+                        TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
+                        TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                        TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
+                        TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+                        TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+                        TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
+                        TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
+                        TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+                        TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+                        TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
+                        TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA">
+                <Certificate certificateFile="C:\git\pe_own_repo\pendspublicengagement\NdsPublicEngagementEsb\src\main\resources\config\certs\server-cert.pem"
+                        certificateKeyFile="C:\git\pe_own_repo\pendspublicengagement\NdsPublicEngagementEsb\src\main\resources\config\certs\server-key.pem" certificateKeyPassword="password">
+                </Certificate>
+        </SSLHostConfig>
+	</Connector>
+-->
+	<!-- Turns off persistence manager -->
+	<!--<Context>
+		<Manager className="org.apache.catalina.session.StandardManager" pathname=""></Manager>
+		<JarScanner scanManifest="false"/>
+	</Context>
+    -->
+
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+          <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
+      </Realm>
+      <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true">
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" prefix="localhost_access_log" suffix=".txt" pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+
+<!-- Don't forget to change the <Connector> tag above when changing the context -->			   
+<!--
+		<Context path="/NdsBeisEsb" docBase="C:\git\beis\NdsBeisEsb\src\main\webapp" reloadable="true"><JarScanner scanManifest="false"/></Context>
+		<Context path="/NdsBeisUi" docBase="C:\git\beis\NdsBeisUi\src\main\webapp" reloadable="true"><JarScanner scanManifest="false"/></Context>
+
+		<Context path="/NdsBeisCas" docBase="C:\git\beis\NdsBeisCas\target\beis-cas-0.0.0.war" reloadable="true" />
+		<Context path="/NdsBeisCas" docBase="C:\scratch\beis-cas-0.12.8.war" reloadable="true" />
+		<Context path="/NdsBeisCas" docBase="C:\scratch\beis-cas-0.12.8.war" reloadable="true" />
+		-->
+		
+		<!--<Context path="/NdsPublicEngagementCas" docBase="C:\git\pe_own_repo\pendspublicengagement\NdsPublicEngagementCas\target\publicengagement-cas-0.0.0.war" reloadable="true" />-->
+		<Context path="/NdsBeisCas" docBase="C:\git\beis\NdsBeisCas\build\libs\NdsBeisCas-version-number.build-number.war" reloadable="true" />
+		
+      </Host>
+    </Engine>
+  </Service>
+</Server>

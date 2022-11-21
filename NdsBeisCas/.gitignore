@@ -1,5 +1,34 @@
+
+### STS ###
+.apt_generated
 .classpath
+.factorypath
+.project
 .settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+.classpath
+!/.project
+.project
+.settings
+.history
+.vscode
 target/
 .idea/
 .DS_Store
@@ -7,9 +36,12 @@ target/
 overlays/
 .gradle/
 build/
+log/
 bin/
+*.war
 *.iml
 *.log
-cas.properties
-bootstrap.properties
-/classes/
+tmp/
+./apache-tomcat
+apache-tomcat.zip
+config-metadata.properties

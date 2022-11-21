@@ -67,13 +67,15 @@ public class AccountAddressSteps {
         pageHelper = PageHelperFactory.visitNew(firstPageHelper,AccountAddressPageHelper.class);
         pageObject=pageHelper.getPageObject();
         checkOnPage(pageHelper, "account-address");
-        
-
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Then("^I will be taken to the account-details page$")
     public void i_will_be_taken_to_the_account_details_page() throws Throwable {
         checkOnPage(pageHelper, "account-details");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @When("^I select Back$")
@@ -118,7 +120,8 @@ public class AccountAddressSteps {
     @Then("^I will remain on the account-address page$")
     public void i_will_remain_on_the_account_address_page() throws Throwable {
         checkOnPage(pageHelper, "account-address");
-
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Given("^I have not supplied a postcode$")
@@ -128,7 +131,6 @@ public class AccountAddressSteps {
 
     @When("^I select Find address$")
     public void i_select_Find_address() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
         pageObject.clickButtonFindPostcode();
     }
 
@@ -140,6 +142,7 @@ public class AccountAddressSteps {
     
     @Then("^I will receive the validation message \"(.*?)\"$")
     public void i_will_receive_the_validation_message(String message) throws Throwable {
+        Thread.sleep(1000);
     	String validationMessage =pageObject.getDriver().findElement(By.xpath("//span[@class='error-message sticky-error']")).getText();
     	 assertEquals("check message", message, validationMessage);
     }
@@ -366,11 +369,14 @@ public class AccountAddressSteps {
     @Then("^I must move to the security-details page$")
     public void i_must_move_to_the_security_details_page() throws Throwable {
         checkOnPage(pageHelper, "security-details");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Given("^I have supplied a valid postcode with no Address exists$")
     public void i_have_supplied_a_valid_postcode_with_no_Address_exists() throws Throwable {
         pageObject.setTextNdsInputPostcodeCriterion("nl3 8da");
+        //
     }
 
     @Given("^I have selected Enter an address manually$")

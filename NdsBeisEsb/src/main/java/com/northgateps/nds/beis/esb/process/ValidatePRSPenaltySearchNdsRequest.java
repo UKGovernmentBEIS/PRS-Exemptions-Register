@@ -21,10 +21,10 @@ public class ValidatePRSPenaltySearchNdsRequest extends ValidateCamelRouteBean {
     /**
      * Validates a PRSPenaltySearch request
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsApplicationException
-     * @throws NdsBusinessException
+     * @throws NdsApplicationException if penalty search is missing from the request
+     * @throws NdsBusinessException if there's a violation found
      */
 
     public PRSPenaltySearchNdsRequest validate(final PRSPenaltySearchNdsRequest request)

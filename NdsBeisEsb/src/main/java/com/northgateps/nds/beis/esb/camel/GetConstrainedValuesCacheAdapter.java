@@ -1,18 +1,16 @@
 package com.northgateps.nds.beis.esb.camel;
 
 import org.apache.camel.Exchange;
-
 import com.northgateps.nds.platform.esb.camel.NdsCacheHandler;
 
 /**
- * Cache adapter class for getConstrainedValues route
+ * Cache adapter class for getConstrainedValues route using the default cache.
  */
-public class GetConstrainedValuesCacheAdapter  extends NdsCacheHandler {
+public class GetConstrainedValuesCacheAdapter extends NdsCacheHandler {
 
     public GetConstrainedValuesCacheAdapter() {
         super(null, "constrainedValues", "singleFileReader:{{beis.csvConstraintsFilePath}}", null, 
               "defaultCache");
-        
     }
 
     @Override
@@ -39,5 +37,4 @@ public class GetConstrainedValuesCacheAdapter  extends NdsCacheHandler {
     protected boolean isCallToSubRouteRequired() {
         return false;
     }
-
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <title th:text="#{cas.login.pagetitle}">CAS Login View</title>
+	<meta id="springViewName" name="dcterms.identifier" content="login-form" />
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+
+</head>
+
+<body class="login mdc-typography">
+<div layout:fragment="content" class="d-flex justify-content-center">
+
+    <div class="phase-banner-beta" th:if="${#strings.equals(@extractPhaseAction.getPhase(), 'TEST')}">
+      <p>
+          <strong class="phase-tag" th:text="${@extractPhaseAction.getPhase()}"></strong> <span
+              th:text="#{'screen.welcome.applicationphase.' + ${@extractPhaseAction.getPhase()}}"></span>
+      </p>
+    </div>
+		
+	<div class="phase-banner-beta"  th:if=${@extractPhaseAction.isFeedbackMessageRequired()}>
+		<p>
+			<strong class="phase-tag" th:text="${@extractPhaseAction.getPhase()}"></strong> <span
+				th:text="#{'screen.welcome.applicationphase.' + ${@extractPhaseAction.getPhase()}}"></span>&nbsp;
+				<a id="link.navigation.phase.feedback"	th:href="@{'mailto:' + ${@extractPhaseAction.getFeedBackEmail()}}" th:text="#{screen.welcome.feedback}"/>&nbsp;
+				<span th:text="#{screen.welcome.feedback.end}"></span>
+		</p>
+	</div>
+	
+	<header>
+			<span th:utext="#{screen.pm.button.back}" />  
+	</header>
+	
+    <div class="d-flex justify-content-center flex-md-row flex-column mdc-card mdc-card-content w-lg-25"
+         th:with="loginFormEnabled=${#strings.defaultString(#themes.code('cas.login-form.enabled'), 'true') == 'true'},
+                  loginFormViewable=${@casThymeleafLoginFormDirector.isLoginFormViewable(#vars)}">
+        <section id="loginForm"
+                 th:if="${loginFormViewable and loginFormEnabled}"
+                 class="login-section login-form">
+         	<div id="notices" class="col-sm-12 col-md-6 col-md-push-6">
+				<div th:replace="fragments/insecure" />			
+			</div>
+            <div th:replace="fragments/loginform :: loginform">
+                <a href="fragments/loginform.html">Login Form goes here</a>
+            </div>
+        </section>
+
+    </div>
+</div>
+</body>
+
+</html>

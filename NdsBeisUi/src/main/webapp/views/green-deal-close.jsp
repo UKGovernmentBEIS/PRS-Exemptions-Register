@@ -6,7 +6,7 @@
   <div class="footer-wrapper">
     <div class="footer-meta">
       <div class="footer-meta-inner">
-        
+        <fmt:message bundle="${FieldsBundle}" key="Link_Footer_NewWindowWarning" var="newWindowWarningText" />
         <h2 class="visuallyhidden">Support links</h2>
         <ul>
           <!-- Show version number -->
@@ -14,30 +14,40 @@
             <li>${version}</li>
           </c:if>
           <li>
-            <a href="gdar-gdip-cookies" id="link.navigation.cookies" target="_blank">Cookies</a>
+            <a href="gdar-gdip-cookies" id="link.navigation.cookies" target="_blank" class="with-tooltip">
+              Cookies <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
           <li>
-          	<a id="link.navigation.phase.feedback" href="mailto:${greenDealFeedbackEmail}">Feedback</a>
+          	<a id="link.navigation.phase.feedback" href="mailto:${greenDealFeedbackEmail}" class="with-tooltip">
+              Feedback <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
+          </li>
+          <li>
+            <a href="${contextUi}/gdar-gdip-accessibility" id="link.navigation.accessibility" target="_blank" class="with-tooltip">
+              Accessibility <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
           <li>
             Built by the 
-            	<a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank">
-            		Department of Business, Energy and Industrial Strategy
-            	</a>
+            <a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank" class="with-tooltip">
+              Department of Business, Energy and Industrial Strategy <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
-          
         </ul>
         
         <div class="open-government-licence">
           <p class="logo">
-            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.logo.open.government.license" target="_blank">
-              	Open Government Licence
+            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.logo.open.government.license" target="_blank" class="with-tooltip">
+              Open Government Licence <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
             </a>
           </p>
           <p>
             All content is available under the 
-            	<a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.open.government.license" target="_blank">
-            		Open Government Licence v3.0</a>, except where otherwise stated
+            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.open.government.license" target="_blank" class="with-tooltip">
+              Open Government Licence v3.0 <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
+            , except where otherwise stated
           </p>
         </div>
         <div class="version">

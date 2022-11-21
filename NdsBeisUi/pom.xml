@@ -49,7 +49,7 @@
 		<nds.integrationTest.skip>true</nds.integrationTest.skip>
 		<nds.integrationTest.browser>Firefox</nds.integrationTest.browser>
 		
-		<nds.integrationTest.gridServer>testServer</nds.integrationTest.gridServer>
+		<nds.integrationTest.gridServer>10.102.71.58:4444</nds.integrationTest.gridServer>
 		<nds.integrationTest.gridUrl>http://${nds.integrationTest.gridServer}/wd/hub</nds.integrationTest.gridUrl>
 		<nds.integrationTest.browserProperties>gridUrl=${nds.integrationTest.gridUrl},timeout=30</nds.integrationTest.browserProperties>
 		
@@ -140,7 +140,7 @@
 				<configuration>
 					<webXml>src\main\webapp\WEB-INF\web.xml</webXml>
 
-					<!-- The dev properties files are excluded so that they get to the test/live servers where they can be confusing. -->
+					<!-- The dev properties files are excluded so that they don't get to the test/live servers where they can be confusing. -->
 					<!-- If you need to run the war file locally outside of Eclipse, you'll need to add the properties file manually. -->
 					<packagingExcludes>**/*.p12, **/*.jceks, **/*.dev.properties</packagingExcludes>
 				</configuration>
@@ -273,7 +273,6 @@
 				<dependencies>
 					<dependency>
 						<groupId>net.serenity-bdd</groupId>
-						<!--<artifactId>core</artifactId>-->
 						<artifactId>serenity-core</artifactId>
 						<version>${serenity.version}</version>
 					</dependency>

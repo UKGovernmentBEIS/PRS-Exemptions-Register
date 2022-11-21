@@ -14,9 +14,10 @@ import java.util.regex.Pattern;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.model.ModelCamelContext;
+
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,20 +29,19 @@ import org.ldaptive.ModifyRequest;
 import org.ldaptive.SearchScope;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+
 import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationCamelSpringTestSupport;
 import com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent;
 import com.northgateps.nds.beis.esb.registration.UpdateEmailAddressInLdapComponent;
 import com.northgateps.nds.beis.api.BeisRegistrationDetails;
-import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsRequest;
-import com.northgateps.nds.beis.api.beisregistration.BeisRegistrationNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsRequest;
 import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsResponse;
 import com.northgateps.nds.beis.esb.MockNdsDirectoryKernel;
+
 import com.northgateps.nds.platform.api.PasswordResetDetails;
 import com.northgateps.nds.platform.api.passwordreset.PasswordResetNdsRequest;
 import com.northgateps.nds.platform.api.passwordreset.PasswordResetNdsResponse;
 import com.northgateps.nds.platform.application.api.utils.PlatformTokenFactory;
-import com.northgateps.nds.beis.esb.MockEndpointInitializer;
 import com.northgateps.nds.platform.esb.directory.DirectoryManager;
 import com.northgateps.nds.platform.esb.directory.UserManager;
 import com.northgateps.nds.platform.esb.directory.ex.DirectoryException;
@@ -65,7 +65,6 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
 
     public static final String routeNameUnderTest = "beisPasswordResetServiceRoute";
     private static final String TEST_START_NAME = "direct:beisPasswordResetServiceRoute";
-    private static final String MOCK_PASSWORD_RESET_REQUEST_CHECK = "mock:beisPasswordResetRequest";
     private static final String MOCK_PASSWORD_RESET_RESPONSE_CHECK = "mock:beisPasswordResetRequest-response-check";
     private static final String getPartyDetailsRouteName = "getPartyDetails_SubRouteForRetrievingRegistrationDetails";
     protected static final String MOCK_GET_PARTYDETAILS = "mock:get-partyDetails";
@@ -82,6 +81,7 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
     private int hoursExpiry = 48;
     
     private TestMockDirectoryKernel mockDirectoryKernel = new TestMockDirectoryKernel();
+    private String username;
 
     
     /*
@@ -182,22 +182,16 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
     //Prepares the camel context beisPasswordResetServiceRoute
     @Before
     public void prepareCamelContext() throws Exception {
-        ModelCamelContext camelContext = context;
+        // assume connection is done for ldap
+        assumeTrue(connection);
+        final BeisRegistrationDetails registeredUser = registerNewUser(null, mockDirectoryKernel);
+        username = registeredUser.getUserDetails().getUsername();
 
-        camelContext.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_PASSWORD_RESET_RESPONSE_CHECK);
                 replaceFromWith(TEST_START_NAME);
-                interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
-                        MOCK_PASSWORD_RESET_REQUEST_CHECK).process(new Processor() {
-
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        // nothing to change
-                    }
-                });
 
                 // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
                 // checking the values supplied by the route via the adapter and avoiding dependence of the test on
@@ -242,25 +236,15 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
             }
         });
 
-        camelContext.start();
+        context.start();
     }
 
     //test for passwordReset with different email address in ldap and backoffice
     @Test
     public void testPasswordResetWithDifferentEmailAddressInBOAndLdap() throws Exception {
-
         final String emailTextLine1 = "You asked for your PRS exemptions account password to be reset. You now need to set a new password.";
-
-        //assume connection is done for ldap
-        assumeTrue(connection);
-
-        final BeisRegistrationDetails registeredUser = registerANewUser(mockDirectoryKernel);
-
-        String username = registeredUser.getUserDetails().getUsername();
-        
         //mocking getPartyDetails endpoint
-        context.getRouteDefinition(getPartyDetailsRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(getPartyDetailsRouteName), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
 
@@ -284,7 +268,7 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
         context.start();
 
         // Ensure email request data is present and correct
-        MockEndpoint requestMock = getMockEndpoint(MOCK_PASSWORD_RESET_REQUEST_CHECK);
+        MockEndpoint requestMock = getMockEndpoint(MOCK_INTERCEPTED_SMTP_SERVER);
         requestMock.reset();
         requestMock.expectedMessageCount(1);
         requestMock.expectedHeaderValuesReceivedInAnyOrder("subject", "Password reset");
@@ -315,18 +299,9 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
     //test for passwordReset with same email address in ldap and backoffice
     @Test
     public void testPasswordResetWithSameEmailAddressInBOAndLdap() throws Exception {
-
         final String emailTextLine1 = "You asked for your PRS exemptions account password to be reset. You now need to set a new password.";
 
-        //assume connection is done for ldap
-        assumeTrue(connection);
-
-        final BeisRegistrationDetails registeredUser = registerANewUser(mockDirectoryKernel);
-
-        String username = registeredUser.getUserDetails().getUsername();
-        
-        context.getRouteDefinition(getPartyDetailsRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(getPartyDetailsRouteName), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
 
@@ -349,7 +324,7 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
 
         context.start();
 
-        MockEndpoint requestMock = getMockEndpoint(MOCK_PASSWORD_RESET_REQUEST_CHECK);
+        MockEndpoint requestMock = getMockEndpoint(MOCK_INTERCEPTED_SMTP_SERVER);
         requestMock.reset();
         requestMock.expectedMessageCount(1);
         requestMock.expectedHeaderValuesReceivedInAnyOrder("subject", "Password reset");
@@ -382,14 +357,8 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
     public void testPasswordResetUnknownUser() throws Exception {
         logger.info("Checking that password reset is not initiated when username is unknown");
         
-        MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
-        
-        final BeisRegistrationDetails registeredUser = registerANewUser(mockDirectoryKernel);
-        
-        String username = registeredUser.getUserDetails().getUsername();
-        
         // Ensure email request data is not present
-        MockEndpoint requestMock = getMockEndpoint(MOCK_PASSWORD_RESET_REQUEST_CHECK);
+        MockEndpoint requestMock = getMockEndpoint(MOCK_INTERCEPTED_SMTP_SERVER);
         requestMock.reset();
         requestMock.expectedMessageCount(0);
          
@@ -407,40 +376,6 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
         assertEquals("Check if it contains invalid message",
                 "Username or activation code is invalid.",
                 userError.getNdsMessages().getViolations().get(0).getMessage());
-    }
-    
-    //method to register a new user and return registered details
-    private BeisRegistrationDetails registerANewUser(MockNdsDirectoryKernel mockDirectoryKernel)
-            throws Exception {
-
-        final BeisRegistrationNdsRequest requestNewUser = createRegistrationNdsRequestWithNewUserName();
-
-        BeisRegistrationDetails registeredUser = registerNewUser(null, mockDirectoryKernel, requestNewUser,
-                new MockEndpointInitializer() {
-
-                    @Override
-                    public void request(MockEndpoint requestMock) throws Exception {
-                        requestMock.expectedMessageCount(1);
-
-                    }
-
-                    @Override
-                    public void response(MockEndpoint responseMock) throws Exception {
-                        responseMock.expectedBodiesReceived(JaxbXmlMarshaller.convertToPrettyPrintXml(
-                                createSuccessfulBeisRegistrationResponse(), BeisRegistrationNdsResponse.class));
-
-                    }
-
-                });
-
-        return registeredUser;
-
-    }
-
-    protected BeisRegistrationNdsResponse createSuccessfulBeisRegistrationResponse() {
-        BeisRegistrationNdsResponse response = new BeisRegistrationNdsResponse();
-        response.setSuccess(true);
-        return response;
     }
 
     private PasswordResetNdsResponse createSuccessfulNdsPasswordResetResponse() {
@@ -471,5 +406,4 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
         response.setEmailAddress(emailAddress);
         return response;
     }
-
 }

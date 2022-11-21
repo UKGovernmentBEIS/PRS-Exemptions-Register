@@ -43,17 +43,17 @@ Scenario: Process security details
 	
 	Given I have supplied a password without enough characters
 	When I select Next
-	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 	And I will remain on the security-details page
 
     Given I have supplied a password without enough numbers
 	When I select Next
-	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 	And I will remain on the security-details page
 	
 	Given I have supplied a password without enough letters
 	When I select Next
-	Then I will receive the validation message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+	Then I will receive the validation message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 	And I will remain on the security-details page
 	
 	Given I have supplied a password that includes user details

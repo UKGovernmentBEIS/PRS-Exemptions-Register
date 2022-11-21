@@ -25,7 +25,7 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp" />			
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 								key="SecondaryHeading_forgottenPasswordConfirmation" />						
 					</h1>

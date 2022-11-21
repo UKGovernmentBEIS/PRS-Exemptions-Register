@@ -29,7 +29,7 @@ Then I must be notified "Your password reset activation link has expired. You wi
 And new password and repeat password must be set to blank
 And I must remain on 'activate-password-reset' page
 
-Scenario: Successfully reset the password after testing validation errors
+Scenario: Testing password validation errors
 
 Given I am on the 'activate-password-reset' page
 And I have not input any data
@@ -42,23 +42,30 @@ And activation code is linked to my username
 And I have input a valid username
 And I have input activation code
 
-And  I have supplied a new password without enough characters
+And I have supplied a new password without enough characters
 When I choose to reset the password
-Then I must be notified "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I must remain on 'activate-password-reset' page
 Given I have supplied a new password without enough numbers
 When I choose to reset the password
-Then I must be notified "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I must remain on 'activate-password-reset' page
 Given I have supplied a new password without enough letters
 When I choose to reset the password
-Then I must be notified "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I must remain on 'activate-password-reset' page
-#REMOVED THIS TEST AS OPEN LDAP DOES NOT SUPPORT THIS
-#Given I have supplied a new password that includes user details
-#When I choose to reset the password
-#Then I must be notified "Password must not contain user details."
-#And I must remain on 'activate-password-reset' page
+Given I have supplied a new password without uppercase letters
+When I choose to reset the password
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
+And I must remain on 'activate-password-reset' page
+Given I have supplied a new password without lowercase letters
+When I choose to reset the password
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
+And I must remain on 'activate-password-reset' page
+Given I have supplied a new password without special letters
+When I choose to reset the password
+Then I must be notified "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
+And I must remain on 'activate-password-reset' page
 
 And I have input valid new password
 And I have input valid but different repeat password
@@ -74,7 +81,10 @@ And I must be taken to the 'password-reset-confirmation' page
 And I have selected Finish
 Then I will be taken to the “sign-on” page
 
-Scenario: Error if activation code has expired by previous usage
+#
+# Cannot guarantee order of scenarios so tacking this on the end of the previous one.
+#Scenario: Error if activation code has expired by previous usage
+#
 
 Given I am on the 'activate-password-reset' page
  And activation code is not expired yet
@@ -85,10 +95,11 @@ Given I am on the 'activate-password-reset' page
  And I have input a valid username
  And I have input activation code
  When I choose to reset the password
- Then I must be notified "Username or activation code is invalid.Use the forgotten password option to try again."
+ Then I must see the error "Username or activation code is invalid.Use the forgotten password option to try again."
  And I must remain on 'activate-password-reset' page
  And new password and repeat password must be set to blank
- 
+
+
 Scenario: Username and activation code are not linked
 
 Given I am on the 'activate-password-reset' page
@@ -100,6 +111,6 @@ And I have input valid confirm password matching the new password
 And I have input a valid username
 And I have input unmatching activation code
 When I choose to reset the password
-Then I must be notified "Username or activation code is invalid.Use the forgotten password option to try again."
+Then I must see the error "Username or activation code is invalid.Use the forgotten password option to try again."
 And I must remain on 'activate-password-reset' page
 And new password and repeat password must be set to blank

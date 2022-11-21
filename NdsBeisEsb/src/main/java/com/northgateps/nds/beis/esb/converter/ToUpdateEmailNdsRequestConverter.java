@@ -10,7 +10,8 @@ import com.northgateps.nds.platform.esb.exception.NdsBusinessException;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converter from SaveRegisteredAccountDetailsNdsRequest to UpdateEmailNdsRequest.
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From SaveRegisteredAccountDetailsNdsRequest to UpdateEmailNdsRequest.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -18,6 +19,7 @@ public class ToUpdateEmailNdsRequestConverter {
     /**
      * @param request This is the shared UI request object for changes to a user's account.
      * @return - the the standard platform UpdateEmailNdsRequest.
+     * @throws NdsBusinessException if the registered account details don't exist
      */
     @Converter
     public static UpdateEmailNdsRequest converting(SaveRegisteredAccountDetailsNdsRequest request)

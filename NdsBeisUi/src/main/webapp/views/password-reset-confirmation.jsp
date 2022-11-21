@@ -30,7 +30,7 @@
 			</div>	
 			<div class="grid-row">
 				<div class="column-full">
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 								key="Heading_PasswordResetConfirmation" />						
 					</h1>		

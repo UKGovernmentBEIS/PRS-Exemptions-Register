@@ -22,10 +22,10 @@ public class ValidatePRSExemptionSearchNdsRequest extends ValidateCamelRouteBean
     /**
      * Validates a PRSExemptionSearch request
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsApplicationException
-     * @throws NdsBusinessException
+     * @throws NdsApplicationException if the exemption search details are expected but it was null
+     * @throws NdsBusinessException if there's a violation found
      */
 
     public PRSExemptionSearchNdsRequest validate(final PRSExemptionSearchNdsRequest request)

@@ -19,9 +19,9 @@ public class ValidateViewPdfDocumentRequest extends ValidateCamelRouteBean {
     /**
      * Validates submitted view pdf request.
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws InvalidReferenceNumberException
+     * @throws InvalidReferenceNumberException if there's a violation found
      */
     public ViewPdfNdsRequest validate(final ViewPdfNdsRequest request)
             throws InvalidReferenceNumberException {

@@ -6,7 +6,7 @@ import com.northgateps.nds.platform.test.configuration.PlatformCamelSecurityTest
 
 /** 
  * Check camel route for security configuration issues.
- * @See PlatformCamelSecurityTest for more details 
+ * See PlatformCamelSecurityTest for more details 
  */
 public class CamelSecurityTest extends PlatformCamelSecurityTest {
 
@@ -15,7 +15,7 @@ public class CamelSecurityTest extends PlatformCamelSecurityTest {
      * they either are not run in the context of a user, or they are subroutes of a route that is either
      * verified as having a <policy> tag or is itself exempt.
      * 
-     * @See PlatformCamelSecurityTest for more details.
+     * @see com.northgateps.nds.platform.test.configuration.PlatformCamelSecurityTest for more details.
      */
     {
         registerOmissionScheme("direct");   // (subRoutes)

@@ -25,7 +25,7 @@
 			<div class="grid-row">
 				<div class="column-full">				
 					<jsp:include page="form-error.jsp"/>
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_ActivatePasswordReset" />
 					</h1>
 				</div>
@@ -39,7 +39,7 @@
 							label="Label_passwordResetDetails.username">
 							<nds:label />
 							<nds:invalid />
-							<nds:input placeholder="false" autofocus="true"
+							<nds:input placeholder="false"
 								readonly="${command.activatePasswordResetDetails.readonlyUsername}" class="form-control" />
 						</nds:field>
 						</div>

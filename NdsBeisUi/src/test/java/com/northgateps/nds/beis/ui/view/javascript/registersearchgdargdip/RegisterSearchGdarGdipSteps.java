@@ -45,6 +45,8 @@ public class RegisterSearchGdarGdipSteps extends AlternateUrlBaseSteps {
     public void i_am_on_the_register_search_gdar_gdip_page() throws Throwable {
         pageHelper = new RegisterSearchGdarGdipPageHelper(pageObject.getDriver());
         checkOnPage(pageHelper, "register-search-gdar-gdip");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Given("^I have not supplied a reference$")
@@ -81,12 +83,13 @@ public class RegisterSearchGdarGdipSteps extends AlternateUrlBaseSteps {
 
     @Then("^I will remain on the 'register-search-gdar-gdip' page$")
     public void i_will_remain_on_the_register_search_gdar_gdip_page() throws Throwable {
-        checkOnPage(pageHelper, "register-search-gdar-gdip");        
+        checkOnPage(pageHelper, "register-search-gdar-gdip");
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }    
 
     @Given("^I have supplied a valid reference$")
     public void i_have_supplied_a_valid_reference() throws Throwable { 
-        pageObject=pageHelper.getNewPageObject();
         pageObject.setTextNdsInputSearchTerm("0000-1111-2222-3333-6666");
     }
 

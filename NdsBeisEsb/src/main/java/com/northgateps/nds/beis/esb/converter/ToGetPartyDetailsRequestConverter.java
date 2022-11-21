@@ -12,7 +12,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converts between a NDS object and an external back office object 
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From RetrieveRegisteredDetailsNdsRequest to GetPartyDetailsRequest.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -23,10 +24,10 @@ public final class ToGetPartyDetailsRequestConverter {
     /**
      * Convert the passed in retrieveRegisteredDetailsNdsRequest to the passed out GetPartyDetailsRequest
      * 
-     * @param class com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsRequest
-     * @return
-     *     class  com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsRequest
-     * @throws NdsApplicationException 
+     * @param retrieveRegisteredDetailsNdsRequest request to be converted to GetPartyDetailsRequest
+     * @return class com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsRequest
+     * @throws NdsApplicationException if error is found
+     * @throws NdsBusinessException if no account id is found from the retrieved registered detail request
      */
     @Converter
     public static GetPartyDetailsRequest converting(RetrieveRegisteredDetailsNdsRequest retrieveRegisteredDetailsNdsRequest) 

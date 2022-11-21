@@ -23,10 +23,12 @@ public class SecurityDetailsPageHelper extends BasePageHelper<SecurityDetailsPag
         setFormFiller(new FormFiller() {
             @Override
             public void fill(BasePageHelper<?> pageHelper) { 
-                getPageObject().setTextNdsInputUsername("PeSelTest-" + System.currentTimeMillis());
-                getPageObject().setTextNdsInputPassword("Randompassword11");
-                getPageObject().setTextNdsInputConfirmPassword("Randompassword11");
-                if (!getPageObject().getWebElementInputIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
+                final SecurityDetailsPageObject pageObject = getPageObject();
+                pageObject.setTextNdsInputUsername("PeSelTest-" + System.currentTimeMillis());
+                pageObject.setTextNdsInputPassword("Randompassword11_");
+                pageObject.setTextNdsInputConfirmPassword("Randompassword11_");
+
+                while (!getPageObject().getWebElementInputIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
                     getPageObject().clickInputIsAgreeRegistrationTermsConditions_AgreeTerms();
                 }
             }

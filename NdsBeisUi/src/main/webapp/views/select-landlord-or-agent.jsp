@@ -40,7 +40,7 @@
 						</p>
 					</div>
 				</c:if>
-				<h1 class="form-title heading-large" role="banner">
+				<h1 class="form-title heading-large">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_Select_Landlord_Or_Agent" />
 				</h1>

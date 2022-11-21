@@ -32,7 +32,12 @@ public class PurgeDocumentsPersistenceAdapter extends BatchJobPersistenceAdapter
         long start = System.currentTimeMillis();      
        
         // delete associated files
-        NdsDbMetadata metadata = getPersistenceManager().deleteOrphanedFilesReturnMetaData(getGridFsCollectionName(), getDateCriteria(), null);
+        NdsDbMetadata metadata;
+		try {
+			metadata = getPersistenceManager().deleteOrphanedFilesReturnMetaData(getGridFsCollectionName(), getDateCriteria(), null);
+		} catch (Exception e) {
+			throw new NdsDbException(e);
+		}
         
         batchJobMetadata.setStartTimestamp(metadata.getStartTimestamp());
         batchJobMetadata.setRecordCount(metadata.getRecordCount());

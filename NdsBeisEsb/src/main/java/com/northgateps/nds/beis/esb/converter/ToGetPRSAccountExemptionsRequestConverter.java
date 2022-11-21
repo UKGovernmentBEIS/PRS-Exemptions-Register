@@ -3,7 +3,7 @@ package com.northgateps.nds.beis.esb.converter;
 import java.math.BigInteger;
 
 import org.apache.camel.Converter;
-import org.jsoup.helper.StringUtil;
+import org.jsoup.internal.StringUtil;
 
 import com.northgateps.nds.beis.api.UserType;
 import com.northgateps.nds.beis.api.dashboard.GetPRSAccountExemptionsNdsRequest;
@@ -13,8 +13,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * converter for BEIS foundation layer account exemptions request which can convert
- * from different request types.
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From GetPRSAccountExemptionsNdsRequest to GetPRSAccountExemptionsRequest.
  */
 @Converter
 @DoNotWeaveLoggingSystem

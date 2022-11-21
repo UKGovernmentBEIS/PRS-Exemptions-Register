@@ -25,7 +25,9 @@
 			<value>account-activation</value>
 			<value>report-forgotten-username</value>
 			<value>report-forgotten-password</value>
+			<value>accessibility</value>
 			<value>cookies</value>
+			<value>gdar-gdip-accessibility</value>
 			<value>gdar-gdip-cookies</value>
 			<value>gdar-gdip-terms-and-conditions</value>
 			<value>privacy-policy</value>
@@ -600,36 +602,43 @@
 				</bean>
 				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
 					<property name="name" value="end" />
-				</bean>				
-				
-				
-                <!-- Common options -->
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="cookies" />
-                    <property name="commonOption" value="true" />
-                </bean>
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="privacy-policy" />
-                    <property name="commonOption" value="true" />
-                </bean>
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="terms-and-conditions" />
-                    <property name="commonOption" value="true" />
-                </bean>
-                 <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="gdar-gdip-cookies" />
-                    <property name="commonOption" value="true" />
-                </bean>
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="SessionExpired" />
-                    <property name="viewName" value="session-expired" />
-                    <property name="commonOption" value="true" />
-                </bean>
-                <bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
-                    <property name="name" value="SessionException" />
-                    <property name="viewName" value="session-exception" />
-                    <property name="commonOption" value="true" />
-                </bean>
+				</bean>
+
+				<!-- Common options -->
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="accessibility" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="cookies" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="privacy-policy" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="terms-and-conditions" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="gdar-gdip-accessibility" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="gdar-gdip-cookies" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="SessionExpired" />
+					<property name="viewName" value="session-expired" />
+					<property name="commonOption" value="true" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.controller.flow.Page">
+					<property name="name" value="SessionException" />
+					<property name="viewName" value="session-exception" />
+					<property name="commonOption" value="true" />
+				</bean>
 			</list>
 		</property>
 	</bean>

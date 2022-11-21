@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fo="http://www.w3.org/1999/XSL/Format" exclude-result-prefixes=" xlink xs xsi">
+<xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	exclude-result-prefixes=" xlink xs xsi">
 	<xsl:output version="1.0" method="xml" encoding="UTF-8" indent="no" omit-xml-declaration="yes"/>
 	<xsl:template match="@*|node()">
 		<xsl:copy>
@@ -18,7 +24,10 @@
 	<xsl:template match="ul/li">
 		<fo:list-item>
 			<fo:list-item-label end-indent="label-end()">
-				<fo:block>&#x2022;</fo:block>
+				<!-- This has been changed to using a dash 
+					because the bullet point is being converted to a "?" on unix 
+					and we have been unable to resolve this charset issue -->
+				<fo:block>-</fo:block>
 			</fo:list-item-label>
 			<fo:list-item-body start-indent="body-start()">
 				<fo:block>

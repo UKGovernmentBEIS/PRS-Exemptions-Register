@@ -19,7 +19,12 @@ public class MockConfigurationManager implements ConfigurationManager {
     
     private Map<String, String> overrideConfig = new HashMap<String, String>();
     
-    /** Add a value to override the default config. */
+    /**
+     * Add a value to override the default config.
+     *
+     * @param key to be stored
+     * @param value to be stored
+     */
     public void setString(String key, String value) {
         overrideConfig.put(key, value);
     }

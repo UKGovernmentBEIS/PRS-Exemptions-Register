@@ -25,10 +25,9 @@
 				<div class="column-two-thirds">
 					<jsp:include page="form-error.jsp"/>
 					<div class="govuk-box-highlight">
-						<h2 class="bold-large" role="banner">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_ExemptionConfirmation" />
-						</h2>
+						<h1 class="bold-large">
+							<fmt:message bundle="${FieldsBundle}" key="Heading_ExemptionConfirmation" />
+						</h1>
 						<p>	
 							<fmt:message bundle="${FieldsBundle}"
 								key="SubHeading_ExemptionConfirmation" />

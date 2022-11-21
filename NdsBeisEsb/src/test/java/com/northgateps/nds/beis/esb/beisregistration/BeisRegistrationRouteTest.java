@@ -7,7 +7,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Test;
@@ -57,15 +59,13 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
 
         logger.info("Existing user created - Starting user already exists test");
 
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith("direct:startBeisRegistrationServiceRoute"); 
-                           
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:startBeisRegistrationServiceRoute"); 
+                    
+            }
+        });
 
         context.start();
 
@@ -88,32 +88,30 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
         
         MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
 
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                @Override
-                public void configure() throws Exception {
-                    replaceFromWith("direct:startBeisRegistrationServiceRoute");
-                    // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                    // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                    // a running LDAP server.
-                    DirectoryManager directoryManager = new DirectoryManager();
-                    directoryManager.setKernel(mockDirectoryKernel);
-                    UserManager userManager = new UserManager();
-                    userManager.setDirectoryManager(directoryManager);
-                    BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                    ldapComponent.setDirectoryManager(directoryManager);
-                    ldapComponent.setUserManager(userManager);                 
-                    BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                    accountIdComponent.setDirectoryManager(directoryManager);
-                    accountIdComponent.setUserManager(userManager);
-                    weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                    weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                    weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                    weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                    weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
-                }
-            });
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:startBeisRegistrationServiceRoute");
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
+            }
+        });
 
         context.start();
 
@@ -130,47 +128,46 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
     
     /**
      * Not checking for an exact error on this one as need to include config a config entry in the message
-     * and it's probably not worth it. Keeping it simple instead. 
+     * and it's probably not worth it. Keeping it simple instead.
+     *
+     * @throws Exception if an error occurs 
      */
     @Test
     public void testRegistrationInvalidTenant() throws Exception {
         assumeTrue(connection);
         MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                interceptSendToEndpoint("smtp://{{smtp.host.server}}").to(
+                        "mock:updateEmail-request-check").skipSendToOriginalEndpoint().process(new Processor() {
 
                     @Override
-                    public void configure() throws Exception {
-                        interceptSendToEndpoint("smtp://{{smtp.host.server}}").to(
-                                "mock:updateEmail-request-check").skipSendToOriginalEndpoint().process(new Processor() {
-
-                            @Override
-                            public void process(Exchange exchange) throws Exception {
-                                // TODO Auto-generated method stub
-
-                            }
-                        });
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                        accountIdComponent.setDirectoryManager(directoryManager);
-                        accountIdComponent.setUserManager(userManager);
-                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");            
+                    public void process(Exchange exchange) throws Exception {
+                        // TODO Auto-generated method stub
 
                     }
                 });
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");            
+            }
+        });
 
         context.start();
         Exception exception = null;
@@ -191,32 +188,30 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
         MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
         final String CONFRIM_VALIDATION_MESSAGE = "ValidationField_RegistrationModel_confirmPassword";
 
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith("direct:startBeisRegistrationServiceRoute");
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                        accountIdComponent.setDirectoryManager(directoryManager);
-                        accountIdComponent.setUserManager(userManager);
-                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:startBeisRegistrationServiceRoute");
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
+            }
+        });
 
         context.start();
 
@@ -236,32 +231,30 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
     public void testRegistrationEmailInvalid() throws Exception {
         assumeTrue(connection);
         MockNdsDirectoryKernel mockDirectoryKernel = new MockNdsDirectoryKernel();
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith("direct:startBeisRegistrationServiceRoute");
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                        accountIdComponent.setDirectoryManager(directoryManager);
-                        accountIdComponent.setUserManager(userManager);
-                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith("direct:startBeisRegistrationServiceRoute");
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse"); 
+            }
+        });
 
         context.start();
 
@@ -291,26 +284,24 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
 
         logger.info("testAlreadyActivatedRegistration");
 
-        context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        ActivateRegistrationLdapComponent ldapComponent = new ActivateRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        weaveById("activateRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                ActivateRegistrationLdapComponent ldapComponent = new ActivateRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                weaveById("activateRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+            }
+        });
 
         context.start();
         
@@ -340,27 +331,25 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
         final String INVALID_CODE_VALIDATION_MESSAGE = "Validation_Field_must_not_be_empty";
         final String INVALID_CODE_VALIDATION_FIELD = "activateRegistrationDetails.activationCode";
 
-        context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
-                        replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        ActivateRegistrationLdapComponent ldapComponent = new ActivateRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        weaveById("activateRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
+                replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                ActivateRegistrationLdapComponent ldapComponent = new ActivateRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                weaveById("activateRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+            }
+        });
 
         context.start();
 
@@ -390,6 +379,8 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
     /**
      * This is an extremely important test since it also checks our user store's security
      * configuration is set up correctly. 
+     *
+     * @throws Exception if an error occurs
      */
     @Test
     public void testVerifyingUnactivatedUserAccountFails() throws Exception {
@@ -423,6 +414,7 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
      * Foundation Layer call is stored as the uid against the FOUNDATION_LAYER_PARTY_SERVICE
      * against the user. This test makes sure this happens with a mocked out MaintainPartyDetails
      * call. 
+     * @throws Exception if an error occurs
      */
     @Test
     public void testFoundationLayerReferenceIsSaved() throws Exception {
@@ -482,74 +474,68 @@ public class BeisRegistrationRouteTest extends BeisRegistrationCamelSpringTestSu
 
         BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
 
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+
+                // Mock out the email
+                weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
+                replaceFromWith(REGISTRATION_TEST_START);
+
+                // Mock out the call to foundation layer for the sub route
+                weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
+                replaceFromWith(REGISTRATION_TEST_START);
+
+                interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
+                        MOCK_INTERCEPTED_SMTP_SERVER).process(new Processor() {
 
                     @Override
+                    public void process(Exchange exchange) throws Exception {
+                        // nothing to change
+                    }
+                });
+                
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");  
+
+                // This sub route is invoked by registration and requires mocking
+                AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+                    @Override
                     public void configure() throws Exception {
-
-                        // Mock out the email
-                        weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        // Mock out the call to foundation layer for the sub route
-                        weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
-                                MOCK_REGISTRATION_REQUEST_CHECK).process(new Processor() {
-
+                        interceptSendToEndpoint(
+                                "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
+                                        MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
                             @Override
                             public void process(Exchange exchange) throws Exception {
-                                // nothing to change
-                            }
-                        });
-                        
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                        accountIdComponent.setDirectoryManager(directoryManager);
-                        accountIdComponent.setUserManager(userManager);
-                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");  
-
-                        // This sub route is invoked by registration and requires mocking
-                        context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                                new AdviceWithRouteBuilder() {
-
-                            @Override
-                            public void configure() throws Exception {
-
-                                interceptSendToEndpoint(
-                                        "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                                MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
-
-                                    @Override
-                                    public void process(Exchange exchange) throws Exception {
-                                        // Mock out a response
-                                        exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
-                                    }
-                                });
+                                // Mock out a response
+                                exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
                             }
                         });
                     }
                 });
+            }
+        });
 
         context.start();
 
         // Ensure email request data is present and correct
-        MockEndpoint requestMock = getMockEndpoint(MOCK_REGISTRATION_REQUEST_CHECK);
+        MockEndpoint requestMock = getMockEndpoint(MOCK_INTERCEPTED_SMTP_SERVER);
         requestMock.expectedMessageCount(1);
         requestMock.expectedHeaderReceived("subject", "Account activation");
         requestMock.expectedHeaderReceived("to", "a@beis.com");

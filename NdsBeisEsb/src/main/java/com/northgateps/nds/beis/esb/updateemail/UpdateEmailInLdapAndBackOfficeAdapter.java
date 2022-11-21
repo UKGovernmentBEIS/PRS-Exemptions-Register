@@ -47,8 +47,8 @@ public class UpdateEmailInLdapAndBackOfficeAdapter {
     /**
      * Set up the request so that we can send a notification email to the new address.
      * 
-     * @param exchange
-     * @throws NdsApplicationException
+     * @param exchange consists of data to process update email request
+     * @throws NdsApplicationException if an error occurs
      */
     public void processRequest(Exchange exchange) throws NdsApplicationException {
         NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);
@@ -74,7 +74,7 @@ public class UpdateEmailInLdapAndBackOfficeAdapter {
     /**
      * Create a SaveRegisteredAccountDetailsNdsResponse.
      *
-     * @param exchange
+     * @param exchange consists of data to process response
      */
     public void processResponse(Exchange exchange) {
         NdsSoapRequestAdapterExchangeProxyImpl ndsExchange = new NdsSoapRequestAdapterExchangeProxyImpl(exchange);

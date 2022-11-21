@@ -7,7 +7,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.BeforeClass;
@@ -81,8 +83,8 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
     private static final String MOCK_RETRIEVE_FL_RESPONSE_CHECK = "mock:fl-response-check";
     private static final String MOCK_RETRIEVE_FL_REQUEST_CHECK = "mock:fl-request-check";
 
-    // Dummy placeholder where we can intercept Registration request
-    protected static final String MOCK_REGISTRATION_REQUEST_CHECK = "mock:registration-request-check";
+    // Dummy placeholder where we can intercept Registration request for when it sends an email
+    protected static final String MOCK_INTERCEPTED_SMTP_SERVER = "mock:intercepted-smtp-server";
 
     @EndpointInject(uri = REGISTRATION_TEST_START)
     private ProducerTemplate apiEndpoint;
@@ -161,6 +163,8 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
 
     /**
      * Creates a request for a new LDAP user suitable for integration tests.
+     *
+     * @return a BeisRegistrationNdsRequest with preset data
      */
     public static BeisRegistrationNdsRequest createRegistrationNdsRequestWithNewUserName() {
 
@@ -245,6 +249,8 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
 
     /**
      * Creates a request for a new LDAP user that has an invalid email address.
+     *
+     * @return a BeisRegistrationNdsRequest with preset data consisting of invalid email address
      */
     public static BeisRegistrationNdsRequest createRegistrationNdsRequestWithAnInvalidEmailAddress() {
 
@@ -308,75 +314,70 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
         
         BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
 
-        context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
+        AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+
+                // Mock out the email
+                weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
+                replaceFromWith(REGISTRATION_TEST_START);
+
+                // Mock out the call to foundation layer for the sub route
+                weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
+                replaceFromWith(REGISTRATION_TEST_START);
+
+                interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
+                        MOCK_INTERCEPTED_SMTP_SERVER).process(new Processor() {
 
                     @Override
+                    public void process(Exchange exchange) throws Exception {
+                        // nothing to change
+                    }
+                });
+                
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
+                ldapComponent.setDirectoryManager(directoryManager);
+                ldapComponent.setUserManager(userManager);                 
+                BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
+                accountIdComponent.setDirectoryManager(directoryManager);
+                accountIdComponent.setUserManager(userManager);
+                weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
+                weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
+                weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
+                weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");                   
+
+
+                // This sub route is invoked by registration and requires mocking
+                AdviceWith.adviceWith(context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+                    @Override
                     public void configure() throws Exception {
-
-                        // Mock out the email
-                        weaveAddLast().to(MOCK_REGISTRATION_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        // Mock out the call to foundation layer fro the sub route
-                        weaveAddLast().to(MOCK_REGISTRATION_FL_RESPONSE_CHECK);
-                        replaceFromWith(REGISTRATION_TEST_START);
-
-                        interceptSendToEndpoint("smtp://{{smtp.host.server}}").skipSendToOriginalEndpoint().to(
-                                MOCK_REGISTRATION_REQUEST_CHECK).process(new Processor() {
+                        interceptSendToEndpoint(
+                                "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
+                                        MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
-                                // nothing to change
-                            }
-                        });
-                        
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        BeisRegistrationLdapComponent ldapComponent = new BeisRegistrationLdapComponent();
-                        ldapComponent.setDirectoryManager(directoryManager);
-                        ldapComponent.setUserManager(userManager);                 
-                        BeisRegistrationUpdateAccountIdLdapComponent accountIdComponent = new BeisRegistrationUpdateAccountIdLdapComponent();
-                        accountIdComponent.setDirectoryManager(directoryManager);
-                        accountIdComponent.setUserManager(userManager);
-                        weaveById("beisRegistrationLdapComponent.checkUsername").replace().bean(ldapComponent, "checkUsername");
-                        weaveById("beisRegistrationLdapComponent.process").replace().bean(ldapComponent, "process");
-                        weaveById("beisRegistrationLdapComponent.processResponse").replace().bean(ldapComponent, "processResponse");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.process").replace().bean(accountIdComponent, "process");
-                        weaveById("beisRegistrationUpdateAccountIdLdapComponent.processResponse").replace().bean(accountIdComponent, "processResponse");                   
-
-
-                        // This sub route is invoked by registration and requires mocking
-                        context.getRouteDefinition(REGISTRATION_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                                new AdviceWithRouteBuilder() {
-
-                            @Override
-                            public void configure() throws Exception {
-
-                                interceptSendToEndpoint(
-                                        "cxf:bean:beisMaintainPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                                MOCK_REGISTRATION_FL_REQUEST_CHECK).process(new Processor() {
-
-                                    @Override
-                                    public void process(Exchange exchange) throws Exception {
-                                        // Mock out a response
-                                        exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
-                                    }
-                                });
+                                // Mock out a response
+                                exchange.getIn().setBody(generateMaintainPartyDetailsResponse());
                             }
                         });
                     }
                 });
+            }
+        });
 
         context.start();
 
         // Ensure email request data is present and correct
-        MockEndpoint requestMock = getMockEndpoint(MOCK_REGISTRATION_REQUEST_CHECK);
+        MockEndpoint requestMock = getMockEndpoint(MOCK_INTERCEPTED_SMTP_SERVER);
         mockEndpointInitializer.request(requestMock);
 
         // setup expected ESB response
@@ -401,7 +402,7 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
         return registerNewUser(emailText, mockDirectoryKernel, requestNewUser, new MockEndpointInitializer() {
 
             @Override
-            public void request(MockEndpoint requestMock) {
+            public void request(MockEndpoint requestMock) throws Exception {
                 BeisRegistrationDetails userRegistration = requestNewUser.getRegistrationDetails();
                 requestMock.expectedMessageCount(1);
                 requestMock.expectedHeaderReceived("subject", "Account activation");
@@ -445,15 +446,20 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
     }
     
     /**
-     * Call the retrieve camel route to get the details out    
+     * Call the retrieve camel route to get the details out  
+     *
+     * @param tenant data used for the request
+     * @param username data used for the request
+     * @param mockNdsDirectoryKernel kernel
+     * @return RetrieveRegisteredDetailsNdsResponse
+     * @throws Exception if an error occurs
      */
     public RetrieveRegisteredDetailsNdsResponse retrieveRegistrationDetails(String tenant, String username,MockNdsDirectoryKernel mockNdsDirectoryKernel)
             throws Exception {
 
         assumeTrue(connection);
 
-        context.getRouteDefinition(retrieveRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(retrieveRouteName), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(restrieveStartName);
@@ -463,18 +469,14 @@ public class BeisRegistrationCamelSpringTestSupport extends CamelSpringTestSuppo
                 replaceFromWith(restrieveStartName);
 
                 // This sub route is invoked by registration and requires mocking
-                context.getRouteDefinition(RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
-
+                AdviceWith.adviceWith(context.getRouteDefinition(RETRIEVE_SUB_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
-
                         interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(
                                 MOCK_RETRIEVE_FL_REQUEST_CHECK).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
-
                                 // Mock out a response
                                 exchange.getIn().setBody(createGetPartyDetailsResponse());
                             }

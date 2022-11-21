@@ -13,7 +13,7 @@ Scenario: Log in as a user with expired password and attempt to reset password h
     When I enter matching password and confirmation passwords but wrong old password
     Then I should see a validation error containing "Current password is invalid"
     When I enter the old password correctly but the new password is too short
-    Then I should see a validation error containing "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+    Then I should see a validation error containing "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
     When I enter a valid new password and confirmation password 
     Then I should see the password confirmation page
     When I click the next button

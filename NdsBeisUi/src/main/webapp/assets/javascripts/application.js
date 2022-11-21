@@ -23,7 +23,7 @@ $(document).ready(function() {
   GOVUK.shimLinksWithButtonRole.init()
 });
 
-// jQuery datepicker
+// jQuery-ui and other custom related features
 $(function () {
    $(".datepicker").datepicker({
        showOn: "both",
@@ -32,9 +32,28 @@ $(function () {
        buttonImageOnly: true,
        buttonText: "Select date"
    });
+
+    // Simple tooltip
+    $(".with-tooltip").on("focus mouseover", function () {
+        $(this).children(".tooltip-text").attr("style", "display: block");
+    });
+    $(".with-tooltip").on("blur mouseout", function () {
+        $(this).children(".tooltip-text").attr("style", "display: none");
+    });
 });
 
 /*** GLOBAL FUNCTIONS ***/
+
+/***
+ * Indicator to turn on/off parts of the js override on clicking the submit button,
+ * to be more specific, this is about the prevention of the submit button from being clicked.
+ * @returns Boolean value 
+ *   true  - we block the js override on the submit button
+ *   false - we allow js to override the submit button's standard functionality
+ */
+function blockSubmitOnJSError() {
+    return true;
+}
 
 /***
  * Display an error message on the screen for a path

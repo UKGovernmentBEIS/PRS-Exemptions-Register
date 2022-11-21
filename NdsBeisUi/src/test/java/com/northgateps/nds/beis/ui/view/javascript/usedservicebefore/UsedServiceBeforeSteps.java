@@ -2,12 +2,20 @@ package com.northgateps.nds.beis.ui.view.javascript.usedservicebefore;
 
 import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.checkOnPage;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
+import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
+import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedDashboardPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.UsedServiceBeforePageObject;
+import com.northgateps.nds.platform.ui.configuration.ConfigurationFactory;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
 import cucumber.api.java.After;
@@ -23,6 +31,7 @@ public class UsedServiceBeforeSteps {
     private SeleniumCucumberTestHelper testHelper = new SeleniumCucumberTestHelper();
     
     UsedServiceBeforePageHelper pageHelper;
+    PersonalisedDashboardPageHelper dashboardPageHelper;
     UsedServiceBeforePageObject pageObject;
 
     @Managed
@@ -64,6 +73,7 @@ public class UsedServiceBeforeSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
     	pageObject.clickButtonNext_NEXTUsedservicebefore();
     }
 
@@ -102,4 +112,41 @@ public class UsedServiceBeforeSteps {
     public void i_will_be_taken_to_the_used_service_before_page() throws Throwable {
     	checkOnPage(pageHelper, "used-service-before");
     }
+
+    @When("^I sign in as user \"(.*?)\" with password \"(.*?)\"$")
+    public void sign_in_as_user_with_password(String username, String password) throws Throwable {
+        LoginPageHelper loginPageHelper = new LoginPageHelper(webDriver);
+
+        PageHelperFactory.registerFormFiller("login-form", loginPageHelper.createFormFiller(username, password));
+
+        try {
+            dashboardPageHelper = PageHelperFactory.visit(loginPageHelper, PersonalisedDashboardPageHelper.class);            
+            checkOnPage(dashboardPageHelper, "personalised-dashboard");
+        } finally {
+            PageHelperFactory.unregisterFormFiller("login-form");
+        }
+    }
+
+    @Then("^I should see the \"(.*?)\" page$")
+    public void i_should_the_page(String springViewNameContent) throws Throwable {
+    	checkOnPage(pageHelper, springViewNameContent);
+    }
+
+    @When("^I go to the used-service-before page by entering it's url$")
+    public void go_to_used_service_before_page_by_entering_its_url() throws Throwable {
+    	testHelper.openUrl();
+    }
+
+    @Then("^I should see the text '(.*?)'$")
+    public void i_should_see_the_text(String text) throws Throwable {
+        List<WebElement> text_found_list = webDriver.findElements(By.xpath("//*[contains(text(), '" + text + "')]"));
+    	assertTrue("Text not found!", text_found_list.size() > 0);
+    }
+
+    @When("^I click on the Next link-button$")
+    public void click_next_link_button() throws Throwable {
+        pageObject = pageHelper.getNewPageObject();
+        pageObject.clickAnchorNext(); 
+    }
+    
 }

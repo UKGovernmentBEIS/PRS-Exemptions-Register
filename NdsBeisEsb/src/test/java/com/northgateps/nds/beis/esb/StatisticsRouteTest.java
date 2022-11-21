@@ -11,7 +11,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.bson.Document;
@@ -40,7 +42,7 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 /**
  * Route test for statistics route
  * 
- * @see com.northgateps.nds.platform.esb.senddormantuseremail.SendEmailToDormantUsersJobRouteTest which this class
+ * see com.northgateps.nds.platform.esb.senddormantuseremail.SendEmailToDormantUsersJobRouteTest which this class
  * is based on.
  */
 
@@ -73,7 +75,11 @@ public class StatisticsRouteTest extends CamelSpringTestSupport {
     }
 
     
-    /** Test to check statistic route*/
+    /** 
+     * Test to check statistic route
+     *
+     * @throws Exception if an error occurs
+     */
     @Test
     public void testStats() throws Exception {
         
@@ -91,8 +97,7 @@ public class StatisticsRouteTest extends CamelSpringTestSupport {
 
         logger.info("testStats test started");
         
-        context.getRouteDefinition(userAccountStatsRouteName).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(userAccountStatsRouteName), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 PersistenceKernel mockPersistenceKernel = new PersistenceKernel() {
@@ -141,8 +146,7 @@ public class StatisticsRouteTest extends CamelSpringTestSupport {
             }
         });
         
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {                             
                 
@@ -286,15 +290,18 @@ public class StatisticsRouteTest extends CamelSpringTestSupport {
     }
 
    
-    /** Test to run actual route. Useful for debugging */
+    /**
+     * Test to run actual route. Useful for debugging
+     *
+     * @throws Exception if an error occurs
+     */
     @Ignore
     @Test
     public void testCounts() throws Exception {
 
         logger.info("statisticsRouteTest test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
 

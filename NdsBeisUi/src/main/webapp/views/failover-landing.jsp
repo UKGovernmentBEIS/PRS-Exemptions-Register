@@ -24,9 +24,9 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>				
-					<h2 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_failover_landing" />
-					</h2>
+					</h1>
 				</div>
 			</div>
 			<div class="grid-row">

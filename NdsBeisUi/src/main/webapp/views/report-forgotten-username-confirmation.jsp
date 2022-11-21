@@ -27,10 +27,9 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp" />
 					<section id="forminfowrap">
-						<h2 class="form-title heading-large" role="banner">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Legend_reportForgottenUsernameConfirmation" />
-						</h2>
+						<h1 class="form-title heading-large">
+							<fmt:message bundle="${FieldsBundle}" key="Legend_reportForgottenUsernameConfirmation" />
+						</h1>
 					</section>
 				</div>
 			</div>

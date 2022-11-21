@@ -6,7 +6,7 @@
 	xmlns:http="http://cxf.apache.org/transports/http/configuration"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-2.19.1.xsd
+		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-3.14.5.xsd
 		 http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
 		 http://cxf.apache.org/core  http://cxf.apache.org/schemas/core.xsd
 		 http://www.northgateps.com/schema/spring/nds-camel-extensions http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd
@@ -25,16 +25,14 @@
         Blocks startup until Mongo is available.  If any beans need or set up access to Mongo on
         initialisation, they must add the attribute depends-on="mongoAvailabilityChecker".
      -->
-    <bean id="mongoAvailabilityChecker" class="com.northgateps.nds.platform.application.mongo.MongoAvailabilityChecker">
-        <constructor-arg name="mongoClientClass" value="com.northgateps.nds.platform.application.mongo.NdsTrustAllMongoClient" />
-        <constructor-arg name="serverList" value="${ndsdb.server}" />
-        <constructor-arg name="portList" value="${ndsdb.port}" />
-        <constructor-arg name="username" value="${ndsdb.user}" />
-        <constructor-arg name="password" value="${ndsdb.password}" />
-        <constructor-arg name="maxPoolSize" value="${ndsdb.max.connection}" />
-        <constructor-arg name="replicaSet" value="${ndsdb.replicaset}" />
+	<bean id="mongoAvailabilityChecker" class="com.northgateps.nds.platform.application.mongo.Mongo3AvailabilityChecker">
         <constructor-arg name="databaseName" value="${ndsdb.name}"/>
         <constructor-arg name="collectionName" value="${ndsdb.audit.collection.name}"/>
+        <constructor-arg name="host" value="${ndsdb.server}" />        
+        <constructor-arg name="port" value="${ndsdb.port}" />
+        <constructor-arg name="authenticationDatabaseName" value="admin" />
+        <constructor-arg name="user" value="${ndsdb.user}" />
+        <constructor-arg name="password" value="${ndsdb.password}" />
     </bean>
 
     <bean id="prepareSecurity"
@@ -70,8 +68,7 @@
 	</bean>
 
     <!-- define some properties that define our configuration environment. -->
-	<bean id="properties"
-		class="com.northgateps.nds.platform.esb.util.configuration.NdsPropertiesComponent" />
+	<bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
 
 	<!-- bridge spring property placeholder with Camel -->
 	<!-- you must NOT use the <context:property-placeholder at the same time, 
@@ -186,14 +183,14 @@
 	</cxf:rsServer>
 
     <!-- 
-        Increase the default number of outgoing CXF connections which use the http4 bean under the hood
+        Increase the default number of outgoing CXF connections which use the http bean under the hood
       -->
     <bean id="httpClientConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager"> 
         <property name="maxTotal" value="500" /> 
         <property name="defaultMaxPerRoute" value="200" /> 
     </bean> 
 
-    <bean id="http4" class="org.apache.camel.component.http4.HttpComponent"> 
+    <bean id="http" class="org.apache.camel.component.http.HttpComponent"> 
         <property name="clientConnectionManager" ref="httpClientConnectionManager" /> 
     </bean>
 	
@@ -498,7 +495,8 @@
 	</cxf:cxfEndpoint>
 
 	<cxf:cxfEndpoint id="beisGetPartyDetailsService"
-		address="{{beis.getPartyDetailsApiUrl}}" xmlns:beisGetPartyDetails="http://www.northgateps.com/GetPartyDetails.wsdl"
+		address="{{beis.getPartyDetailsApiUrl}}"
+		xmlns:beisGetPartyDetails="http://www.northgateps.com/GetPartyDetails.wsdl"
 		serviceName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsWSDLPort"
 		endpointName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
@@ -687,13 +685,13 @@
 
 	<!-- The camel route context -->
 	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring"
-		errorHandlerRef="defaultEH" handleFault="true" allowUseOriginalMessage="true">
-
+		errorHandlerRef="defaultEH" allowUseOriginalMessage="true" loadTypeConverters="true">
 		<ndsext:ndsStandardExceptionHandlers />
 
-		<properties>
-			<property key="CamelLogDebugBodyMaxChars" value="10000" />
-		</properties>
+
+		<globalOptions>
+			<globalOption key="CamelLogDebugBodyMaxChars" value="10000" />
+		</globalOptions>
 
 		<errorHandler id="defaultEH" useOriginalMessage="true">
 			<redeliveryPolicy maximumRedeliveries="2"
@@ -741,8 +739,7 @@
 			<process ref="ndsDirectoryErrorRecoveryProcessor" />
 		</onException>
 
-        <route id="getPartiallyRegisteredDetailsServiceRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="getPartiallyRegisteredDetailsServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiGetPartiallyRegisteredDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateGetPartiallyRegisteredDetails" method="validate" />
@@ -751,8 +748,7 @@
 			</policy>
 		</route>
 		
-		<route id="getPrsAccountExemptionsServiceRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="getPrsAccountExemptionsServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiDashboardEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateGetPrsAccountExemptionsRequest" method="validate" />
@@ -764,14 +760,15 @@
 				<bean ref="getUserTypePartyDetailsAdapter" method="getUserType" /> 
 				<bean ref="getPrsAccountExemptionsAdapter" method="processRequest" />
 				<to uri="cxf:bean:beisGetPrsAccountExemptionsService" />
-				<unmarshal ref="jaxb-getPrsAccountExemptionsResponse" />
+				<unmarshal>
+					<custom ref="jaxb-getPrsAccountExemptionsResponse" />
+				</unmarshal>
 				<bean ref="getPrsAccountExemptionsAdapter" method="processResponse" />
 			</policy>
 		</route>
 
 		<!-- route to retrieve party reference from foundation layer -->
-		<route id="retrieveRegisteredDetailsServiceRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="retrieveRegisteredDetailsServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiRetrieveRegisteredDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateRetrieveRegisteredUserDetails" method="validate" />
@@ -782,29 +779,28 @@
 		</route>
 
 		<!-- route to retrieve details from back office -->
-		<route id="getPartyDetails_SubRouteForRetrievingRegistrationDetails">
+		<route id="getPartyDetails_SubRouteForRetrievingRegistrationDetails" streamCache="true">
 			<from uri="direct:getPartyDetails" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processRequest" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-							processRequest ${body} headers are ${headers} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
 					loggingLevel="DEBUG" />
 				<to uri="cxf:bean:beisGetPartyDetailsService" />
-				<unmarshal ref="jaxb-getPartyDetailsResponse" />
-				<log
-					message="${threadName} 
-							&gt;&gt;&gt; After service, before adapter ${body} !!"
+				<!-- SO it looks like we are actually getting the correct xml string back and it is placed in the body,
+					but it looks like there is some multi-threading that is going in in between the logger below and the unmarshal which
+					changes the contents of the body to be the bodyType (which is an object of CxfPayload, but it consists of the xml value we wanted) -->
+				<unmarshal>
+					<custom ref="jaxb-getPartyDetailsResponse" />
+				</unmarshal>
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
 					loggingLevel="DEBUG" />
 				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processResponse" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-							processResponse ${body} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
 					loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
-		<route id="getConstrainedValuesRoute">
+		<route id="getConstrainedValuesRoute" streamCache="true">
 			<from uri="{{apiGetConstrainedValuesService}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
@@ -813,14 +809,15 @@
 				<bean ref="constrainedValuesCacheAdapter" method="doCaching" /> 
 					
 				<!-- bind to a java class ie. CsvConstrainedValueRecord -->
-				<unmarshal ref="csvBindyConstrainedValueRecord" />
+				<unmarshal>
+					<custom ref="csvBindyConstrainedValueRecord" />
+				</unmarshal>
 				<bean ref="getConstrainedValuesAdapter" method="processResponse" />
 				<bean ref="getConstrainedValuesAdapter" method="processFilterResponse" />
 			</policy>
 		</route>
 
-		<route id="beisRegistrationServiceRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="beisRegistrationServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiBeisRegistrationEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateBeisRegistration" method="validate" />
@@ -851,30 +848,25 @@
 		</route>
 
 		<!-- route to be shared by register and save registered account details -->
-		<route id="maintainPartyDetails_SubRouteForRegistration">
+		<route id="maintainPartyDetails_SubRouteForRegistration" streamCache="true">
 			<from uri="direct:maintainPartyDetails" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="beisRegistrationSoapAdapter" method="processRequest" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-							processRequest ${body} headers are ${headers} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
 					loggingLevel="DEBUG" />
 				<to uri="cxf:bean:beisMaintainPartyDetailsService" />
-				<unmarshal ref="jaxb-maintainPartyDetailsResponse" />
-				<log
-					message="${threadName} 
-							&gt;&gt;&gt; After service, before adapter ${body} !!"
+				<unmarshal>
+					<custom ref="jaxb-maintainPartyDetailsResponse" />
+				</unmarshal>
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
 					loggingLevel="DEBUG" />
 				<bean ref="beisRegistrationSoapAdapter" method="processResponse" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-							processResponse ${body} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
 					loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
-		<route id="saveRegisteredAccountDetailsServiceRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="saveRegisteredAccountDetailsServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiSaveRegisteredAccountDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="prepareSecurity" method="setAuthenticationHeader" />
@@ -917,7 +909,9 @@
 				<bean ref="saveRegisteredAccountDetailsSoapAdapter" method="processRequest" />
 				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<to uri="cxf:bean:beisMaintainPartyDetailsService" />
-				<unmarshal ref="jaxb-maintainPartyDetailsResponse" />
+				<unmarshal>
+					<custom ref="jaxb-maintainPartyDetailsResponse" />
+				</unmarshal>
 				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!" loggingLevel="DEBUG" />
 				<bean ref="saveRegisteredAccountDetailsSoapAdapter" method="processResponse" />
 
@@ -950,23 +944,22 @@
 			</policy>
 		</route>
 		
-		<route id="beisPasswordResetServiceRoute" trace="true" streamCache="true"
-            handleFault="true">
-            <from uri="{{apiBeisPasswordResetEndpoint}}" />
-            <policy ref="directorySecurityPolicy">
-                <bean ref="validatePasswordReset" method="validate" />
-                
-                <!-- Get the email address from ldap and set in exchange -->
-                <bean id="beisPasswordResetLdapComponent.process" ref="passwordResetLdapComponent" method="process" />
-                <bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
-                
-               <!--  Create request to get email address from backoffice -->
-                <bean ref="getUserEmailAddressAdapter" method="createMyAccountDetailsRequest" />
-                
-               <!--  Get party ref from ldap for the user -->
-                <bean id="retrieveRegisteredDetailsRetrieveAccountId.process" 
-                      ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" method="process" />
-                
+		<route id="beisPasswordResetServiceRoute" trace="true" streamCache="true">
+			<from uri="{{apiBeisPasswordResetEndpoint}}" />
+			<policy ref="directorySecurityPolicy">
+				<bean ref="validatePasswordReset" method="validate" />
+				
+				<!-- Get the email address from ldap and set in exchange -->
+				<bean id="beisPasswordResetLdapComponent.process" ref="passwordResetLdapComponent" method="process" />
+				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				
+				<!--  Create request to get email address from backoffice -->
+				<bean ref="getUserEmailAddressAdapter" method="createMyAccountDetailsRequest" />
+
+				<!--  Get party ref from ldap for the user -->
+				<bean id="retrieveRegisteredDetailsRetrieveAccountId.process" 
+							ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" method="process" />
+
 				<to uri="direct:getPartyDetails" />
 				<bean ref="getUserEmailAddressAdapter" method="getEmailAddress" />
 				
@@ -974,7 +967,6 @@
 				<!-- Check if update in ldap is required or not -->
 				<choice>
 					<when>
-						
 						<simple>${exchangeProperty.isUpdateRequired} == true</simple>
 						<bean id="updateEmailAddressLdapComponent.process" ref="updateEmailAddressInLdapAdapter" method="process" />
 					</when>
@@ -982,32 +974,31 @@
 				
 				<!-- Sending email -->
 				<bean id="beisPasswordResetEmailAdapter.processRequest" ref="passwordResetEmailAdapter" method="processRequest" />
-                <to uri="smtp://{{smtp.host.server}}" />
-                <bean id="beisPasswordResetLdapComponent.processResponse" ref="passwordResetLdapComponent" method="processResponse" />
-            </policy>
-        </route>
+				<removeHeaders pattern="ResponseContext" />
+				<to uri="smtp://{{smtp.host.server}}" />
+				<bean id="beisPasswordResetLdapComponent.processResponse" ref="passwordResetLdapComponent" method="processResponse" />
+			</policy>
+		</route>
 
 		<route id="printExemptionDetailsRoute">
 			<from uri="{{apiPrintExemptionDetailsEndpoint}}" />
 			<policy ref="generalSecurityPolicy">
-				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
-				<to
-					uri="xslt:exemption-details.xslt?transformerFactoryClass=org.apache.xalan.processor.TransformerFactoryImpl" />
-				<convertBodyTo type="org.w3c.dom.Document" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!" loggingLevel="INFO" />
+				<to uri="xslt:exemption-details.xslt?transformerFactoryClass=org.apache.xalan.processor.TransformerFactoryImpl" />
+				<convertBodyTo type="org.w3c.dom.Document" charset="UTF-8" />
 				<bean ref="printExemptionDetailsAdapter" method="unescapeHtml" />
-				<convertBodyTo type="java.lang.String" />
+				<!-- <convertBodyTo type="java.lang.String" charset="UTF-8" /> -->
+				<convertBodyTo type="java.lang.String" charset="UTF-8" />
 				<to uri="fop:application/pdf" />
 				<bean ref="printExemptionDetailsAdapter" method="processResponse" />
 			</policy>
 		</route>
 
 
-		<route id="fileAddRoute" trace="true" streamCache="true"
-			handleFault="true">
+		<route id="fileAddRoute" trace="true" streamCache="true">
 			<from uri="{{apiFileAddService}}" />
 			<policy ref="generalSecurityPolicy">				
-				<log message="${threadName} &gt;&gt;&gt;  Start of route:"
+				<log message="${threadName} &gt;&gt;&gt; Start of route:"
 					loggingLevel="INFO" />
 				<bean ref="fileAddAdapter" method="processRequest" />
 				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
@@ -1019,8 +1010,7 @@
 			</policy>
 		</route>
 
-		<route id="fileReadRoute" trace="true" streamCache="true"
-			handleFault="true">
+		<route id="fileReadRoute" trace="true" streamCache="true">
 			<from uri="{{apiFileReadService}}" />
 			<policy ref="generalSecurityPolicy">
 				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
@@ -1034,8 +1024,7 @@
 			</policy>
 		</route>
 
-		<route id="fileDeleteRoute" trace="true" streamCache="true"
-			handleFault="true">
+		<route id="fileDeleteRoute" trace="true" streamCache="true">
 			<from uri="{{apiFileDeleteService}}" />
 			<policy ref="generalSecurityPolicy">
 				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
@@ -1049,75 +1038,72 @@
 			</policy>
 		</route>
 
-		<route id="prsExemptionSearchRoute">
+		<route id="prsExemptionSearchRoute" streamCache="true">
 			<from uri="{{apiPRSExemptionSearchEndpoint}}" />
 			<policy ref="generalSecurityPolicy">
 			    <bean ref="validatePRSExemptionSearchNdsRequest" method="validate" />
 				<bean ref="prsExemptionSearchAdapter" method="processRequest" />
 				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<to uri="cxf:bean:prsExemptionSearchServiceEndPoint" />
-				<unmarshal ref="jaxb-prsExemptionSearchResponse" />
+				<unmarshal>
+					<custom ref="jaxb-prsExemptionSearchResponse" />
+				</unmarshal>
 				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!" loggingLevel="DEBUG" />
 				<bean ref="prsExemptionSearchAdapter" method="processResponse" />
 				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!" loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
-		<route id="prsPenaltySearchRoute">
+		<route id="prsPenaltySearchRoute" streamCache="true">
 			<from uri="{{apiPRSPenaltySearchEndpoint}}" />
 			<policy ref="generalSecurityPolicy">
 			 <bean ref="validatePRSPenaltySearchNdsRequest" method="validate" />
 			 <bean ref="prsPenaltySearchAdapter" method="processRequest" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-                            processRequest ${body} headers are ${headers} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
 					loggingLevel="DEBUG" />
 				<to uri="cxf:bean:prsPenaltySearchServiceEndPoint" />
-				<unmarshal ref="jaxb-prsPenaltySearchResponse" />
-				<log
-					message="${threadName} 
-                            &gt;&gt;&gt; After service, before adapter ${body} !!"
+				<unmarshal>
+					<custom ref="jaxb-prsPenaltySearchResponse" />
+				</unmarshal>
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
 					loggingLevel="DEBUG" />
 				<bean ref="prsPenaltySearchAdapter" method="processResponse" />
-				<log
-					message="${threadName} &gt;&gt;&gt; processed 
-                            processResponse ${body} !!"
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
 					loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
 
-		<route id="GetPrsExemptionRefDataRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="GetPrsExemptionRefDataRoute" trace="true" streamCache="true">
 			<from uri="{{apiGetPrsExemptionRefData}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="getPrsExemptionRefDataAdapter" method="processRequest" />
 				<!-- read the prs exemption ref data from backoffice/cache -->
 				<bean ref="prsExemptionRefDataCacheAdapter" method="doCaching" /> 
-                <unmarshal ref="jaxb-getPrsExemptionRefDataResponse" />
+				<unmarshal>
+					<custom ref="jaxb-getPrsExemptionRefDataResponse" />
+				</unmarshal>
 				<bean ref="getPrsExemptionRefDataAdapter" method="processResponse" />
-
 			</policy>
 		</route>
 		
-		<route id="GetPrsPenaltyRefDataRoute" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="GetPrsPenaltyRefDataRoute" trace="true" streamCache="true">
 			<from uri="{{apiGetPrsPenaltyRefData}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="getPrsPenaltyRefDataAdapter" method="processRequest" />
 				
 				<!-- read the prs exemption ref data from backoffice/cache -->
 				<bean ref="prsPenaltyRefDataCacheAdapter" method="doCaching" /> 
-				<unmarshal ref="jaxb-getPrsPenaltyRefDataResponse" />
+				<unmarshal>
+					<custom ref="jaxb-getPrsPenaltyRefDataResponse" />
+				</unmarshal>
 				<bean ref="getPrsPenaltyRefDataAdapter" method="processResponse" />
-
 			</policy>
 		</route>
 		
 
 
-		<route id="Register_PRS_Exemption_Route" trace="true"
-			streamCache="true" handleFault="true">
+		<route id="Register_PRS_Exemption_Route" trace="true" streamCache="true">
 			<from uri="{{apiRegisterPrsExemptionEndpoint}}" />
 			<policy ref="generalSecurityPolicy">				
 				<bean ref="validateRegisterPrsExemptionNdsRequest" method="validate" />				
@@ -1125,16 +1111,18 @@
 				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />				
 				<bean ref="registerPrsExemptionAdapter" method="processRequest" />				
 				<to uri="cxf:bean:exemptionRegistrationService" />				
-				<unmarshal ref="jaxb-registerPrsExemptionResponse" />				
+				<unmarshal>
+					<custom ref="jaxb-registerPrsExemptionResponse" />				
+				</unmarshal>
 				<bean ref="registerPrsExemptionAdapter" method="processResponse" />					
 				<choice>
 					<when>					
 						<simple>${exchangeProperty.exemptionRegisteredSuccessfully} == true</simple>
 						<log message="Deleting uploaded files from db" />                        
-                        <bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
-                        <bean ref="deleteUploadedFilesAdapter" method="deleteFiles" />
-                        <!-- Checks if email notification is true to trigger email -->
-                       	<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="deleteUploadedFilesAdapter" method="deleteFiles" />
+						<!-- Checks if email notification is true to trigger email -->
+						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
 						<bean ref="registerPrsExemptionEmailNotifier" method="processRequest" />
 						<!-- exception processor will handle any smtp exceptions and break 
 							out of route -->
@@ -1155,30 +1143,34 @@
 			</policy>
 		</route>
 		
-		<route id="prsExemptionUpdateRoute">
+		<route id="prsExemptionUpdateRoute" streamCache="true">
 			<from uri="{{apiPRSExemptionUpdateEndpoint}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="validatePrsExemptionUpdateRequest" method="validate" />
 				<bean ref="prsExemptionUpdateLookupIdAdapter" method="process" />
 				<bean ref="prsExemptionUpdateAdapter" method="processRequest" />
 				<to uri="cxf:bean:prsExemptionUpdateServiceEndPoint" />
-				<unmarshal ref="jaxb-prsExemptionUpdateResponse" />
+				<unmarshal>
+					<custom ref="jaxb-prsExemptionUpdateResponse" />
+				</unmarshal>
 				<bean ref="prsExemptionUpdateAdapter" method="processResponse" />
 			</policy>
 		</route>
 
-		<route id="viewDocumentGdipgdarRoute">
+		<route id="viewDocumentGdipgdarRoute" streamCache="true">
 			<from uri="{{apiViewDocumentGDIPGDAREndpoint}}" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="validateViewDocument" method="validate" />
 				<bean ref="viewDocumentAdapter" method="processRequest" />
 				<to uri="cxf:bean:viewDocumentGDIPGDARServiceEndPoint" />
-				<unmarshal ref="jaxb-viewPdfResponse" />
+				<unmarshal>
+					<custom ref="jaxb-viewPdfResponse" />
+				</unmarshal>
 				<bean ref="viewDocumentAdapter" method="processResponse" />
 			</policy>
 		</route>
 
-		<route id="GetReferenceValuesRoute" streamCache="true" handleFault="true">
+		<route id="GetReferenceValuesRoute" streamCache="true">
 			<from uri="{{apiGetReferenceValuesEndpoint}}" />
 			<policy ref="generalSecurityPolicy">
 				<log message="${threadName} &gt;&gt;&gt; we've got a BEIS request from ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
@@ -1186,7 +1178,9 @@
 				<bean ref="getReferenceValuesAdapter" method="processRequest" />
 				<!-- read the prs exemption ref data from backoffice/cache -->
 				<bean ref="referenceDataCacheAdapter" method="doCaching" /> 
-                <unmarshal ref="jaxb-getReferenceValuesResponse" />
+					<unmarshal>
+						<custom ref="jaxb-getReferenceValuesResponse" />
+					</unmarshal>
 				<bean ref="getReferenceValuesAdapter" method="processResponse" />
 				<bean ref="getReferenceValuesAdapter" method="processFilterResponse" />
 			</policy>
@@ -1221,7 +1215,7 @@
 				<bean ref="ndsExchangeUtilities" method="peekMessageToOut(*, 'statisticsAdapterRequest')" />
 				<bean ref="statisticsAdapter" method="prepareStatsForEmailRequest" />
 				<bean ref="statisticsEmailAdapter" method="processRequest" />
-				<setHeader headerName="Content-Type">
+				<setHeader name="Content-Type">
 				  <constant>text/html</constant>
 				</setHeader>
 				<to uri="smtp://{{smtp.host.server}}" />
@@ -1231,12 +1225,10 @@
 			</when>						
 		</route>
     
-        <!-- Simple SMTP send without retries. Remove this route if adding the userComms-routeContext.xml to the imports -->        
-        <route id="noRetrySmtpSendSubRoute">
-            <from uri="direct:resilientSmtpSendEndpoint" />
-            <to uri="smtp://{{smtp.host.server}}" />
-        </route>
-    
-    </camelContext>
-
+		<!-- Simple SMTP send without retries. Remove this route if adding the userComms-routeContext.xml to the imports -->        
+		<route id="noRetrySmtpSendSubRoute">
+			<from uri="direct:resilientSmtpSendEndpoint" />
+			<to uri="smtp://{{smtp.host.server}}" />
+		</route>
+	</camelContext>
 </beans>

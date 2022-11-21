@@ -70,6 +70,12 @@ public class BeisController extends PlatformApplicationController {
         
         //register Search Penalties url
         attributes.put("registerSearchPenaltiesUrl", ConfigurationFactory.getConfiguration().getString("registerSearchPenalties.moreAboutPenalties.url"));
+
+        // Register Search Exemptions - finish url
+        attributes.put("registerSearchExemptionsFinishUrl", ConfigurationFactory.getConfiguration().getString("registerSearchExemptions.finish.url"));
+        
+        // Register Search Penalties - finish url
+        attributes.put("registerSearchPenaltiesFinishUrl", ConfigurationFactory.getConfiguration().getString("registerSearchPenalties.finish.url"));
         
         //GOV UK site
         attributes.put("govUkUrl", ConfigurationFactory.getConfiguration().getString("govUk.url"));
@@ -87,7 +93,12 @@ public class BeisController extends PlatformApplicationController {
      * Handler for index.htm GET and POST non-ajax requests
      * 
      * @param model - The entire model
-     * @param page - A specific page request via the requested URL, only supported in prototyping mode
+     * page - A specific page request via the requested URL, only supported in prototyping mode
+     * @param bindingResult ...
+     * @param response ...
+     * @return Object
+     * @throws ServletException if an error occurs
+     * @throws IOException if an error occurs
      * @return A model and view, when call can be completed synchronously, or
      *         otherwise, a callable object so that the request doesn't block
      *         the thread wailing for a back end service to complete.
@@ -102,6 +113,13 @@ public class BeisController extends PlatformApplicationController {
     /**
      * Handle the form response from the used-service-before page and redirect to the dashboard
      * This allows us to do a redirect to dashboard which triggers the redirect to CAS
+     *
+     * @param model is the entire model
+     * @param bindingResult ...
+     * @param response ...
+     * @return Object
+     * @throws ServletException if an error occurs
+     * @throws IOException if an error occurs
      */
     @RequestMapping(value = { "/used-service-handler" })
     public Object handleUsedServiceBeforeRequest(final @ModelAttribute("command") BeisAllModel model, final BindingResult bindingResult,
@@ -129,6 +147,13 @@ public class BeisController extends PlatformApplicationController {
     /**
      * Handler for GET and POST non-ajax requests. Named entry point.
      * 
+     * @param model is the entire model
+     * @param bindingResult ...
+     * @param entryPoint ...
+     * @param response ...
+     * @return Object
+     * @throws ServletException if an error occurs
+     * @throws IOException if an error occurs
      * @see processRequest
      */
     @RequestMapping(value = "/{entryPoint}", method = RequestMethod.GET)
@@ -153,7 +178,10 @@ public class BeisController extends PlatformApplicationController {
 
         FileDetails fileDetails = FileReadUtility.readFile(fileID, allModel, controllerState);
 
-        if (fileDetails != null) {
+        if (fileDetails == null) {
+            // Error 404 page not found, for any user who tries to download file that they have no access to
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else {
             response.setContentType(fileDetails.getContentType());
             response.setHeader("Content-Disposition", "inline; filename=\"" + fileDetails.getFileName() + "\"");            
             response.setStatus(HttpServletResponse.SC_OK);
@@ -161,9 +189,8 @@ public class BeisController extends PlatformApplicationController {
             InputStream in1 = new ByteArrayInputStream(buffer);
             final int copied = IOUtils.copy(in1, response.getOutputStream());
             System.out.println(copied);
-            response.flushBuffer();
-
         }
+        response.flushBuffer();
     }
 
     private ResponseEntity<?> downloadFile(FileDetails fileDetails) throws IOException {
@@ -228,7 +255,6 @@ public class BeisController extends PlatformApplicationController {
 			return handleRequest(allModel, bindingResult, "register-search-gdip-gdar", response );
 		}		 
 	}
-    
     
     @RequestMapping(value = "/download-epc-file/{exemptionRefNo}")
     public Object downloadEPC(HttpServletResponse response,

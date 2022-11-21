@@ -28,7 +28,7 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Title_changePassword" />
 					</h1>					
 				</div>
@@ -41,7 +41,7 @@
 							<nds:label />
 							<nds:invalid />
 							<nds:input placeholder="false" class="form-control"
-										autofocus="true" type="password" autocomplete="off"/>							
+										type="password" autocomplete="off"/>							
 						</nds:field>
 					</div>
 					<div class="form-group" >
@@ -52,7 +52,7 @@
 							<nds:hint />	
 							<nds:invalid />									
 							<nds:input placeholder="false"
-									class="form-control" autofocus="false"
+									class="form-control"
 									type="password" autocomplete="off"/>
 						</nds:field>
 					</div>
@@ -62,7 +62,7 @@
 							<nds:label />
 							<nds:invalid />
 							<nds:input placeholder="false" class="form-control"
-									autofocus="false" type="password" autocomplete="off"/>							
+									type="password" autocomplete="off"/>							
 						</nds:field>
 					</div>
 					<div class="form-group" >

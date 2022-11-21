@@ -103,6 +103,7 @@ public class ExemptionStartDateSteps {
 
     @Then("^I must receive \"(.*?)\" as validation message$")
     public void i_must_receive_as_validation_message(String validationMessage) throws Throwable {
+        Thread.sleep(1000);
         assertTrue("Check validation message", pageHelper.getFirstSummaryFaultMessage().contains(validationMessage));
     }
 

@@ -35,10 +35,9 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
 					<section id="forminfowrap">
-						<h2 class="form-title heading-large" role="banner">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_reportForgottenUsername" />
-						</h2>
+						<h1 class="form-title heading-large">
+							<fmt:message bundle="${FieldsBundle}" key="Heading_reportForgottenUsername" />
+						</h1>
 					</section>
 					<p>
 						<fmt:message bundle="${FieldsBundle}"
@@ -53,7 +52,7 @@
 							labeldecoration="required">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control" autofocus="true" />							
+							<nds:input class="form-control" />							
 						</nds:field>
 					</div>
 					

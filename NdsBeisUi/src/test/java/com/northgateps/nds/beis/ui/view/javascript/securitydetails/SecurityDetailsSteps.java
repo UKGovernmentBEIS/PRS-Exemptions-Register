@@ -78,7 +78,7 @@ public class SecurityDetailsSteps {
     @Then("^I will be taken to the account-address page$")
     public void i_will_be_taken_to_the_account_address_page() throws Throwable {
         checkOnPage(pageHelper, "account-address");
-
+        pageObject = pageHelper.getPageObject();
     }
 
     @Then("^details previously entered will be displayed$")
@@ -100,7 +100,7 @@ public class SecurityDetailsSteps {
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
-        pageObject.clickNext();        
+        pageObject.clickNext();
     }
 
     @Then("^I will receive the message \"(.*?)\"$")
@@ -110,8 +110,10 @@ public class SecurityDetailsSteps {
 
     @Then("^I will remain on the security-details page$")
     public void i_will_remain_on_the_security_details_page() throws Throwable {
+        Thread.sleep(1000);
         checkOnPage(pageHelper, "security-details");
-
+        Thread.sleep(1000);
+        pageObject = pageHelper.getPageObject();
     }
 
     @Given("^I have supplied an invalid user name$")
@@ -121,7 +123,6 @@ public class SecurityDetailsSteps {
 
     @Given("^I have supplied a password without enough (.*?)$")
     public void i_have_entered_an_invalid_password(String missingType) throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
         pageHelper.clearForm();
         pageHelper.fillInForm();
         pageHelper.fillInPassword(missingType);
@@ -129,7 +130,6 @@ public class SecurityDetailsSteps {
 
     @Given("^I have supplied a password that includes user details$")
     public void i_have_supplied_a_password_that_includes_user_details() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
         pageHelper.clearForm();
         pageObject.setTextNdsInputUsername("randomusername");
         pageHelper.fillInSamePasswordAsUsername();
@@ -138,23 +138,17 @@ public class SecurityDetailsSteps {
 
     @Then("^I will receive the validation message \"(.*?)\"$")
     public void i_will_receive_the_validation_message(String validationMessage) throws Throwable {
-    	pageObject = pageHelper.getNewPageObject();
-    	if (!pageObject.getWebElementInputIsAgreeRegistrationTermsConditions_AgreeTerms().isSelected()) {
-    		pageObject.clickInputIsAgreeRegistrationTermsConditions_AgreeTerms();
-        }    	
-        BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());        
+        BasePageHelper.waitUntilPageLoading(pageObject.getDriver());        
         assertEquals("checking message",validationMessage, pageHelper.getFirstSummaryFaultMessage());
     }
 
 
     @Given("^I have supplied a password$")
     public void i_have_supplied_a_password() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
         pageHelper.clearForm();
         pageHelper.fillInForm();
         pageObject.setTextNdsInputUsername("testuser");
         pageObject.setTextNdsInputPassword("testuser123");
-
     }
 
     @Given("^I have supplied a different confirm password$")
@@ -169,16 +163,14 @@ public class SecurityDetailsSteps {
 
     }
 
-    @Then("^I will be taken to the account-confirmation page$")
-    public void i_will_be_taken_to_the_account_confirmation_page() throws Throwable {
-        checkOnPage(pageHelper, "account-confirmation");
-    }
-
     @Then("^I will be taken to the account-confirmation page with the correct signposting$")
-    public void i_will_be_taken_to_the_account_confirmation_page_with_the_correct_signposting() {
+    public void i_will_be_taken_to_the_account_confirmation_page_with_the_correct_signposting() throws InterruptedException {
+    	Thread.sleep(3000);
+    	
         accountConfirmationPageHelper = new AccountConfirmationPageHelper(webDriver);
         accountConfirmationPageObject = accountConfirmationPageHelper.getPageObject();
         checkOnPage(accountConfirmationPageHelper, "account-confirmation");
+        pageObject = pageHelper.getPageObject();
         assertTrue("It may take up to 12 hours for the email to arrive. is not present ", pageObject.getTextMainContent().contains(
                 "It may take up to 12 hours for the email to arrive."));
         assertTrue("use the forgotten password link to request another one is not present ", pageObject.getTextMainContent().contains(
@@ -209,12 +201,13 @@ public class SecurityDetailsSteps {
 
         webDriver.close(); // close newly opened window when done with it
         webDriver.switchTo().window(parentHandle);
-
     }
     
     @Given("^I have supplied a username which is outside of length restrictions$")
     public void i_have_supplied_a_username_which_is_outside_of_length_restrictions() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
-        pageObject.setTextNdsInputUsername("a");
+    	pageObject.getTextNdsInputUsername();
+    	pageObject.setTextNdsInputUsername("");
+    	pageObject.setTextNdsInputUsername("a");
+    	pageObject.setTextNdsInputUsername("a");
     }
 }

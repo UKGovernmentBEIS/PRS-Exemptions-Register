@@ -4,7 +4,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Test;
@@ -54,11 +56,9 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
     //test to view the green deal pdf
     @Test
     public void testViewPdfSuccessPath() throws Exception {
-        
         logger.info("ViewDocumentGdipgdarRoute test started");       
-       
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_VIEW_DOCUMENT_RESPONSE_CHECK);
@@ -93,11 +93,9 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
     //test to make a Gdip-Gdar search
     @Test
     public void testSearchGdarGdipSuccessPath() throws Exception {
-        
         logger.info("ViewDocumentGdipgdarRoute test started");       
-       
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_VIEW_DOCUMENT_RESPONSE_CHECK);
@@ -132,11 +130,9 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
     
     @Test
     public void testFailurePath() throws Exception {
-        
         logger.info("ViewDocumentGdipgdarRoute Failure test started");       
-       
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_VIEW_DOCUMENT_RESPONSE_CHECK);
@@ -169,11 +165,9 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
     
     @Test
     public void testNoResultsPath() throws Exception {
-        
         logger.info("ViewDocumentGdipgdarRoute Failure test started");       
-       
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_VIEW_DOCUMENT_RESPONSE_CHECK);
@@ -207,9 +201,8 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
     @Test
     public void testSuperseededCondition() throws Exception {
         logger.info("ViewDocumentGdipgdarRoute Failure test started");       
-        
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
 
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_VIEW_DOCUMENT_RESPONSE_CHECK);
@@ -342,9 +335,9 @@ public class viewDocumentRouteTest extends CamelSpringTestSupport {
 
    /**
     * Following method convert file into bytes which need to pass into back-office response
-    * @param fileName
-    * @return
-    * @throws Exception
+    * @param fileName file to be converted into bytes
+    * @return file in byte format
+    * @throws Exception if an error occurs
     */
     public static byte[] loadFileAsBytesArray(String fileName) throws Exception {        
         java.io.File file = new java.io.File(fileName);

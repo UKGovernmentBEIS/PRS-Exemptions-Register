@@ -288,6 +288,8 @@ public class DashboardSteps {
 
     @Then("^I will be taken to the page for that link$")
     public void i_will_be_taken_to_the_page_for_that_link() throws Throwable {
+        // Wait for new window to load so that it can be found
+        Thread.sleep(1000);
         for (String winHandle : webDriver.getWindowHandles()) {
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)

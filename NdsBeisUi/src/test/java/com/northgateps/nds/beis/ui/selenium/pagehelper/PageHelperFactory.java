@@ -178,12 +178,15 @@ public class PageHelperFactory {
     
     /**
      * Visit a target page based on its PageHelper class.
+     * {@code
      * This is just a wrapper for calling :
      *    PageHelperFactory.factory().new PageVisitor<TargetedPageHelper>(){}.visit(firstPageHelper);
-     * 
+     * }
+     *
      * @param startPageHelper - the current page helper
      * @param targetPageHelperClass - class of the page helper you want to get to
-     * @return <T> targetPageHelper instance
+     * @param <T> targetPageHelper
+     * @return T targetPageHelper instance
      * @throws PageHelperException - CyclicPageVisitException if the page has been visited before, DeadEndPageVisitException if 
      *                                  there is no NEXT button or Steering. 
      */
@@ -194,12 +197,15 @@ public class PageHelperFactory {
     /**
 
      * Visit a target page based on its PageHelper class. Does not use the cache of any previous visit to the page.
+     * {@code
      * This is just a wrapper for calling :
      *    PageHelperFactory.factory().new PageVisitor<TargetedPageHelper>(){}.noCache().visit(firstPageHelper);
-     * 
+     * }
+     *
      * @param startPageHelper - the current page helper
      * @param targetPageHelperClass - class of the page helper you want to get to
-     * @return <T> targetPageHelper instance
+     * @param <T> targetPageHelper
+     * @return T targetPageHelper instance
      * @throws PageHelperException - CyclicPageVisitException if the page has been visited before, DeadEndPageVisitException if 
      *                                  there is no NEXT button or Steering. 
      */
@@ -213,6 +219,9 @@ public class PageHelperFactory {
      * NB when calling PageHelperFactory.visit() this form filler only take effect after the 
      * first page has been skipped.  If you need to set a filler on your starting PageHelper,
      * set it on the PageHelper directly instead.
+     *
+     * @param dcId id of form filler to be stored
+     * @param formFiller to be stored
      */
     public static void registerFormFiller(String dcId, FormFiller formFiller) {
         platformPageHelperFactory.getFormFillerRegistry().put(dcId, formFiller);
@@ -220,6 +229,8 @@ public class PageHelperFactory {
     
     /** 
      * Convenience method to unregister a form filler
+     *
+     * @param dcId id of form filler to be unregistered
      */
     public static void unregisterFormFiller(String dcId) {
         platformPageHelperFactory.getFormFillerRegistry().remove(dcId);
@@ -227,6 +238,9 @@ public class PageHelperFactory {
 
     /** 
      * Convenience method to get the currently registered form filler
+     *
+     * @param dcId id of registered form filler
+     * @return registered form filler with id of dcId
      */
     public static FormFiller getFormFiller(String dcId) {
         return platformPageHelperFactory.getFormFillerRegistry().get(dcId);
@@ -236,6 +250,7 @@ public class PageHelperFactory {
      * Remove the registry entry for the given page. 
      * This is just a wrapper for calling :
      *     PageHelperFactory.factory().getFormFillerRegistry().remove(dcId);
+     * @param dcId id of registry entry to be removed
      */
     public static void remove(String dcId) {
         PageHelperFactory.factory().getFormFillerRegistry().remove(dcId);

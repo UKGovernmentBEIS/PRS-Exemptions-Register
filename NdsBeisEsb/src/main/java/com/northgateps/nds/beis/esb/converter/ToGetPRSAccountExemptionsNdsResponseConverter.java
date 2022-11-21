@@ -15,8 +15,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * converter for GetPRSAccountExemptionsNdsResponse which can convert
- * from GetPRSAccountExemptionsRequestConverter response.
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From GetPRSAccountExemptionsResponse to GetPRSAccountExemptionsNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -25,9 +25,9 @@ public final class ToGetPRSAccountExemptionsNdsResponseConverter {
 	private static final NdsLogger logger = NdsLogger.getLogger(ToGetPRSAccountExemptionsNdsResponseConverter.class);
 
 	/**
-	 * @param response
-	 *            - This is the back office response that needs transforming 
-	 * @return - the dashboard nds response
+	 * Conversion process
+	 * @param response - the back office response to be converted to a standard NDS object
+	 * @return - the dashboard nds response of class GetPRSAccountExemptionsNdsResponse
 	 */
 	@Converter
 	public static GetPRSAccountExemptionsNdsResponse converting(GetPRSAccountExemptionsResponse response) {

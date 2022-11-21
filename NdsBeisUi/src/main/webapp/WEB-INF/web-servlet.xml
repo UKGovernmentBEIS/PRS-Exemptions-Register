@@ -22,9 +22,13 @@
 		<mvc:async-support default-timeout="30000" task-executor="asyncTaskExecutor" />
 	</mvc:annotation-driven>
 
+    <!-- Turns on ehcache spring annotations -->
     <cache:annotation-driven />
-
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache" />
+    
+    <!-- Turn on java config and import a Java config (could use context:component-scan instead but want a surgical strike for caching only) -->
+    <context:annotation-config/>
+    <bean name="cacheConfig" class="com.northgateps.nds.platform.ui.component.NdsCacheConfiguration" />
+    
     
 	<mvc:interceptors>
 		<mvc:interceptor>

@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%-- This page contains hard coded English text. However, it is included into a container page via
      the resource bundle such that it is only included in the English language rendering of that
      container page. The Welsh (say) rendering of the container page would include a different
@@ -11,9 +12,9 @@
     <li>measure how you use the website so that we can make sure it meets your needs</li>
 </ul>
 <p>Cookies are used to make the website work better for you.They aren't used to identify you personally.
-To learn more about cookies and how to manage them, visit <a id="aboutcookies" href="http://www.aboutcookies.org/" target="_blank">AboutCookies.org</a></p>
-<h3 class="heading-medium">How we use cookies</h3>
-<h4 class="heading-small">Keeping you signed in</h4>
+To learn more about cookies and how to manage them, visit <a id="aboutcookies" href="http://www.aboutcookies.org/" target="_blank">AboutCookies.org <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a></p>
+<h2 class="heading-medium">How we use cookies</h2>
+<h3 class="heading-small">Keeping you signed in</h3>
 <table>
     <tr>
         <th>Name</th>
@@ -31,7 +32,7 @@ To learn more about cookies and how to manage them, visit <a id="aboutcookies" h
         <td>When you close your browser</td>
     </tr>
 </table>
-<h4 class="heading-small">Measuring website usage (Google Analytics)</h4>
+<h3 class="heading-small">Measuring website usage (Google Analytics)</h3>
 <p>We use Google Analytics software to collect information about how you use this BEIS website. We do this to make sure the site is meeting the needs of its users and to understand how we could do it better.</p>
 <p>Google Analytics stores information about:</p>
 <ul class="list list-bullet">
@@ -73,8 +74,8 @@ To learn more about cookies and how to manage them, visit <a id="aboutcookies" h
         <td>6 months</td>
     </tr>
 </table>
-<p>You can <a id="gaoptout" href="https://tools.google.com/dlpage/gaoptout" target="_blank">opt out of Google Analytics cookies</a> on the Google website.</p>
-<h4 class="heading-small">Our introductory message</h4>
+<p>You can <a id="gaoptout" href="https://tools.google.com/dlpage/gaoptout" target="_blank">opt out of Google Analytics cookies <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> on the Google website.</p>
+<h3 class="heading-small">Our introductory message</h3>
 <p>When you first visit this BEIS website you may see a pop-up welcome message. We'll store a cookie so that your computer knows you've seen the message and knows not to show it again.</p>
 <table>
     <tr>

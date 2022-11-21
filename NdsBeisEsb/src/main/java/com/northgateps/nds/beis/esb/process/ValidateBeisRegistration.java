@@ -22,10 +22,10 @@ public class ValidateBeisRegistration extends ValidateCamelRouteBean {
     /**
      * Validates a submitted registration.
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsBusinessException 
-     * @throws NdsApplicationException 
+     * @throws NdsBusinessException if there's any violations found
+     * @throws NdsApplicationException if an error is found
      */
     public BeisRegistrationNdsRequest validate(final BeisRegistrationNdsRequest request)
             throws NdsBusinessException, NdsApplicationException {

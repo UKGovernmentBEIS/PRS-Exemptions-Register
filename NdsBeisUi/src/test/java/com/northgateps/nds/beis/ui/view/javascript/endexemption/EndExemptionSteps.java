@@ -70,12 +70,12 @@ public class EndExemptionSteps {
     	
         PageHelperFactory.registerFormFiller("login-form", 
         		loginPageHelper.createFormFiller(loginUsername, loginPassword));
-        
+
         try {
         	checkOnPage(loginPageHelper, "used-service-before");
-        	pageHelper = PageHelperFactory.visit(firstPageHelper, PersonalisedEndExemptionPageHelper.class);   
-            pageObject = pageHelper.getPageObject();
+        	pageHelper = PageHelperFactory.visit(firstPageHelper, PersonalisedEndExemptionPageHelper.class);
             checkOnPage(pageHelper, "personalised-end-exemption");
+            pageObject = pageHelper.getPageObject();
         } finally {
             PageHelperFactory.unregisterFormFiller("login-form");
         }

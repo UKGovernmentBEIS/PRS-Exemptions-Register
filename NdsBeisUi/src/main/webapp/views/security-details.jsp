@@ -28,7 +28,7 @@
 		<div class="grid-row">
 			<div class="column-full">
 				<jsp:include page="form-error.jsp" />
-				<h1 class="form-title heading-large" role="banner">
+				<h1 class="form-title heading-large">
 					<fmt:message bundle="${FieldsBundle}" key="Heading_SecurityDetails" />
 				</h1>
 			</div>
@@ -43,7 +43,7 @@
 							<nds:label />
 							<nds:hint />
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"	autofocus="true" />
+							<nds:input class="form-control" placeholder="false" />
 						</nds:field>
 					</div>
 
@@ -54,16 +54,16 @@
 							<nds:label />
 							<nds:hint />
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"	autofocus="false" type="password" autocomplete="off"/>
+							<nds:input class="form-control" placeholder="false"	type="password" autocomplete="off"/>
 						</nds:field>
 					</div>
 					<div class="form-group">
 						<nds:field
 							path="beisRegistrationDetails.userDetails.confirmPassword"
-							labeldecoration="required">							
+							labeldecoration="required">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control"	placeholder="false" autofocus="false" type="password" autocomplete="off"/>							
+							<nds:input class="form-control"	placeholder="false" type="password" autocomplete="off"/>
 						</nds:field>
 					</div>
 					<div class="form-group">
@@ -83,7 +83,7 @@
 									</label>
 									<input type="hidden" name="_uiData.isAgreeRegistrationTermsConditions" value="on">
 								</div>
-							</fieldset>							
+							</fieldset>
 						</nds:field>
 					</div>
 					<div class="form-group">

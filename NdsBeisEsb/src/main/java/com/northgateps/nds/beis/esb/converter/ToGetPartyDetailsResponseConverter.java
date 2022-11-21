@@ -23,7 +23,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converts between a NDS object and an external back office object
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From GetPartyDetailsResponse to RetrieveRegisteredDetailsNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -34,9 +35,8 @@ public final class ToGetPartyDetailsResponseConverter {
     /**
      * Convert the passed in GetPartyDetailsResponse to the passed out RetrieveRegisteredDetailsNdsResponse
      * 
-     * @param class com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsResponse
-     * @return
-     *         class com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse
+     * @param getPartyDetailsResponse response to be converted to RetrieveRegisteredDetailsNdsResponse
+     * @return class com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse
      */
     @Converter
     @SuppressWarnings("unused")

@@ -9,8 +9,8 @@ import com.northgateps.nds.platform.esb.exception.NdsApplicationException;
  * The purpose of this adapter is to pass a strongly typed request and response class to the 
  * abstract class to save the accountid exchange property into ldap.
  * 
- * @param <TRequest> This must be a request class that implements the BeisPartyRequest interface
- * @param <TResponse> This must implement the NdsResponse interface
+ * The param TRequest must be a request class that implements the BeisPartyRequest interface
+ * The param TResponse must implement the NdsResponse interface
  */
 public class SaveRegisteredAccountDetailsAccountIdLdapComponent extends
         SaveAccountIdLdapComponent<SaveRegisteredAccountDetailsNdsRequest, SaveRegisteredAccountDetailsNdsResponse> {

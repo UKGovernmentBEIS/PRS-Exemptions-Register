@@ -24,7 +24,7 @@
 			<div class="column-full">
 				<jsp:include page="form-error.jsp" />
 
-				<h1 class="form-title heading-large" role="banner">
+				<h1 class="form-title heading-large">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_register_search_penalties" />
 				</h1>
@@ -64,8 +64,7 @@
 						labeldecoration="required">
 						<nds:label />
 						<nds:invalid />
-						<nds:input class="form-control form-control-1-8" placeholder="false"
-							autofocus="true" />
+						<nds:input class="form-control form-control-1-8" placeholder="false" />
 					</nds:field>
 				</div>
                 <nds:field path="uiData.penaltySearch.panelDisplayed">
@@ -213,7 +212,7 @@
 
 				<section class="submit">
 					<div class="form-group">
-						<a href="${contextUi}/${app.IndexPageUrl}" id="finish" class="button next">
+						<a href="${registerSearchExemptionsFinishUrl}" id="finish" class="button next">
 							<fmt:message bundle="${FieldsBundle}" key="Button_FINISH" />
 						</a>
 					</div>

@@ -50,6 +50,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
    
     /**
      * Helper method to skip to personalised-change-account-details page for org
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangeAccountDetailsPageHelper skipToChangeAccountDetailsPage() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();
@@ -61,6 +63,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
     
     /**
      * Helper method to skip to personalised-change-account-details page for person
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangeAccountDetailsPageHelper skipToChangeAccountDetailsPageForPerson() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();
@@ -73,6 +77,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
     
     /**
      * Helper method to skip to personalised-change-account-details page for agent
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangeAccountDetailsPageHelper skipToChangeAccountDetailsPageForAgent() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();
@@ -84,6 +90,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
     
     /**
      * Steer method to skip to personalised-change-account-address page
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangeAccountAddressPageHelper skipToChangeAccountAddress() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();
@@ -95,6 +103,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
     
     /**
      * Steer method to skip to personalised-change-email-address page
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangeEmailAddressPageHelper skipToChangeEmailAddress() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();
@@ -106,6 +116,8 @@ public class PersonalisedAccountSummaryPageHelper extends BasePageHelper<Persona
     
     /**
      * Steer method to skip to personalised-change-password page
+     *
+     * @return page helper after skipping pages
      */
     public PersonalisedChangePasswordPageHelper skipToChangePassword() {
         final PersonalisedAccountSummaryPageObject pageObject = getPageObject();

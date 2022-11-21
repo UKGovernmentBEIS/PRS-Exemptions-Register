@@ -28,9 +28,13 @@
 			<div class="column-full">
 				<jsp:include page="form-error.jsp" />				
 				<section id="forminfowrap">
-				<h1 class="form-title heading-large" role="banner">
-					<fmt:message bundle="${FieldsBundle}"
-						key="Heading_FurtherInformation" />
+				<h1>
+					<label class="form-title heading-large" for="exemptionDetails.exemptionConfirmationText">
+						<fmt:message bundle="${FieldsBundle}" key="Heading_FurtherInformation" />
+						<span class="visuallyhidden">
+							<fmt:message bundle="${FieldsBundle}" key="Label_Optional" />
+						</span>
+					</label>
 				</h1>
 				</section>
 			</div>

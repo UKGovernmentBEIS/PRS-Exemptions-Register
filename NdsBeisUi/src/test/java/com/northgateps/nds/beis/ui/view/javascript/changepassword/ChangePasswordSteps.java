@@ -13,6 +13,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedChangePasswor
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PersonalisedChangePasswordPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.UsedServiceBeforePageHelper;
 import com.northgateps.nds.beis.ui.selenium.pageobject.PersonalisedChangePasswordPageObject;
+import com.northgateps.nds.beis.ui.view.javascript.activatepasswordreset.ActivatePasswordResetSteps;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
 
@@ -26,7 +27,7 @@ import net.thucydides.core.annotations.Managed;
 /**
  * 
  * @author DavidL
- * Note that passwordw!11bechangedbytest is the initial password and red999streets the password after this test.
+ * Note that passwordw!11bechangedbytest is the initial password and something else is the password after this test.
  * That means this test is LIMITED to only run ONCE!
  * To reset it, run the following LDAP ldif script
  * 
@@ -136,8 +137,8 @@ public class ChangePasswordSteps {
 
 	@Then("^I will receive the error message \"(.*?)\"$")
 	public void i_will_receive_the_error_message(String validationMessage) throws Throwable {
-		
-		assertEquals(validationMessage, pageHelper.findFaultMessage(validationMessage));
+		String foundMessage = pageHelper.findFaultMessage(validationMessage);
+		assertEquals(validationMessage, foundMessage);
 	}
 	
 	@Then("^I will receive the message \"(.*?)\"$")
@@ -187,15 +188,10 @@ public class ChangePasswordSteps {
 		
 	}
 	
-	/*
-	 * NB this test may not run on dev if the password rules are such that an upper case character is required.
-	 * Please do not 'fix' this, the lower case password is what the test should check for.  (Should run fine on
-	 * the autotest system).
-	 */
 	@Given("^I have supplied a valid new password$")
 	public void i_have_supplied_a_valid_new_password() throws Throwable {
-		pageObject.setTextNdsInputNewPassword("red999streets");
-		pageObject.setTextNdsInputConfirmPassword("red999streets");
+		pageObject.setTextNdsInputNewPassword("Rred999streets!");
+		pageObject.setTextNdsInputConfirmPassword("Rred999streets!");
 	}
 	
 	@Given("^I have supplied a different confirm password$")
@@ -210,20 +206,20 @@ public class ChangePasswordSteps {
 
 	@Given("^I have supplied a new password without enough characters$")
 	public void i_have_supplied_a_new_password_without_enough_characters() throws Throwable {
-		pageObject.setTextNdsInputNewPassword("red1");
-		pageObject.setTextNdsInputConfirmPassword("red1");
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.TOO_SHORT_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.TOO_SHORT_PASSWORD);
 	}
 
 	@Given("^I have supplied a new password without enough numbers$")
 	public void i_have_supplied_a_new_password_without_enough_numbers() throws Throwable {
-		pageObject.setTextNdsInputNewPassword("redstreets");
-		pageObject.setTextNdsInputConfirmPassword("redstreets");
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.MISSING_NUMBER_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.MISSING_NUMBER_PASSWORD);
 	}
 
 	@Given("^I have supplied a new password without enough letters$")
 	public void i_have_supplied_a_new_password_without_enough_letters() throws Throwable {
-		pageObject.setTextNdsInputNewPassword("1234567890");
-		pageObject.setTextNdsInputConfirmPassword("1234567890");
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.MISSING_CHARACTER_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.MISSING_CHARACTER_PASSWORD);
 	}
 
 	@Given("^I have supplied a new password that includes user details$")
@@ -231,6 +227,24 @@ public class ChangePasswordSteps {
 		pageObject.setTextNdsInputNewPassword("newpasswordtest");
 		pageObject.setTextNdsInputConfirmPassword("newpasswordtest");
 	}	
+	@Given("^I have supplied a new password without lowercase letters$")
+	public void i_have_supplied_a_new_password_without_lowercase_letters() throws Throwable {
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.MISSING_LOWER_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.MISSING_LOWER_PASSWORD);
+	}
+	
+	@Given("^I have supplied a new password without uppercase letters$")
+	public void i_have_supplied_a_new_password_without_uppercase_letters() throws Throwable {
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.MISSING_UPPER_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.MISSING_UPPER_PASSWORD);
+	}
+	
+	@Given("^I have supplied a new password without special letters$")
+	public void i_have_supplied_a_new_password_without_special_letters() throws Throwable {
+		pageObject.setTextNdsInputNewPassword(ActivatePasswordResetSteps.MISSING_SPECIAL_PASSWORD);
+		pageObject.setTextNdsInputConfirmPassword(ActivatePasswordResetSteps.MISSING_SPECIAL_PASSWORD);
+	}
+	
 	@Given("^I am on the 'personalised-change-password-confirmation' page$")
 	public void i_am_on_the_change_personalised_change_password_confirmation_page() throws Throwable {
 		checkOnPage(pageHelper, "personalised-change-password-confirmation");

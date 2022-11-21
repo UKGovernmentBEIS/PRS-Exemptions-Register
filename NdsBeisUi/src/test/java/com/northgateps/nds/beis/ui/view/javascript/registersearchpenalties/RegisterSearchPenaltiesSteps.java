@@ -18,6 +18,7 @@ import com.northgateps.nds.beis.ui.selenium.pagehelper.RegisterSearchPenaltiesPa
 import com.northgateps.nds.beis.ui.selenium.pageobject.FailoverLandingPageObject;
 import com.northgateps.nds.beis.ui.selenium.pageobject.RegisterSearchPenaltiesPageObject;
 import com.northgateps.nds.beis.ui.view.javascript.base.AlternateUrlBaseSteps;
+import com.northgateps.nds.platform.ui.configuration.ConfigurationFactory;
 import com.northgateps.nds.platform.ui.selenium.core.BasePageHelper;
 import com.northgateps.nds.platform.ui.selenium.core.NdsUiWait;
 import com.northgateps.nds.platform.ui.selenium.cukes.SeleniumCucumberTestHelper;
@@ -96,7 +97,10 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
 
     @Then("^I will be taken to the finish page$")
     public void i_will_be_taken_to_the_finish_page() throws Throwable {
-        checkOnPage(pageHelper,"failover-landing");
+        String actualUrl = webDriver.getCurrentUrl();
+        String expectedUrl = ConfigurationFactory.getConfiguration().getString("registerSearchPenalties.finish.url");
+
+        assertEquals("Checking the finish page", expectedUrl, actualUrl);
     }
     
     @When("^I select 'What is a penalty notice'$")
@@ -109,7 +113,8 @@ public class RegisterSearchPenaltiesSteps extends AlternateUrlBaseSteps{
 
     @Then("^I will be taken to the 'What is a penalty notice information page'$")
     public void i_will_be_taken_to_the_What_is_a_penalty_notice_information_page() throws Throwable {
-        
+        // Wait for new window to load so that it can be found
+        Thread.sleep(1000);
         for (String winHandle : webDriver.getWindowHandles()) {
             webDriver.switchTo().window(winHandle); // switch focus of WebDriver to the next found window handle (that's
                                                     // your newly opened window)

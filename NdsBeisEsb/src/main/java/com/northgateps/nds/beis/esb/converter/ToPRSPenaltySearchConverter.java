@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.Converter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.northgateps.nds.beis.api.GetPenaltySearchResponseDetail;
 import com.northgateps.nds.beis.api.PRSPenaltySearchNdsRequest;
@@ -19,8 +19,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converts between a NDS object and an external back office object
- * 
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From PRSPenaltySearchNdsRequest to PRSPenaltySearchRequest.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -31,9 +31,8 @@ public final class ToPRSPenaltySearchConverter {
     /**
      * Convert the passed in PRSPenaltySearchRequest to the passed out Penalty search result
      * 
-     * @param class PRSPenaltySearchNdsRequest
-     * @return
-     *         class PRSPenaltySearchRequest
+     * @param prsPenaltySearchNdsRequest request to be converted to PRSPenaltySearchNdsRequest
+     * @return class PRSPenaltySearchRequest
      */
     @Converter
     public static PRSPenaltySearchRequest converting(PRSPenaltySearchNdsRequest prsPenaltySearchNdsRequest) {

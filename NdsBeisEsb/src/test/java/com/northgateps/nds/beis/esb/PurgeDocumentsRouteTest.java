@@ -2,7 +2,9 @@ package com.northgateps.nds.beis.esb;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,8 +45,7 @@ public class PurgeDocumentsRouteTest extends CamelSpringTestSupport{
 
         logger.info("PurgeDocumentsRouteTest test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
 

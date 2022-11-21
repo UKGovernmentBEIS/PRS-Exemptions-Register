@@ -99,13 +99,11 @@ public class ExemptionTextSteps {
     @When("^I select Back$")
     public void i_select_Back() throws Throwable {
         pageObject.clickBack();
-
     }
 
     @Then("^I will be taken to the personalised-exemption-document-upload page$")
     public void i_will_be_taken_to_the_exemption_document_upload_page() throws Throwable {
         checkOnPage(pageHelper, "personalised-exemption-document-upload");
-
     }
 
     @Then("^the details previously entered will be displayed$")
@@ -115,18 +113,16 @@ public class ExemptionTextSteps {
         assertEquals("file uploaded", "test.docx",
                 PersonalisedExemptionDocumentUploadPageObject.getDriver().findElement(
                         By.className("filename")).getText());
-
     }
 
     @Given("^I have not entered any text$")
     public void i_have_not_entered_any_text() throws Throwable {
-
     }
 
     @When("^I select Next$")
     public void i_select_Next() throws Throwable {
+        Thread.sleep(2000);
     	BasePageHelper.waitUntilPageLoading(pageObject.getDriver());
-        pageObject = pageHelper.getNewPageObject();
         JavascriptExecutor jse = (JavascriptExecutor)pageObject.getDriver();
         jse.executeScript("scroll(0, 250)");       
         pageObject.clickNext();
@@ -136,22 +132,14 @@ public class ExemptionTextSteps {
     public void i_will_receive_as_validation_message(String validationMessage) throws Throwable {
     	// There's a redirect from this page to this page that we need to wait for to get the validation message
     	Thread.sleep(500);
-    	checkOnPage(pageHelper, "personalised-exemption-text");
         assertEquals("check validation message", validationMessage, pageHelper.findFaultMessage(validationMessage));
     }
 
     @Then("^I will remain on the personalised-exemption-text page$")
     public void i_will_remain_on_the_exemption_text_page() throws Throwable {
+        Thread.sleep(1000);
         checkOnPage(pageHelper, "personalised-exemption-text");
-
-    }
-
-    @Then("^I will receive the message \"(.*?)\"$")
-    public void i_will_receive_the_message(String message) throws Throwable {
-    	checkOnPage(pageHelper, "personalised-exemption-text");
-        assertEquals("Check custom validation message", message,
-                pageObject.getDriver().findElement(By.className("validationMessage")).getText());
-
+        pageObject = pageHelper.getPageObject();
     }
 
     @Then("^the file \"(.*?)\" will be uploaded$")
@@ -172,12 +160,6 @@ public class ExemptionTextSteps {
 
     }
 
-    @Given("^I have loaded a file with a correct file type or entered exemption text$")
-    public void i_have_loaded_a_file_with_a_correct_file_type_or_entered_exemption_text() throws Throwable {
-        pageObject = pageHelper.getNewPageObject();
-        pageObject.setTextNdsTextareaExemptionText("Exemption text");
-    }
-
     @Then("^I will be taken to the personalised-further-information page$")
     public void i_will_be_taken_to_the_personalised_further_information_page() throws Throwable {    	
         checkOnPage(pageHelper, "personalised-further-information");
@@ -190,27 +172,17 @@ public class ExemptionTextSteps {
 
     @Given("^I select a file \"(.*?)\" with an incorrect file type$")
     public void i_select_a_file_with_an_incorrect_file_type(String fileName) throws Throwable {
-    	checkOnPage(pageHelper, "personalised-exemption-text");
         selectFile(fileName, "personalised-exemption-text");        
     }
 
     @Given("^I select a file \"(.*?)\" that is larger than the maximum size$")
     public void i_select_a_file_that_is_larger_than_the_maximum_size(String fileName) throws Throwable {
-        pageHelper.ClearForm();
         selectFile(fileName, "personalised-exemption-text");
     }
 
     @Given("^I select a file \"(.*?)\" that is of the correct type and size$")
     public void i_select_a_file_that_is_of_the_correct_type_and_size(String fileName) throws Throwable {
-        pageHelper.ClearForm();
-        pageObject = pageHelper.getNewPageObject();
         selectFile(fileName, "personalised-exemption-text");
-    }
-
-    @When("^I upload \"(.*?)\" as one more document$")
-    public void i_upload_as_one_more_document(String fileName) throws Throwable {
-        selectFile(fileName, "personalised-exemption-text");
-        pageObject.getDriver().findElement(By.id("button.uploadresource")).click();
     }
 
     @Then("^the document \"(.*?)\" is not listed as uploaded$")
@@ -229,6 +201,7 @@ public class ExemptionTextSteps {
     
     private void selectFile(String filename, String page) {
         checkOnPage(pageHelper, page);
+        pageObject = pageHelper.getPageObject();
         beisUtils.selectFile(pageObject.getDriver(), filename);
     }
     

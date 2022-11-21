@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -19,10 +19,10 @@ import com.northgateps.nds.platform.ui.selenium.core.PageHelper;
 @PageObject(pageObjectClass = ExpiredPasswordPageObject.class)
 public class ExpiredPasswordPageHelper extends BasePageHelper<ExpiredPasswordPageObject> implements PageHelper {
 
-    /** A possible password to use.  If using this as the old password then PASSWORD_2 will be the new password. */
+    /** A possible password to use for the user "ExpiredPasswordTest". If using this as the old password then PASSWORD_2 will be the new password. */
     private static final String PASSWORD_1 = "Password123$%^";
     
-    /** A possible password to use.  If using this as the old password then PASSWORD_1 will be the new password. */
+    /** A possible password to use for the user "ExpiredPasswordTest". If using this as the old password then PASSWORD_1 will be the new password. */
     private static final String PASSWORD_2 = "pAssword123|||";
 
     /** Set when we know which password was used on the login page (either PASSWORD_1 or PASSWORD_2). */
@@ -67,12 +67,22 @@ public class ExpiredPasswordPageHelper extends BasePageHelper<ExpiredPasswordPag
         pageObject.setTextConfirmPassword(confirmNewPassword);
     }
 
-    /** Skip the login page using either PASSWORD_1 or PASSWORD_2 for user ExpiredPasswordTest. */ 
+    /**
+     * Skip the login page using either PASSWORD_1 or PASSWORD_2 for user ExpiredPasswordTest.
+     *
+     * @param loginPageHelper page helper for login
+     */ 
     public void login(LoginPageHelper loginPageHelper) {
         
         // try to log in (without any retries)
         login(loginPageHelper, PASSWORD_1);
-        
+        // Logging in doesn't give enough time for the page to finish getting proccessed, which ends up in
+        // storing the wrong "oldPassword" and is mainly the cause of failing on getting the correct password
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String currentPage = getNewPageObject().getDcId();
         
         // check if that worked or not

@@ -7,62 +7,102 @@
      container page. The Welsh (say) rendering of the container page would include a different
      file, with hard coded Welsh text. This avoids the resource bundle having to containing a 
      large number of text fragments to build the page. --%>
-     
-<h3 class="heading-medium">Privacy statement</h3>
-<p>BEIS is committed to ensuring that your privacy is protected. When you provide information by which you can be identified, it will be used in accordance with this privacy statement and applicable regulations, including the Data Protection Act and Freedom of Information Act.</p>
-<p>Any future change to our privacy policy will only affect how we use any information collected after the date of the change. If you provided information before the change you will have done so in light of the previous policy statement. We will honour the assurances we gave at the time.</p>
-<h3 class="heading-medium">Information we collect</h3>
-<p>When setting up an account and/or registering an exemption you will be asked to provide the information required by the minimum standard regulations - <a id="energyefficiencyregulations" href="http://www.legislation.gov.uk/ukdsi/2015/9780111128350/pdfs/ukdsi_9780111128350_en.pdf" target="_blank">Energy Efficiency (Private Rented Property)(England and Wales) Regulations 2015</a>.</p>
-<p>The information needed will include:</p>
+
+<h1 class="heading-medium">Privacy Notice</h1>
+<p class="body-text">This notice sets out how we will use your personal data, and your rights. It is made under Articles 13 and/or 14 of the UK General Data Protection Regulation (UK GDPR).</p>
+
+<h2 class="heading-medium">YOUR DATA</h2>
+
+<h3 class="heading-small">The data</h3>
+<p class="body-text">We will process the following personal data:</p>
+
 <ul class="list list-bullet">
-    <li>the name, address, email address and telephone number of the landlord,</li>
+    <li>the name, address, email address and telephone number of the landlord and landlord agent (where the landlord agent has registered the exemption on the landlords behalf)</li>
+    <li>usernames and passwords</li>
     <li>the address of the property to be exempt,</li>
     <li>other information relevant to the exemption (according to the minimum standard regulations)</li>
 </ul>
-<h3 class="heading-medium">Protection of personal information</h3>
-<p>Some of the information you provide may be personal information.The Data Protection Act determines how your personal information may be used.</p>
-<p>Everyone responsible for using personal information must follow strict rules called 'data protection principles'.They must make sure the information is:</p>
+
+<h3 class="heading-small">Purpose</h3>
+<p class="body-text">We are processing your personal data because we are required to do so by law under the minimum standard regulations - <a href="https://www.legislation.gov.uk/uksi/2015/962/contents/made" id="energyefficiencyregulations" target="_blank">Energy Efficiency (Private Rented Property)(England and Wales) Regulations 2015 (opens in a new window)</a>.</p>
+
+<h3 class="heading-small">Legal basis of processing</h3>
+<p class="body-text">Legal obligation - under the minimum standard regulations - Energy Efficiency (Private Rented Property)(England and Wales) Regulations 2015.</p>
+<p class="body-text">Public task - Processing is necessary for the performance of a task carried out in the public interest or in the exercise of official authority vested in the data controller, such as the exercise of a function of the Crown, a Minister of the Crown, or a government department; the exercise of a function conferred on a person by an enactment; the exercise of a function of either House of Parliament; or the administration of justice.</p>
+<p class="body-text">The specific public task is to allow landlords to submit an exemption from the Energy Efficiency (Private Rented Property) (England and Wales) Regulations 2015 and allow Local Authorities and Local Weights and Measures to review the information submitted for compliance and enforcement purposes.</p>
+
+<h3 class="heading-small">Recipients</h3>
 <ul class="list list-bullet">
-    <li>used fairly and lawfully</li>
-    <li>used for limited, specifically stated purposes</li>
-    <li>used in a way that is adequate,relevant and not excessive</li>
-    <li>accurate</li>
-    <li>kept for no longer than is absolutely necessary</li>
-    <li>handled according to people's data protection rights</li>
-    <li>kept safe and secure</li>
-    <li>not transferred outside the European Economic Area without adequate protection</li>
+    <li>Your personal data will be shared by us with the relevant enforcement authority to enable them to enforce compliance with the minimum standard regulations.
+        <ul class="list list-bullet">
+            <li>For non-domestic rental properties, the relevant authority will be the Local Weights and Measures Authority within whose boundaries the rental property sits.</li>
+            <li>For domestic rental properties, the relevant enforcement authority will be the Local Authority within whose boundaries the rental property sits.</li>
+        </ul>
+    </li>
+
+    <li>Information submitted to the register may be shared with the BEIS Statistical Unit for the purposes of compiling statistical reports relating to the minimum standards regulations. This may include linking the data you provide to Energy Company Obligation (ECO) delivery data or other government held datasets. Information used for these purposes will be anonymised.</li>
+    <li>We may use your email address to send you service-related notices (including any notices required by law, in lieu of communication by postal mail).</li>
+    <li>We may use your information for research and evaluation purposes relating to the minimum standards regulations, the operation of the register, and other regulations that BEIS operate in relation to energy use. This may include research or evaluation conducted by third-party agencies, unless you have specifically asked us not to use your contact details as part of research work undertaken on our behalf by a third-party. If you do not want your personal information used in research work undertaken by a third party on our behalf, please email us at <a href="mailto:PRSregisterfeedback@beis.gov.uk" id="link.mailto.prs" target="_blank">PRSregisterfeedback@beis.gov.uk</a> .</li>
+    <li><span style="font-weight: bold !important">The public register</span> - The minimum standard regulations require the following information to be published on the public page of the register:
+        <ul class="list list-bullet">
+            <li>the address of the exempt property,</li>
+            <li>the name of the landlord (where the landlord is not an individual),</li>
+            <li>the exemption category,</li>
+            <li>the energy performance certificate for the property,</li>
+            <li>the date on which the exemption was registered.</li>
+        </ul>
+    </li>
+    
+    <li><span style="font-weight: bold !important">Publication of penalties</span> - Where a landlord is in breach of the minimum standard regulations and a penalty notice has been issued, the minimum standards regulations give powers to enforcement authorities to publish the following information on the register:
+        <ul class="list list-bullet">
+            <li>the landlords name (where the landlord is not an individual),</li>
+            <li>details of the breach of the regulations,</li>
+            <li>the address of the property, and</li>
+            <li>the amount of any financial penalty imposed.</li>
+        </ul>
+    The minimum standard regulations require that this information be published on the penalties page for a minimum period
+    of 12 months.
+    </li>
+    <li>Your personal data will also be shared with our data processor NEC Software Solutions UK to administer the PRS Exemptions Register, or alternative data processor in the event this changes.</li>
 </ul>
-<p>BEIS will not pass on your personal information to third parties unless we have your permission or are required by law to do so.</p>
-<p>The Data Protection Act gives you the right to find out what information is held about you.If you have any queries or concerns about the information we hold, please e-mail us at ${contactInfoEmailAddress} .</p>
-<p>If you do not want us to use your personal information in the ways set out in this privacy statement, please email us at ${contactInfoEmailAddress} .</p>
-<h3 class="heading-medium">Purposes of the information collected</h3>
-<p>Information that you submit will be shared with the relevant enforcement authority to enable them to enforce compliance with the minimum standard regulations.</p>
-<ul class="list list-bullet">
-    <li>For non-domestic rental properties the relevant authority will be the Local Weights and Measures Authority within whose boundaries the rental property sits.</li>
-    <li>For domestic rental properties the relevant enforcement authority will be the Local Authority within whose boundaries the rental property sits.</li>
-</ul>
-<p>Information submitted to the register may be shared with the BEIS Statistical Unit for the purposes of compiling statistical reports relating to the minimum standards regulations.This may include linking the data you provide to Energy Company Obligation (ECO) delivery data or other government held datasets. Information used for these purposes will be anonymised.</p>
-<p>We may use your email address to send you service-related notices (including any notices required by law, in lieu of communication by postal mail).</p>
-<p>We may use your information for research and evaluation purposes relating to the minimum standards regulations, the operation of the register, and other regulations that BEIS operate in relation to energy use. This may include research or evaluation conducted by third-party agencies on our behalf, unless you have specifically asked us not to use your contact details as part of research work undertaken on our behalf by a third-party.</p>
-<p>If you do not want your personal information used in research work undertaken by a third party on our behalf, please email us at ${contactInfoEmailAddress} .</p>
-<h3 class="heading-medium">The public register</h3>
-<p>The minimum standard regulations require the following information to be published on the public page of the register:</p>
-<ul class="list list-bullet">
-    <li>the address of the exempt property,</li>
-    <li>the name of the landlord (where the landlord is not an individual),</li>
-    <li>the exemption category,</li>
-    <li>the energy performance certificate for the property,</li>
-    <li>the date on which the exemption was registered.</li>
-</ul>
-<h3 class="heading-medium">Publication of penalties</h3>
-<p>Where a landlord is in breach of the minimum standard regulations and a penalty notice has been issued, the minimum standards regulations give powers to enforcement authorities to publish the following information on the register:</p>
-<ul class="list list-bullet">
-    <li>The landlords name (where the landlord is not an individual),</li>
-    <li>details of the breach of the regulations,</li>
-    <li>the address of the property, and</li>
-    <li>the amount of any financial penalty imposed.</li>
-</ul>
-<p>The minimum standard regulations require that this information be published on the penalties page for a minimum period of 12 months.</p>
-<h3 class="heading-medium">Information security and cookies</h3>
-<p>We are committed to ensuring that your information is kept secure. We have put in place physical, electronic and managerial procedures to safeguard and secure the information we collect online.</p>
-<p>Cookies will be managed in accordance with the <a id="cookiespolicy" href="cookies" target="_blank">Cookies Policy</a>.</p>
+
+<h3 class="heading-small">Retention</h3>
+<p class="body-text">NEC Software Solutions UK, or alternative data processor in the event this changes, will retain the personal data for up to a 12 month retention period after their contract expires, following which they will provide BEIS with the personal data in electronic form and erase the personal data from any computers, storage devices and storage media that are to be retained by NEC Software Solutions UK.</p>
+<p class="body-text">BEIS will store your personal data for 7 years after an exemption expires. BEIS may store the personal data beyond that date for statistical purposes.</p>
+
+<h3 class="heading-small">Automated decision making</h3>
+<p class="body-text">Your personal data will not be subject to automated decision making.</p>
+
+<h3 class="heading-small">Your rights</h3>
+<p class="body-text">You have the right to request information about how your personal data are processed, and to request a copy of that personal data.</p>
+<p class="body-text">You have the right to request that any inaccuracies in your personal data are rectified without delay.</p>
+<p class="body-text">You have the right to request that any incomplete personal data are completed, including by means of a supplementary statement.</p>
+<p class="body-text">You have the right to request that your personal data are erased if there is no longer a justification for them to be processed.</p>
+<p class="body-text">You have the right in certain circumstances (for example, where accuracy is contested) to request that the processing of your personal data is restricted.</p>
+<p class="body-text">You have the right to object to the processing of your personal data where it is processed for direct marketing purposes.</p>
+<p class="body-text">You have the right to object to the processing of your personal data.</p>
+
+<h3 class="heading-small">International transfers</h3>
+<p class="body-text">As your personal data is stored on our IT infrastructure and shared with our data processors Microsoft and Amazon Web Services, it may be transferred and stored securely in the UK and European Economic Area. Where your personal data is stored outside the UK and EEA it will be subject to equivalent legal protection through the use of Model Contract Clauses.</p>
+
+<h3 class="heading-small">Complaints</h3>
+<p class="body-text">If you consider that your personal data has been misused or mishandled, you may make a complaint to the Information Commissioner, who is an UK independent regulator. The Information Commissioner can be contacted at:</p>
+<p class="body-text">Information Commissioner's Office<br>
+Wycliffe House<br>
+Water Lane<br>
+Wilmslow<br>
+Cheshire<br>
+SK9 5AF<br>
+0303 123 1113<br>
+<a href="mailto:casework@ico.org.uk" id="link.mailto.casework" target="_blank">casework@ico.org.uk</a></p>
+<p class="body-text">Any complaint to the Information Commissioner is without prejudice to your right to seek redress through the courts.</p>
+
+<h3 class="heading-small">Contact details</h3>
+<p class="body-text">The data controller for your personal data is the Department for Business, Energy & Industrial Strategy (BEIS). You can
+contact the BEIS Data Protection Officer at:</p>
+<p class="body-text">BEIS Data Protection Officer<br>
+Department for Business, Energy and Industrial Strategy<br>
+1 Victoria Street<br>
+London<br>
+SW1H 0ET</p>
+<p class="body-text">Email: <a href="mailto:dataprotection@beis.gov.uk" id="link.mailto.dataprotection" target="_blank">dataprotection@beis.gov.uk</a></p>

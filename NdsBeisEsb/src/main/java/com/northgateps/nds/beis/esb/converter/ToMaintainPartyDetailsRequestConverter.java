@@ -19,7 +19,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * converter for BEIS foundation layer maintain party details which can convert from different request types.
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From BeisRegistrationNdsRequest to MaintainPartyDetailsRequest.
  */
 @Converter
 @DoNotWeaveLoggingSystem

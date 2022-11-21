@@ -21,13 +21,9 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Convert the passed in GetPRSExemptionReferenceDataResponse to the passed out GetPrsExemptionRefDataNdsResponse
- * 
- * @param com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataResponse
- * @return class com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDataNdsResponse
- * 
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From GetPRSExemptionReferenceDataResponse to GetPrsExemptionRefDataNdsResponse.
  */
-
 @Converter
 @DoNotWeaveLoggingSystem
 public class ToGetPrsExemptionRefDataNdsResponseConverter {

@@ -51,6 +51,12 @@ public class PersonalisedDashboardPageHelper extends BasePageHelper<Personalised
     
     //Steer method to skip to end-exemption page
     public PageHelper skipPageToEndExemption() {
+        // As the page is not being loaded as fast as the check steps, a short wait is needed. 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         final PersonalisedDashboardPageObject pageObject = getPageObject();
         checkOnPage(this, "personalised-dashboard");
         pageObject.clickSummaryLink();

@@ -59,7 +59,11 @@ public class RegisterSearchExemptionsPageHelper extends BasePageHelper<RegisterS
         return PageHelperFactory.build(getPageObject().getDcId(), getPageObject().getDriver(), getLocale());
     }
     
-    /** Picks postcode from the form filler, searches for it and picks an address by clicking the landlord's name. */
+    /**
+     * Picks postcode from the form filler, searches for it and picks an address by clicking the landlord's name.
+     *
+     * @return page helper after skipping pages
+     */
     public PageHelper skipPageClickingLandlordName() {
         searchPostcode();
         

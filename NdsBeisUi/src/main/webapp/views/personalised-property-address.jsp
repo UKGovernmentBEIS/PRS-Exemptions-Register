@@ -34,9 +34,9 @@
 						</section>
 					</c:if>
 	
-					<h2 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_PropertyAddress" />
-					</h2>
+					</h1>
 					<p class="form-hint">
 						<fmt:message bundle="${FieldsBundle}"
 							key="Hint_please_enter_address_of_property_exemption" />

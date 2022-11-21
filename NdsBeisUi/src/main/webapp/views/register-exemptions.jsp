@@ -27,7 +27,7 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 							key="Heading_Register_Exemptions" />
 					</h1>
@@ -70,7 +70,7 @@
 							</table>
 						</div>
 						<c:if test="${command.uiData.selectedExemptionData.epcExists == true}">
-						<p><a id="epcfile-download-link" href="${contextUi}/download-epc-file/${command.uiData.selectedExemptionData.exemptionRefNo}.do">Download EPC</a></p>
+						<p><a id="epcfile-download-link" href="${contextUi}/download-epc-file/${command.uiData.selectedExemptionData.exemptionRefNo}">Download EPC</a></p>
 						<p><a id="report.epc.content" href="mailto:${feedbackEmail}">Report this content</a></p>
 						</c:if>
 					</section>

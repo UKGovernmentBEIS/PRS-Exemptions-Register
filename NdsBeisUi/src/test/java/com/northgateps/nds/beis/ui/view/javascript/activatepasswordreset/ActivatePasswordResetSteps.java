@@ -49,12 +49,15 @@ public class ActivatePasswordResetSteps {
     private final String activateExpiredResetPasswordTwoResetToken = "YmVuYw==-07e7b56a-c53d-446b-ba69-d89070532cb1-1479570110300";    
     private final String activateResetPasswordOneUsername = "activateResetPasswordOne"; 
     private final String activateExpiredResetPasswordTwoUsername = "ActivateExpiredResetPasswordTwo";
-    private final String validPassword = "a123456789";
-    private final String differentPassword = "a123456780";
-    private final String tooShortPassword = "a";
-    private final String missingCharacterPassword = "1234567890";
-    private final String missingNumericPassword = "aaaaaaaaaa";
-    private final String userDetailsPassword = activateResetPasswordOneUsername + "a1";
+    private final String validPassword = "Ab123BE456is789_";
+    private final String differentPassword = "a123456780bc_";
+    
+    public static final String TOO_SHORT_PASSWORD = "A4_defghijk";  // successful password will be 12 characters or more so this is 11
+    public static final String MISSING_CHARACTER_PASSWORD = "123456789011%";
+    public static final String MISSING_NUMBER_PASSWORD = "aaaaaaAaaaa%";
+    public static final String MISSING_UPPER_PASSWORD = "aaaaaaa4aaa%";
+    public static final String MISSING_LOWER_PASSWORD = "A4%BCEERAGSADF";
+    public static final String MISSING_SPECIAL_PASSWORD = "1111111111Abc";
     
     @Managed
     private WebDriver webDriver;
@@ -132,6 +135,7 @@ public class ActivatePasswordResetSteps {
         //Invoke reset password
         pageHelper.getPageObject().clickButtonNext_NEXT();
         //Wait for the page to load
+        Thread.sleep(3000);
         BasePageHelper.waitUntilPageLoading(pageHelper.getPageObject().getDriver());    
     }
 
@@ -162,26 +166,32 @@ public class ActivatePasswordResetSteps {
     public void activation_code_has_already_been_used() throws Throwable {
         //Enter a token already used. This depends on the order of tests and I know this comes after
         //the scenario which uses the token.
+    	// NB we cannot guarantee the order unless they're part of the same scenario (have updated the .feature file accordingly)
         pageHelper.getPageObject().setTextNdsInputActivationCode(activateResetPasswordOneResetTokenExpires2066);
     }
 
     @Then("^I must be notified \"(.*?)\"$")
     public void i_must_be_notified(String expectedErrorMessage) throws Throwable {
-        
-        //The notification could be a validation message or system error message so ensure it is displayed.
-        boolean foundMessage = false;
-        
-        pageHelper.getWait().untilTextPresent(expectedErrorMessage);
-        foundMessage = expectedErrorMessage.equals(pageHelper.getFirstSysErr());
-        
-        if (!foundMessage)
-        {
-            foundMessage = expectedErrorMessage.equals(pageHelper.getFirstSummaryFaultMessage());                        
-        }
-        
-        assertTrue("Check validation message", foundMessage);
+        assertEquals(expectedErrorMessage, pageHelper.findFaultMessage(expectedErrorMessage));
     }
-
+    
+    /** Uses the old method for i_must_be_notified which seems to work better/worse in different situations. */
+    @Then("^I must see the error \"(.*?)\"$")
+    public void i_must_see_the_error(String expectedErrorMessage) throws Throwable {	    
+	    boolean foundMessage = false;
+	    
+	    pageHelper.getWait().untilTextPresent(expectedErrorMessage);
+	    
+	    // The notification could be a validation message or system error message so ensure it is displayed.
+	    foundMessage = expectedErrorMessage.equals(pageHelper.getFirstSysErr());
+	    
+	    if (!foundMessage) {
+	        foundMessage = expectedErrorMessage.equals(pageHelper.getFirstSummaryFaultMessage());                        
+	    }
+	    
+	    assertTrue("Check validation message", foundMessage);
+    }
+	    
     @Then("^I must remain on 'activate-password-reset' page$")
     public void i_must_remain_on_activate_password_reset_page() throws Throwable {
         checkOnPage(pageHelper, "activate-password-reset");
@@ -235,27 +245,37 @@ public class ActivatePasswordResetSteps {
     
     @Then("^I have supplied a new password without enough characters$")
     public void i_have_supplied_a_new_password_without_enough_characters() throws Throwable {
-        pageHelper.getPageObject().setTextNdsInputPassword(tooShortPassword);
-        pageHelper.getPageObject().setTextNdsInputConfirmPassword(tooShortPassword);
+        pageHelper.getPageObject().setTextNdsInputPassword(TOO_SHORT_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(TOO_SHORT_PASSWORD);
     }
 
     @Given("^I have supplied a new password without enough numbers$")
     public void i_have_supplied_a_new_password_without_enough_numbers() throws Throwable {
-        pageHelper.getPageObject().setTextNdsInputPassword(missingNumericPassword);
-        pageHelper.getPageObject().setTextNdsInputConfirmPassword(missingNumericPassword);
+        pageHelper.getPageObject().setTextNdsInputPassword(MISSING_NUMBER_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(MISSING_NUMBER_PASSWORD);
     }
 
     @Given("^I have supplied a new password without enough letters$")
     public void i_have_supplied_a_new_password_without_enough_letters() throws Throwable {
-        pageHelper.getPageObject().setTextNdsInputPassword(missingCharacterPassword);
-        pageHelper.getPageObject().setTextNdsInputConfirmPassword(missingCharacterPassword);
-    }
-
-    @Given("^I have supplied a new password that includes user details$")
-    public void i_have_supplied_a_new_password_that_includes_user_details() throws Throwable {
-        pageHelper.getPageObject().setTextNdsInputPassword(userDetailsPassword);
-        pageHelper.getPageObject().setTextNdsInputConfirmPassword(userDetailsPassword);
+        pageHelper.getPageObject().setTextNdsInputPassword(MISSING_CHARACTER_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(MISSING_CHARACTER_PASSWORD);
     }
     
+    @Given("^I have supplied a new password without uppercase letters$")
+    public void i_have_supplied_a_new_password_without_uppercase_letters() throws Throwable {
+        pageHelper.getPageObject().setTextNdsInputPassword(MISSING_UPPER_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(MISSING_UPPER_PASSWORD);
+    }
+    
+    @Given("^I have supplied a new password without lowercase letters$")
+    public void i_have_supplied_a_new_password_without_lowercase_letters() throws Throwable {
+        pageHelper.getPageObject().setTextNdsInputPassword(MISSING_LOWER_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(MISSING_LOWER_PASSWORD);
+    }
+    
+    @Given("^I have supplied a new password without special letters")
+    public void i_have_supplied_a_new_password_without_special_letters() throws Throwable {
+        pageHelper.getPageObject().setTextNdsInputPassword(MISSING_SPECIAL_PASSWORD);
+        pageHelper.getPageObject().setTextNdsInputConfirmPassword(MISSING_SPECIAL_PASSWORD);
+    }
 }
-

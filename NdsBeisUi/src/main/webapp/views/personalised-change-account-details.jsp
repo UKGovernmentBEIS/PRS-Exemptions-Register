@@ -32,15 +32,16 @@
 		<form:input type="hidden" path="navigationalState" />
 		<form:input type="hidden" path="language" />
 
-		<main id="content" role="main"> <jsp:include
-			page="phase-banner.jsp" /> <header>
+		<main id="content" role="main">
+		<jsp:include page="phase-banner.jsp" /> 
+		<header>
 			<nds:back />
 		</header>
 		<div class="grid-row">
 			<div class="column-full">
 				<jsp:include page="form-error.jsp" />
 				<section id="forminfowrap">
-					<h2 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<c:choose>
 							<c:when
 								test="${command.beisRegistrationDetails.userDetails.userType == 'AGENT'}">
@@ -52,7 +53,7 @@
 									key="Heading_ChangeAccountDetails_${command.beisRegistrationDetails.accountDetails.accountType}" />
 							</c:otherwise>
 						</c:choose>
-					</h2>
+					</h1>
 				</section>
 			</div>
 		</div>
@@ -91,8 +92,7 @@
 											labeldecoration="required">
 											<nds:label />
 											<nds:invalid />
-											<nds:input class="form-control" placeholder="false"
-												autofocus="false" />
+											<nds:input class="form-control" placeholder="false" />
 										</nds:field>
 									</div>
 								</c:when>
@@ -103,8 +103,7 @@
 											labeldecoration="none">
 											<nds:label />
 											<nds:invalid />
-											<nds:input class="form-control" placeholder="false"
-												autofocus="true" />
+											<nds:input class="form-control" placeholder="false" />
 										</nds:field>
 									</div>
 								</c:otherwise>
@@ -115,8 +114,7 @@
 						<nds:field path="beisRegistrationDetails.accountDetails.telNumber">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false"
-								autofocus="false" />
+							<nds:input class="form-control" placeholder="false" />
 						</nds:field>
 					</div>
 					<div class="form-group">

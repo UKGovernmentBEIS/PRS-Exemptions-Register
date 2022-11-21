@@ -58,20 +58,8 @@ public class ReportForgottenUsernameSteps {
         loginPageHelper = PageHelperFactory.visitNew(firstPageHelper, LoginPageHelper.class);
         checkOnPage(loginPageHelper, "login-form");
         i_select_forgotten_your_username();
-        pageObject = pageHelper.getPageObject();
         checkOnPage(pageHelper, "report-forgotten-username");
-    }
-
-    @Given("^I am on the 'report-forgotten-username-confirmation' page$")
-    public void i_am_on_the_report_forgotten_username_confirmation_page() throws Throwable {
-        loginPageHelper = PageHelperFactory.visit(firstPageHelper, LoginPageHelper.class);
-        checkOnPage(loginPageHelper, "login-form");
-        i_select_forgotten_your_username();
         pageObject = pageHelper.getPageObject();
-        checkOnPage(pageHelper, "report-forgotten-username");
-        pageObject.setTextNdsInputEmailAddress("example@northgateps.com");
-        pageObject.clickButtonNext_NEXT();
-        checkOnPage(pageHelper, "report-forgotten-username-confirmation");
     }
 
     @Given("^I have supplied the email address \"(.*)\"$")
@@ -97,6 +85,8 @@ public class ReportForgottenUsernameSteps {
     @Then("^I will be taken to the '(.*)' page$")
     public void i_will_be_taken_to_the_page(String page) {
         checkOnPage(pageHelper, page);
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 
     @Then("^I will receive the message \"(.*)\"$")
@@ -109,5 +99,7 @@ public class ReportForgottenUsernameSteps {
     @Then("^I will remain on the '(report-forgotten-username.*)' page$")
     public void i_will_remain_on_the_page(String page) {
         checkOnPage(pageHelper, page);
+        // check on page gets the new page object, therefore page object needs to be updated
+        pageObject = pageHelper.getPageObject();
     }
 }

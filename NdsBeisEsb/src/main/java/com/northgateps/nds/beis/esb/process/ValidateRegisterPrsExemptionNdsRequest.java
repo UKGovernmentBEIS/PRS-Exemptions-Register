@@ -29,10 +29,11 @@ public class ValidateRegisterPrsExemptionNdsRequest extends ValidateCamelRouteBe
 	/**
 	 * Validates a RegisterPrsExemption request
 	 * 
-	 * @param request
+	 * @param request consists of data to be validated
 	 * @return request - after validation
-	 * @throws NdsApplicationException
-	 * @throws NdsBusinessException
+	 * @throws NdsApplicationException if the following expected data are missing: username, tenant and register
+	 * 	 prs exemption details
+	 * @throws NdsBusinessException if there's a violation found
 	 */
 	public RegisterPrsExemptionNdsRequest validate(final RegisterPrsExemptionNdsRequest request)
 			throws NdsApplicationException, NdsBusinessException {

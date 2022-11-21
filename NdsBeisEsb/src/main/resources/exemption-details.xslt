@@ -235,12 +235,7 @@
 															</fo:inline>																
 															<fo:inline>
 																<xsl:value-of select="pmod:fileName" />
-															</fo:inline>															
-															<fo:inline-container>
-																<fo:block>
-																	<xsl:text>&#x200B;</xsl:text>
-																</fo:block>
-															</fo:inline-container>
+															</fo:inline>
 															<fo:block margin-right="100% - 100%"
 																space-before="0" space-after="0" margin="0pt" />
 															<fo:block>
@@ -345,9 +340,6 @@
 				<fo:block text-align="center">
 					<fo:leader rule-thickness="0.01in" leader-pattern="rule"
 						leader-length="100%" />
-				</fo:block>
-				<fo:block>
-					<xsl:text>&#x200B;</xsl:text>
 				</fo:block>
 			</fo:table-cell>
 		</fo:table-row>

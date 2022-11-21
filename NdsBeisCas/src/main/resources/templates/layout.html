@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
    		<!-- There is meta data we can add to the page to stop searches finding the site.  -->
     	<meta name="robots" content="noindex, nofollow">
-		<title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE"></title>
+		<title layout:title-pattern="$CONTENT_TITLE $LAYOUT_TITLE"><th:block th:text="#{prs.suffix.title}"></th:block></title>
 
 		<script
 			th:src="'/NdsBeisUi/assets/javascripts/jquery-init.js?version=' + ${@environment.getProperty('version')}"></script>
@@ -69,21 +69,47 @@
 		<!-- Default non-defined size, also used for Android 2.1+ devices -->
 		<link rel="apple-touch-icon-precomposed"
 			th:href="'/NdsBeisUi/assets/images/apple-touch-icon-60x60.png?version=' + ${@environment.getProperty('version')}" />
+		<style>
+			[role="tooltip"] {
+				display: none;
+				padding: 8px;
+				background: white;
+				color: #0b0c0c;
+				border: solid #0b0c0c 1px;
+				position: absolute;
+				text-indent: 0px;
+				z-index: 9999;
+				width: max-content;
+  			max-width: 250px;
+			}
+		</style>
 	</head>
 
 	<body>
+		<script th:replace="fragments/scripts" />
 		<div th:replace="fragments/logo" />
 		<div id="container" class="container">
 	
-			<main layout:fragment="content" id="content">
-			<h1 />
-			<p />
-			</main>
+		<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust d-flex justify-content-center">
+		    <main role="main" id="main-content" class="container-lg py-4">
+		        <div layout:fragment="content" id="content">
+		            CAS content will go here
+		        </div>
+		    </main>
+		</div>
 	
 		</div>
 		<div th:replace="fragments/footer" />
 	
 		<!-- <div th insert="fragments/bottom" />  -->
-	
+		<script>
+			// Simple tooltip
+			$(".with-tooltip").on("focus mouseover", function () {
+				$(this).children(".tooltip-text").attr("style", "display: block");
+			});
+			$(".with-tooltip").on("blur mouseout", function () {
+				$(this).children(".tooltip-text").attr("style", "display: none");
+			});
+		</script>	
 	</body>
 </html>

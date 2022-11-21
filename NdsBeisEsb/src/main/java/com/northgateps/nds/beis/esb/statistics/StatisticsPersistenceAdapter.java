@@ -143,7 +143,7 @@ public class StatisticsPersistenceAdapter extends BatchJobPersistenceAdapter {
     /**
      * Create the request to get the user stats
      * 
-     * @param exchange
+     * @param exchange consists of data to create user account statistic nds request
      */
     public void createUserAccountStatisticsRequest(Exchange exchange) {
         
@@ -163,7 +163,7 @@ public class StatisticsPersistenceAdapter extends BatchJobPersistenceAdapter {
     /**
      * Extract the user stats from response
      * 
-     * @param exchange
+     * @param exchange consists of data to extract from response
      */
     public void processUserAccountStatisticsResponse(Exchange exchange) {
 
@@ -186,7 +186,7 @@ public class StatisticsPersistenceAdapter extends BatchJobPersistenceAdapter {
     /**
      * Prepare the stats for the email request
      * 
-     * @param exchange
+     * @param exchange consists of data to prepare for email request
      */
     public void prepareStatsForEmailRequest(Exchange exchange) {
 

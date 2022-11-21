@@ -10,6 +10,8 @@ public class TestUtils {
 
     /**
      * This method generates random string
+     *
+     * @return randomly-generated string
      */
     public static String generateRandomString() {
 

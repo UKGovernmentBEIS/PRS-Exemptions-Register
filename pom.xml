@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ 
+ 	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.northgateps.nds</groupId>
+	<artifactId>nds</artifactId>
+	<version>0.0.0</version>
+	<packaging>pom</packaging>
+
+	<name>Northgate Public Services Digital Services</name>
+	<description>
+		Northgate Public Services Digital Services
+	</description>
+	<organization>
+		<name>Northgate Public Services</name>
+		<url>http://www.northgatepublicservices.co.uk/</url>
+	</organization>
+
+	<profiles>
+		<profile>
+			<id>build-all-bbis</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>/NdsBeis</module>
+			</modules>
+		</profile>
+	</profiles>
+		
+</project>

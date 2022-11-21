@@ -4,7 +4,7 @@ import static com.northgateps.nds.platform.ui.selenium.cukes.StepsUtils.*;
 
 import java.util.Map;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.WebDriver;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.LoginPageHelper;
 import com.northgateps.nds.beis.ui.selenium.pagehelper.PageHelperFactory;
@@ -138,7 +138,11 @@ public class ContentSecuritySteps {
     	endPageHelper.skipPage();
     }
 
-    /** NB this will fail saying it's on the 406 page if a mod-security error happens */
+    /** 
+     * NB this will fail saying it's on the 406 page if a mod-security error happens
+     *
+     * @throws Throwable if a throwable occurs
+     */
     @Then("^I will be taken to personalised-exemption-confirmation page$")
     public void i_will_be_taken_to_personalised_exemption_confirmation_page() throws Throwable {
         checkOnPage(endPageHelper, "personalised-exemption-confirmation");

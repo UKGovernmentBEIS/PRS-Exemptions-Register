@@ -32,7 +32,7 @@
 					</tr>
 					<tr>
 						<td class="hideline" ><input type="file"
-							name="${param.uipath}" id="resource" /></td>
+							name="${param.uipath}" id="${param.path}" class="resource" /></td>
 						<td class="hideline js-hidden" ><nds:input
 								path="${param.uidescription}" class="form-control js-hidden" /></td>
 						<td class="hideline js-hidden width-fixed">

@@ -23,7 +23,7 @@
 		<main id="content" role="main"> 
 			<jsp:include page="phase-banner.jsp" />
 
-			<h1 class="form-title heading-large" role="banner">
+			<h1 class="form-title heading-large">
 				<span> <fmt:message bundle="${FieldsBundle}"
 									key="SecondaryHeading_ErrorPrintExemptionSummary" />
 				</span>

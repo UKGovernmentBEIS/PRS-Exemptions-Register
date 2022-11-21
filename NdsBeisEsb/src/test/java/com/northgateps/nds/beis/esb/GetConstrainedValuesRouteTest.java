@@ -4,9 +4,11 @@ import java.util.TreeMap;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 
@@ -38,8 +40,7 @@ public class GetConstrainedValuesRouteTest extends CamelSpringTestSupport {
 	public void testGetConstrainedValuesForCountryListName() throws Exception {
 		logger.info("getConstrainedValuesRoute test started");
 
-		context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+		AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
 			@Override
 			public void configure() throws Exception {
 				replaceFromWith(TEST_START_NAME);

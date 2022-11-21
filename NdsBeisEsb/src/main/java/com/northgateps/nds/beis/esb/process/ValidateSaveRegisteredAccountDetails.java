@@ -26,10 +26,11 @@ public class ValidateSaveRegisteredAccountDetails extends ValidateCamelRouteBean
     /**
      * Validates submitted save registered user details.
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsApplicationException
-     * @throws NdsBusinessException
+     * @throws NdsApplicationException if the following expected data are missing: username, tenant,
+     *   registered account - update user details with username
+     * @throws NdsBusinessException if there's a violation found
      */
     public SaveRegisteredAccountDetailsNdsRequest validate(final SaveRegisteredAccountDetailsNdsRequest request)
             throws NdsApplicationException, NdsBusinessException {

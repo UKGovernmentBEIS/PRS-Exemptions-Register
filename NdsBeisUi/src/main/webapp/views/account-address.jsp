@@ -52,10 +52,9 @@
 	
 					</c:if>
 	
-					<h2 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<c:choose>
-							<c:when
-								test="${command.beisRegistrationDetails.userDetails.userType == 'AGENT'}">
+							<c:when test="${command.beisRegistrationDetails.userDetails.userType == 'AGENT'}">
 								<fmt:message bundle="${FieldsBundle}"
 									key="Heading_AccountAddress_${command.beisRegistrationDetails.userDetails.userType}" />
 							</c:when>
@@ -64,7 +63,7 @@
 									key="Heading_AccountAddress_${command.beisRegistrationDetails.accountDetails.accountType}" />
 							</c:otherwise>
 						</c:choose>						
-					</h2>
+					</h1>
 				</div>
 			</div>
 			<div class="grid-row">

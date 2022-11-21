@@ -94,7 +94,7 @@
 		<meta id="i18n-please-check-the-form" name="i18n-please-check-the-form" content="${i18nPleaseCheckTheForm}" />
 	</c:catch>
 	<meta property="og:image" content="assets/images/opengraph-image.png?version=${version}" />
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
 	<script src="assets/javascripts/jsinit${minify}.js?version=${version}"></script>
 	<script src="assets/javascripts/vendor/stageprompt${minify}.js?version=${version}"></script>
 </head>

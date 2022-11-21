@@ -4,7 +4,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.component.cxf.CxfPayload;
 import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -56,17 +58,17 @@ public class GetReferenceValuesServiceRouteTest extends CamelSpringTestSupport {
     
      /**
      * Runs the Get Reference Values Service camel route expecting a successful outcome
+     *
+     * @throws Exception if an error occurs
      */
     @Test
     public void successPathTest() throws Exception {
         LOGGER.info("Starting success path test");
         LOGGER.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiGetReferenceValuesEndpoint}}") + " to run unit tests");
-
         // mock out bits of the route to test that we are sending the right content to BEIS
         // and that we simulate the response from BEIS, and finally so that we can check
         // that the response back to the caller is correct
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_GSPS_RESPONSE_CHECK);

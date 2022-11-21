@@ -234,6 +234,7 @@ public class ExemptionDocumentUploadSteps {
 
     @Given("^I have loaded \"(.*?)\" with Max Documents$")
     public void i_have_loaded_with_Max_Documents(String fileName) throws Throwable {
+        Thread.sleep(2500);
         pageObject = pageHelper.getNewPageObject();
         selectFile(fileName, "personalised-exemption-document-upload");   
     }
@@ -265,17 +266,19 @@ public class ExemptionDocumentUploadSteps {
     @Then("^the Upload button will be shown$")
     public void the_Upload_button_will_be_shown() throws Throwable {
         pageObject = pageHelper.getNewPageObject();
-        assertTrue("Uploaded file is shown", pageObject.getDriver().findElement(By.id("resource")).isDisplayed());
+        assertTrue("Uploaded file is shown", pageObject.getDriver().findElement(By.className("resource")).isDisplayed());
     }
 
     @Then("^the Upload button will be hidden$")
     public void the_Upload_button_will_be_hidden() throws Throwable {
+        checkOnPage(pageHelper, "personalised-exemption-document-upload");
+        Thread.sleep(1000);
     	BasePageHelper.waitUntilPageLoading(webDriver);
         pageObject = pageHelper.getNewPageObject();
         boolean showFileUpload = true;
         try {
             @SuppressWarnings("unused")
-            WebElement fileUpload = pageObject.getDriver().findElement(By.id("resource"));
+            WebElement fileUpload = pageObject.getDriver().findElement(By.className("resource"));
         } catch (org.openqa.selenium.NoSuchElementException ex) {
             showFileUpload = false;
         }

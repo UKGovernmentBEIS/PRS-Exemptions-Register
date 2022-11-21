@@ -30,10 +30,10 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
 					<section id="forminfowrap">
-						<h2 class="form-title heading-large" role="banner">
+						<h1 class="form-title heading-large">
 							<fmt:message bundle="${FieldsBundle}"
 								key="Heading_ChangeEmailAddress" />
-						</h2>
+						</h1>
 					</section>
 				</div>
 			</div>
@@ -48,7 +48,7 @@
 						<nds:field path="updateEmailDetails.email">
 							<nds:label /> 
 							<nds:invalid />
-							<nds:input placeholder="false" class="form-control" autofocus="false" />						
+							<nds:input placeholder="false" class="form-control" />						
 						</nds:field>
 					</section>
 	
@@ -56,7 +56,7 @@
 						<nds:field path="updateEmailDetails.confirmEmail">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control" placeholder="false" autofocus="false" />
+							<nds:input class="form-control" placeholder="false" />
 						</nds:field>
 					</section>
 					
@@ -67,7 +67,7 @@
 						<nds:field path="updateEmailDetails.password">
 							<nds:label />
 							<nds:invalid /> 
-							<nds:input placeholder="false"	class="form-control" autofocus="false" type="password" autocomplete="off" />						
+							<nds:input placeholder="false"	class="form-control" type="password" autocomplete="off" />						
 						</nds:field>
 					</section>
 	

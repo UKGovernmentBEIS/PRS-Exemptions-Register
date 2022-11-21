@@ -29,11 +29,11 @@
 				<jsp:include page="form-error.jsp" />
 				
 				<section id="forminfowrap">
-					<h2 class="form-title heading-large" role="banner">
-						<c:out
-							value="${command.uiData.selectedExemptionTypeText.textPwsLabel}"
-							escapeXml="false"></c:out>
-					</h2>
+					<h1>
+						<label class="form-title heading-large" for="exemptionDetails.exemptionText">
+							<c:out value="${command.uiData.selectedExemptionTypeText.textPwsLabel}" escapeXml="false"></c:out>
+						</label>
+					</h1>
 				</section>
 			</div>
 		</div>
@@ -53,9 +53,7 @@
 								data-maxlength="4000" />							
 						</nds:field>
 					</div>
-					<p>
-					<fmt:message bundle="${FieldsBundle}"
-								key="Paragraph_you_can_also_upload_document" /></p>
+
 				<c:choose>
 					<c:when
 						test="${not empty command.exemptionDetails.epc.files.resources}">
@@ -71,7 +69,7 @@
 					<jsp:include page="personalised-exemption-upload-component.jsp">
 						<jsp:param name="path"
 							value="exemptionDetails.exemptionTextFile" />
-						<jsp:param name="showLabel" value="false" />
+						<jsp:param name="showLabel" value="true" />
 						<jsp:param name="supportedtypes"
 							value="${uploadProperties.limitationsMap['resource'].getSupportedTypeNames(FieldsBundle,command)}" />
 						<jsp:param name="supportedmaxsize"
@@ -110,7 +108,7 @@
 									varStatus="res">
 									<tr>
 										<td class="filename"><a id="${res.index}"
-											href="${contextUi}/download-document/${command.exemptionDetails.exemptionTextFile.resources[res.index].fileId}.do"
+											href="${contextUi}/download-document/${command.exemptionDetails.exemptionTextFile.resources[res.index].fileId}"
 											target="_blank">
 												${command.exemptionDetails.exemptionTextFile.resources[res.index].fileName}
 										</a></td>

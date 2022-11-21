@@ -30,9 +30,9 @@
 			<div class="column-full">
 				<jsp:include page="form-error.jsp"/>
 				<section id="forminfowrap">
-					<h2 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}" key="Heading_Dashboard" />
-					</h2>
+					</h1>
 				</section>
 				<p class="body-text">
 					<fmt:message bundle="${FieldsBundle}"

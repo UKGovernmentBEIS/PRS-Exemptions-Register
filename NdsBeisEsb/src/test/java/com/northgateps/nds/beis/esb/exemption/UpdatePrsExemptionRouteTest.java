@@ -7,7 +7,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Test;
@@ -58,8 +60,7 @@ public class UpdatePrsExemptionRouteTest extends CamelSpringTestSupport {
         logger.info("Starting success path test");
         logger.info("Using endpoint " + context.resolvePropertyPlaceholders("{{apiPRSExemptionUpdateEndpoint}}")
                 + " to run unit tests");
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_UPDATE_EXEMPTION_RESPONSE_CHECK);

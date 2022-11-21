@@ -10,9 +10,8 @@ import com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferen
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Converts between a NDS object and an external back office object
- *
- * 
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From GetReferenceValuesNdsRequest to GetReferenceValues.
  */
 @Converter
 @DoNotWeaveLoggingSystem
@@ -21,8 +20,9 @@ public class ToGetReferenceValuesRequestConverter {
     /**
      * Convert the passed in GetReferenceValuesNdsRequest to the passed out GetReferenceValues
      * 
-     * @param class GetReferenceValuesNdsRequest
-     * @return GetReferenceValues
+     * @param getReferenceValuesNdsRequest request to be converted to GetReferenceValues
+     * @return class GetReferenceValues
+     * @throws DatatypeConfigurationException if an error occurs during the conversion
      */
     @Converter
     public GetReferenceValues converting(GetReferenceValuesNdsRequest getReferenceValuesNdsRequest)

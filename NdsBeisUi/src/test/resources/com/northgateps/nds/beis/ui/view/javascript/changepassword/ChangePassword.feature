@@ -1,4 +1,4 @@
-Feature: Changing the user's password
+Feature: Changing the user password
 
 # Note that blue1skies is the initial password and red9streets the password after this test.
 # That means this test is LIMITED to only run ONCE!
@@ -9,7 +9,7 @@ Feature: Changing the user's password
 #    replace: userPassword
 #    userPassword: passwordw!11bechangedbytest
 #    
-# Do not change the initial password of blue1skies until we change this hacky way of testing
+# Do not change the initial password
 # because it will break the auto tests which always run on fresh LDAP data. 
 
  
@@ -47,26 +47,43 @@ And I will remain on the personalised-change-password page
 Given I have supplied a valid old password
 And  I have supplied a new password without enough characters
 When I select 'Change password'
-Then I will receive the error message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I will remain on the personalised-change-password page
 
 Given I have supplied a valid old password
 And I have supplied a new password without enough numbers
 When I select 'Change password'
-Then I will receive the error message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I will remain on the personalised-change-password page
 
 Given I have supplied a valid old password
 And I have supplied a new password without enough letters
 When I select 'Change password'
-Then I will receive the error message "Your password must be a minimum of 10 characters long with at least 1 lower case letter and 1 number"
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I will remain on the personalised-change-password page
 
-#THIS IS NO LONGER SUPPORTED IN OPENLDAP TO BE UNCOMMENTED WHEN CUSTOM MOD ADDED##
 Given I have supplied a valid old password
 And I have supplied a new password that includes user details
 When I select 'Change password'
 Then I will receive the message "You must make the password different from the username"
+And I will remain on the personalised-change-password page
+
+Given I have supplied a valid old password
+And I have supplied a new password without lowercase letters
+When I select 'Change password'
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
+And I will remain on the personalised-change-password page
+
+Given I have supplied a valid old password
+And I have supplied a new password without uppercase letters
+When I select 'Change password'
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
+And I will remain on the personalised-change-password page
+
+Given I have supplied a valid old password
+And I have supplied a new password without special letters
+When I select 'Change password'
+Then I will receive the error message "Your password must be a minimum of 12 characters long with at least 1 lower case letter, 1 upper case letter, 1 symbol and 1 number"
 And I will remain on the personalised-change-password page
 
 #Unconfirmed password 

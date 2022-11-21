@@ -30,7 +30,7 @@
 			<div class="column-full">
 				<jsp:include page="form-error.jsp"/>
 				
-				<h1 class="form-title heading-large" role="banner">
+				<h1 class="form-title heading-large">
 					<fmt:message bundle="${FieldsBundle}"
 						key="Heading_Energy_Performance_Certificate" />
 				</h1>
@@ -97,7 +97,7 @@
 									varStatus="res">
 									<tr>
 										<td class="filename"><a id="${res.index}"
-											href="${contextUi}/download-document/${command.exemptionDetails.epc.files.resources[res.index].fileId}.do"
+											href="${contextUi}/download-document/${command.exemptionDetails.epc.files.resources[res.index].fileId}"
 											target="_blank">
 												${command.exemptionDetails.epc.files.resources[res.index].fileName}
 										</a></td>

@@ -23,8 +23,8 @@ public class BeisTestUtilities  {
 
     public void selectFile(WebDriver driver, String filename) {
         NdsUiWait wait = new NdsUiWait(driver);        
-        wait.untilElementEnabled(By.id("resource"));
-        WebElement el = driver.findElement(By.id("resource"));
+        wait.untilElementEnabled(By.className("resource"));
+        WebElement el = driver.findElement(By.className("resource"));
         System.out.println("selectFile driver class = " +((RemoteWebElement) el).getWrappedDriver().getClass().getName());
         if (((RemoteWebElement) el).getWrappedDriver().getClass().getName().contains("Chrome") || ((RemoteWebElement) el).getWrappedDriver().toString().contains("chrome")) {
             // For Chrome, the fileDetector MUST be set. For Firefox, it MUST NOT be set

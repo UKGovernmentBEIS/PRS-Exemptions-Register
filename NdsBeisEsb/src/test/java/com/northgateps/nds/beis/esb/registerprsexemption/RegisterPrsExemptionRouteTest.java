@@ -7,9 +7,11 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelCamelContext;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 import org.junit.Test;
@@ -56,6 +58,8 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
 
     /**
      * Runs the Register Prs exemption Service camel route expecting a successful outcome
+     *
+     * @throws Exception if an error occurs
      */
     @Test
     public void testRegisteringAPrsExemption() throws Exception {
@@ -91,6 +95,8 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
     
     /**
      * Runs the Register Prs exemption Service camel route  as agent expecting a successful outcome
+     *
+     * @throws Exception if an error occurs
      */
     @Test
     public void testExemptionRegistrationAsAgent() throws Exception {
@@ -113,8 +119,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
      * return context configured with route which is common for all tests
      */
     public ModelCamelContext getContextConfiguredWithRoute() throws Exception{
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 weaveAddLast().to(MOCK_RE_RESPONSE_CHECK);

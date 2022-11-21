@@ -26,7 +26,7 @@
 			<div class="column-full">
 				<jsp:include page="form-error.jsp" />
 				<section id="forminfowrap">
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 							key="Heading_Select_Property_Type" />
 					</h1>
@@ -50,19 +50,19 @@
 						<section id="description_about_property">
 							<div class="panel panel-border-narrow"
 								id="select_property_name_div" >
-								<p id="more_about_property_type" aria-hidden="true">
+								<p id="more_about_property_type">
 									<fmt:message bundle="${FieldsBundle}"
 										key="paragraph_more_about_property_type" />
 								</p>
-								<p id="more_about_property_type1" aria-hidden="true">
+								<p id="more_about_property_type1">
 									<fmt:message bundle="${FieldsBundle}"
 										key="paragraph_more_about_property_type1" />
 								</p>
-								<p id="more_about_property_type2" aria-hidden="true">
+								<p id="more_about_property_type2">
 									<fmt:message bundle="${FieldsBundle}"
 										key="paragraph_more_about_property_type2" />
 								</p>
-								<p id="more_about_property_type3" aria-hidden="true">
+								<p id="more_about_property_type3">
 									<fmt:message bundle="${FieldsBundle}"
 										key="paragraph_more_about_property_type3" />
 								</p>

@@ -6,27 +6,41 @@
   <div class="footer-wrapper">
     <div class="footer-meta">
       <div class="footer-meta-inner">
-        
+        <fmt:message bundle="${FieldsBundle}" key="Link_Footer_NewWindowWarning" var="newWindowWarningText" />
         <h2 class="visuallyhidden">Support links</h2>
         <ul>
           <li>
             If you need help to register your exemption, get in touch by email 
-            <a id="link.navigation.phase.support" href="mailto:${supportEmail}">${supportEmail}</a>
+            <a id="link.navigation.phase.support" href="mailto:${supportEmail}" class="with-tooltip">
+              ${supportEmail} <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
              or call the digital helpline on ${supportNumber}
-          </li>          <li>
-            <a href="${contextUi}/cookies" id="link.navigation.cookies" target="_blank">Cookies</a>
           </li>
           <li>
-          	<a id="link.navigation.phase.feedback" href="mailto:${feedbackEmail}">Feedback</a>
+            <a href="${contextUi}/cookies" id="link.navigation.cookies" target="_blank" class="with-tooltip">
+              Cookies <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
           <li>
-          	<a id="link.navigation.phase.termsandconditions" href="${contextUi}/terms-and-conditions" target="_blank">Terms and conditions</a>
+          	<a id="link.navigation.phase.feedback" href="mailto:${feedbackEmail}" class="with-tooltip">
+              Feedback <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
+          </li>
+          <li>
+          	<a id="link.navigation.phase.termsandconditions" href="${contextUi}/terms-and-conditions" target="_blank" class="with-tooltip">
+              Terms and conditions <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+       		  </a>
+          </li>
+          <li>
+            <a href="${contextUi}/accessibility" id="link.navigation.accessibility" target="_blank" class="with-tooltip">
+              Accessibility <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
           <li>
             Built by the 
-            	<a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank">
-            		Department of Business, Energy and Industrial Strategy
-            	</a>
+            <a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank" class="with-tooltip">
+              Department of Business, Energy and Industrial Strategy <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
           </li>
           <!-- Show version number -->
           <c:if test="${not empty version}">
@@ -36,14 +50,16 @@
         
         <div class="open-government-licence">
           <p class="logo">
-            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.logo.open.government.license" target="_blank">
-              	Open Government Licence
+            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.logo.open.government.license" target="_blank" class="with-tooltip">
+              Open Government Licence <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
             </a>
           </p>
           <p>
             All content is available under the 
-            	<a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.open.government.license" target="_blank">
-            		Open Government Licence v3.0</a>, except where otherwise stated
+            <a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" id="link.open.government.license" target="_blank" class="with-tooltip">
+              Open Government Licence v3.0 <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            </a>
+            , except where otherwise stated
           </p>
         </div>
         <div class="version">
@@ -56,8 +72,8 @@
         </div>
       </div>
       <div class="copyright">
-        <a href="https://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm" id="link.crown.copyright" target="_blank">
-          	&copy; Crown copyright
+        <a href="https://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm" id="link.crown.copyright" target="_blank" class="with-tooltip">
+          &copy; Crown copyright <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
         </a>
       </div>
     </div>

@@ -27,19 +27,18 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
 					<section id="forminfowrap">
-						<h2 class="form-title heading-large" role="banner">
+						<h1 class="form-title heading-large">
 							<fmt:message bundle="${FieldsBundle}" key="Heading_Select_Exemption_Type" />
-						</h2>
-                        <p>
-                            <fmt:message bundle="${FieldsBundle}" key="Prompt_Select_Exemption_Type" />
-                        </p>    
+						</h1>
+						<p>
+							<fmt:message bundle="${FieldsBundle}" key="Prompt_Select_Exemption_Type" />
+						</p>    
 					</section>
 				</div>
 			</div>
 
 			<div class="grid-row">
 				<div class="column-full">
-					
 					<div class="form-group">
 						<nds:field path="exemptionDetails.exemptionType">
 							<fieldset class="radio">

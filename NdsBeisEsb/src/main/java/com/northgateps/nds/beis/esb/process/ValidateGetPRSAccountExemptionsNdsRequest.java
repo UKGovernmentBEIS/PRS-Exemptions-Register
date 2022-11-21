@@ -19,9 +19,9 @@ public class ValidateGetPRSAccountExemptionsNdsRequest extends ValidateCamelRout
     /**
      * Validates a dashboard request
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsApplicationException
+     * @throws NdsApplicationException if either the username or the tenant doesn't exist
      */
     public GetPRSAccountExemptionsNdsRequest validate(final GetPRSAccountExemptionsNdsRequest request)
             throws NdsApplicationException {
@@ -42,6 +42,9 @@ public class ValidateGetPRSAccountExemptionsNdsRequest extends ValidateCamelRout
 
     /**
      * Validates if user is present in backoffice or not
+     * @param exchange contains the body to be checked for the validation process
+     * @throws NdsBusinessException if the retrieved nds message from the response exists, and that message
+     *   error number is either "BEI-187" or "BEI-188"
      */
     public void validateUserDataInBackoffice(Exchange exchange) throws NdsBusinessException {
 

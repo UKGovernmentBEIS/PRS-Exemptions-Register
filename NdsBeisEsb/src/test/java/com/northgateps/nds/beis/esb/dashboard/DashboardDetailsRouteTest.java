@@ -11,7 +11,9 @@ import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
+
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
 
@@ -68,48 +70,35 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
     public void SuccessPathTestWithLandlord() throws Exception {
         logger.info("dashboardDetails success test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
 
                 interceptSendToEndpoint("cxf:bean:beisGetPrsAccountExemptionsService").skipSendToOriginalEndpoint()
-                        .to(MOCK_GET_EXEMPTIONS).process(new Processor() {
+                    .to(MOCK_GET_EXEMPTIONS).process(new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            //check that the request got the party ref added
+                            GetPRSAccountExemptionsRequest request = (GetPRSAccountExemptionsRequest) exchange.getIn().getBody();
+                            assertEquals("Checking party ref", BigInteger.valueOf(9000), request.getLandlordPartyRef());
+                            
+                            // Mock out a response
+                            exchange.getIn().setBody(createGetPrsAccountExemptionsResponse());
+                        }
+                    });
 
-                            @Override
-                            public void process(Exchange exchange) throws Exception {
-
-                                //check that the request got the party ref added
-                                GetPRSAccountExemptionsRequest request = (GetPRSAccountExemptionsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(9000) , request.getLandlordPartyRef());
-                                
-                                // Mock out a response
-                                exchange.getIn().setBody(createGetPrsAccountExemptionsResponse());
-                            }
-                        });
-                
-                
-                
-               // This sub route is invoked by get prs exemptions and requires mocking
-                context.getRouteDefinition(routeNameUnderTest).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
-
+                // This sub route is invoked by get prs exemptions and requires mocking
+                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
-
-                        interceptSendToEndpoint(
-                                "cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                        MOCK_GET_PARTYDETAILS).process(new Processor() {
-
+                        interceptSendToEndpoint("cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint()
+                            .to(MOCK_GET_PARTYDETAILS).process(new Processor() {
                             @Override
                             public void process(Exchange exchange) throws Exception {
-                                
                                 //check that the request got the party ref added
-                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(9000) , request.getAccountId());
+                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(9000), request.getAccountId());
                                 
                                 // Mock out a response
                                 exchange.getIn().setBody(createGetPartyDetailsResponse());
@@ -135,8 +124,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
     public void SuccessPathTestWithAgent() throws Exception {
         logger.info("dashboardDetails success test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
@@ -156,13 +144,9 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                                 exchange.getIn().setBody(createGetPrsAccountExemptionsResponse());
                             }
                         });
-                
-                
-                
-                // This sub route is invoked by get prs exemptions and requires mocking
-                context.getRouteDefinition(routeNameUnderTest).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
 
+                // This sub route is invoked by get prs exemptions and requires mocking
+                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
 
@@ -208,9 +192,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
         return request;
     }
     
-    
-    static GetPRSAccountExemptionsResponse createGetPrsAccountExemptionsResponse()
-            throws DatatypeConfigurationException {
+    static GetPRSAccountExemptionsResponse createGetPrsAccountExemptionsResponse() throws DatatypeConfigurationException {
         GetPRSAccountExemptionsResponse response = new GetPRSAccountExemptionsResponse();
 
         Exemptions exemptions = new Exemptions();
@@ -220,14 +202,14 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
         Exemption exemption = new Exemption();
         exemption.setAddress("TEST ADDRESS");
         //Use hard coded dates to avoid any BST conversion issues to do with adding 5 years.
-        exemption.setRegisteredDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2017-03-27"));
-        exemption.setEndDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-03-27"));
+        exemption.setRegisteredDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-03-27"));
+        exemption.setEndDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2027-03-27"));
         exemption.setExemptionReasonCode("CODE");
         exemption.setPWSDescription("REASON");
 
         exemptions.getExemption().add(exemption);
 
-        // ended exempion
+        // ended exemption
         exemption = new Exemption();
         exemption.setAddress("TEST ADDRESS 2");
         exemption.setRegisteredDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2015-03-27"));
@@ -239,10 +221,8 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
 
         return response;
     }
-    
-    
+        
     static RetrieveRegisteredDetailsNdsResponse createGetPartyDetailsResponse() {
-
         RetrieveRegisteredDetailsNdsResponse response = new RetrieveRegisteredDetailsNdsResponse();
         response.setBeisRegistrationDetails(new BeisRegistrationDetails());
         response.getBeisRegistrationDetails().setUserDetails(new BeisUserDetails());
@@ -252,7 +232,6 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
     }
     
     static RetrieveRegisteredDetailsNdsResponse createGetPartyDetailsResponseForAgent() {
-
         RetrieveRegisteredDetailsNdsResponse response = new RetrieveRegisteredDetailsNdsResponse();
         response.setBeisRegistrationDetails(new BeisRegistrationDetails());
         response.getBeisRegistrationDetails().setUserDetails(new BeisUserDetails());
@@ -269,16 +248,16 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
         assertEquals("Checking address", "TEST ADDRESS", details.getCurrentExemptions().get(0).getAddress());
         assertEquals("Checking description", "REASON", details.getCurrentExemptions().get(0).getDescription());
         
-        assertEquals("Checking start date",ZonedDateTime.of(2017, 3, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
+        assertEquals("Checking start date",ZonedDateTime.of(2022, 3, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
                 details.getCurrentExemptions().get(0).getStartDate());
-        assertEquals("Checking end date", ZonedDateTime.of(2022, 3, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
+        assertEquals("Checking end date", ZonedDateTime.of(2027, 3, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
                 details.getCurrentExemptions().get(0).getEndDate());
 
         assertEquals("Checking address", "TEST ADDRESS 2", details.getExpiredExemptions().get(0).getAddress());
         assertEquals("Checking description", "REASON 2", details.getExpiredExemptions().get(0).getDescription());
         assertEquals("Checking start date", ZonedDateTime.of(2015, 3, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
                 details.getExpiredExemptions().get(0).getStartDate());
-        assertEquals("Checking end date",ZonedDateTime.of(2015, 5, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
+        assertEquals("Checking end date", ZonedDateTime.of(2015, 5, 27, 0, 0, 0, 0, ZoneId.systemDefault()),
                 details.getExpiredExemptions().get(0).getEndDate());
     }
     
@@ -287,8 +266,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
     public void ToRetrieveCurrentExemptionTest() throws Exception {
         logger.info("To get current selected exemption success test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
@@ -310,9 +288,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
                 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                context.getRouteDefinition(routeNameUnderTest).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
-
+                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
 
@@ -351,8 +327,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
     public void ToRetrieveCurrentExemptionTestForAgent() throws Exception {
         logger.info("To get current selected exemption success test started");
 
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
@@ -374,9 +349,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
                 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                context.getRouteDefinition(routeNameUnderTest).adviceWith(context,
-                        new AdviceWithRouteBuilder() {
-
+                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
 
@@ -432,8 +405,8 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
         Exemption exemption = new Exemption();
         exemption.setExemptionRefNo(BigInteger.valueOf(exemptionRefNo));
         exemption.setAddress("TEST ADDRESS");
-        exemption.setRegisteredDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2017-03-27"));
-        exemption.setEndDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-03-27"));
+        exemption.setRegisteredDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2022-03-27"));
+        exemption.setEndDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2027-03-27"));
         exemption.setExemptionReasonCode("CODE");
         exemption.setPWSDescription("REASON");
 

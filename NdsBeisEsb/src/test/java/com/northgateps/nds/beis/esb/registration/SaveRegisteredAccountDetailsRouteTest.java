@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+
 import org.junit.Test;
 
 import com.northgateps.nds.beis.api.AccountType;
@@ -30,6 +32,7 @@ import com.northgateps.nds.beis.esb.MockNdsDirectoryKernel;
 import com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationCamelSpringTestSupport;
 import com.northgateps.nds.platform.api.ActivateRegistrationDetails;
 import com.northgateps.nds.platform.api.activateregistration.ActivateRegistrationNdsRequest;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 import com.northgateps.nds.platform.api.updateemail.UpdateEmailNdsResponse;
 import com.northgateps.nds.platform.esb.adapter.NdsDirectoryComponent;
 import com.northgateps.nds.platform.esb.directory.DirectoryAccessConnection;
@@ -163,9 +166,8 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
      * @throws Exception
      */
     private void setupUpdateMockedRoute(MockNdsDirectoryKernel mockDirectoryKernel) throws Exception {
-     // setup the route
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        // setup the route
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
@@ -282,9 +284,9 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         context.start();
         Exception exception = null;
         try {
-            SaveRegisteredAccountDetailsNdsResponse response = (SaveRegisteredAccountDetailsNdsResponse) apiEndpoint.requestBody(
-                    createNewSaveRegisteredAccountDetailsNdsRequest(registeredUser.getUserDetails().getUsername(),
-                            registeredUser.getUserDetails().getEmail(), updateDetails, false, UserType.LANDLORD));
+            NdsErrorResponse response = (NdsErrorResponse) apiEndpoint.requestBody(
+                createNewSaveRegisteredAccountDetailsNdsRequest(registeredUser.getUserDetails().getUsername(),
+                    registeredUser.getUserDetails().getEmail(), updateDetails, false, UserType.LANDLORD));
         } catch (CamelExecutionException e) {
             exception = e.getExchange().getException();
 
@@ -310,16 +312,18 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         context.start();
 
+        NdsErrorResponse ndsErrorResponse = null;
         Exception exception = null;
 
         try {
-            apiEndpoint.requestBody(createNewSaveRegisteredAccountDetailsNdsRequest("DOESNTEXIST",
-                    "Mike.Smith@wibble.com", updateDetails, false, UserType.LANDLORD));
+            ndsErrorResponse = (NdsErrorResponse) apiEndpoint.requestBody(createNewSaveRegisteredAccountDetailsNdsRequest(
+                "DOESNTEXIST", "Mike.Smith@wibble.com", updateDetails, false, UserType.LANDLORD));
         } catch (CamelExecutionException e) {
             exception = e.getExchange().getException();
         }
 
-        assertNotNull("Exception should not be null ", exception);
+        assertNull("Camel exception should be null ", exception);
+        assertNotNull("Exception should not be null ", ndsErrorResponse.getNdsMessages().getExceptionCaught());
     }
 
     @Test
@@ -341,16 +345,18 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
 
         context.start();
 
+        NdsErrorResponse ndsErrorResponse = null;
         Exception exception = null;
 
         try {
-            apiEndpoint.requestBody(createNewSaveRegisteredAccountDetailsNdsRequest("DOESNTEXIST",
+            ndsErrorResponse = (NdsErrorResponse) apiEndpoint.requestBody(createNewSaveRegisteredAccountDetailsNdsRequest("DOESNTEXIST",
                     "Mike.Smith@wibble.com", updateDetails, false, UserType.LANDLORD));
         } catch (CamelExecutionException e) {
             exception = e.getExchange().getException();
         }
 
-        assertNotNull("Exception should not be null ", exception);
+        assertNull("Camel exception should be null ", exception);
+        assertNotNull("Exception should not be null ", ndsErrorResponse.getNdsMessages().getExceptionCaught());
     }
 
     @Test
@@ -398,26 +404,24 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         final BeisRegistrationDetails registeredUser = registerNewUser(null,mockNdsDirectoryKernel);
 
         // set up the activation route
-        context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST).adviceWith(context,
-                new AdviceWithRouteBuilder() {
-
-                    @Override
-                    public void configure() throws Exception {
-                        replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
-                        // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
-                        // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
-                        // a running LDAP server.
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.setKernel(mockNdsDirectoryKernel);
-                        UserManager userManager = new UserManager();
-                        userManager.setDirectoryManager(directoryManager);
-                        ActivateRegistrationLdapComponent activateldapComponent = new ActivateRegistrationLdapComponent();
-                        activateldapComponent.setDirectoryManager(directoryManager);
-                        activateldapComponent.setUserManager(userManager);
-                        weaveById("activateRegistrationLdapComponent.process").replace().bean(activateldapComponent, "process");
-                        weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(activateldapComponent, "processResponse");
-                    }
-                });
+        AdviceWith.adviceWith(context.getRouteDefinition(ACTIVATE_REGISTRATION_ROUTE_NAME_UNDER_TEST), context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                replaceFromWith(TEST_ACTIVATE_REGISTRATION_START_NAME);
+                // replace the directory kernel that the adapter uses to communicate with LDAP with a mocked class,
+                // checking the values supplied by the route via the adapter and avoiding dependence of the test on  
+                // a running LDAP server.
+                DirectoryManager directoryManager = new DirectoryManager();
+                directoryManager.setKernel(mockNdsDirectoryKernel);
+                UserManager userManager = new UserManager();
+                userManager.setDirectoryManager(directoryManager);
+                ActivateRegistrationLdapComponent activateldapComponent = new ActivateRegistrationLdapComponent();
+                activateldapComponent.setDirectoryManager(directoryManager);
+                activateldapComponent.setUserManager(userManager);
+                weaveById("activateRegistrationLdapComponent.process").replace().bean(activateldapComponent, "process");
+                weaveById("activateRegistrationLdapComponent.processResponse").replace().bean(activateldapComponent, "processResponse");
+            }
+        });
 
         final String activationCode = registeredUser.getActivationCode();
 
@@ -595,8 +599,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
          * party ref returned in the mock response. */
 
         // setup the route
-        context.getRouteDefinition(routeNameUnderTest).adviceWith(context, new AdviceWithRouteBuilder() {
-
+        AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);

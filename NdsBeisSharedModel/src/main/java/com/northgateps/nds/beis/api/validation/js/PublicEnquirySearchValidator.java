@@ -3,7 +3,7 @@ package com.northgateps.nds.beis.api.validation.js;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.northgateps.nds.platform.application.api.metadata.StringLengthFieldMetadata;
 import com.northgateps.nds.platform.application.api.validation.BaseValidationProperty;
 import com.northgateps.nds.platform.application.api.validation.Field;

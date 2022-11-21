@@ -7,6 +7,7 @@ set -e
 maven=$1
 release_version=$2
 release_repo=$3
+gradle=$4
 
 # this is probably a hack, but version numbers of plugins aren't updating as for dependencies, so we append the following to any builds that use any
 # NDS plugins. (It should be possible to update versions:update-property, but that just fails with an NPE)
@@ -45,6 +46,11 @@ ${maven} -f platform/NdsPlatform/pom.xml -s beis/NdsBeis/release-settings.xml -D
 ${maven} -f platform/NdsMavenPlugins/pom.xml -s beis/NdsBeis/release-settings.xml ${version_plugin}:set-property -Dproperty=nds.platform.version -DnewVersion=${release_version} -DallowSnapshots=true -DforceNewVersion=true -DgenerateBackupPoms=false
 ${maven} -f platform/NdsMavenPlugins/pom.xml -s beis/NdsBeis/release-settings.xml versions:update-property versions:update-property -DnewVersion="[${release_version}]" -Dproperty=nds.platform.version -DgenerateBackupPoms=false
 ${maven} -f platform/NdsMavenPlugins/pom.xml -s beis/NdsBeis/release-settings.xml -DskipTests -DaltDeploymentRepository=build::default::${release_repo} -DdeployAtEnd=true clean install deploy:deploy -U ${plugin_version} 
+
+# BEIS CAS Build
+pushd beis/NdsBeisCas
+${gradle} build --no-daemon --project-prop build-number=${release_version} --project-prop platform-version=${release_version} --project-prop release-repo=http://10.102.65.246:9090/repository/beis-release/
+popd
 
 # BEIS Build
 grep -l -r --include "pom.xml" "<version>0.0.0-SNAPSHOT</version>" beis/NdsBeis* | xargs -i -n 1 sed 's~<version>0.0.0-SNAPSHOT</version>~<version>'${release_version}'</version>~g' -i {}

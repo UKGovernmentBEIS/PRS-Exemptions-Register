@@ -238,7 +238,7 @@ public class AccountDetailsSteps {
     
     @Then("^heading will be 'Agent address'$")
     public void heading_will_be_Agent_address() throws Throwable {
-        assertEquals("Checking heading",webDriver.findElement(By.xpath("//div[contains(@class, 'column-full')]/h2")).getText(),"Agent address");
+        assertEquals("Checking heading", webDriver.findElement(By.xpath("//div[contains(@class, 'column-full')]/h1")).getText(), "Agent address");
     }
     
     @When("^I submit Next$")

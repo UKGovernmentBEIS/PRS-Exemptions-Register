@@ -16,10 +16,10 @@ public class ValidateRetrieveRegisteredUserDetails extends ValidateCamelRouteBea
     /**
      * Validates submitted retrieve registered user details.
      * 
-     * @param request
+     * @param request consists of data to be validated
      * @return request - after validation
-     * @throws NdsBusinessException
-     * @throws NdsApplicationException 
+     * @throws NdsBusinessException if an error is found
+     * @throws NdsApplicationException if the following expected data are missing: username and tenant
      */
     public RetrieveRegisteredDetailsNdsRequest validate(final RetrieveRegisteredDetailsNdsRequest request)
             throws NdsBusinessException, NdsApplicationException {

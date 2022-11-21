@@ -946,3 +946,16 @@ input[type=file] {
 	display:none;
 	visibility:hidden;
 }
+
+[role="tooltip"] {
+	display: none;
+	padding: 8px;
+	background: white;
+	color: #0b0c0c;
+	border: solid #0b0c0c 1px;
+	position: absolute;
+	text-indent: 0px;
+	z-index: 9999;
+	width: max-content;
+  max-width: 250px;
+}

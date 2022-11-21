@@ -1,10 +1,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <head data-nds-version="${version}">
+    <c:if test="${fault.length() > 0}">
+        <fmt:message bundle="${FieldsBundle}" key="Title_ErrorPrefix" var="error" />
+    </c:if>
+
+    <c:if test="${param.noTitleSuffix == null}">
+        <fmt:message bundle="${FieldsBundle}" key="Title_PRS_ServiceNameSuffix" var="serviceName" />
+        <c:if test="${param.isTitleGdarGdipSuffix}">
+            <fmt:message bundle="${FieldsBundle}" key="Title_GDAR_GDIP_ServiceNameSuffix" var="serviceName" />
+        </c:if>
+    </c:if>
+    
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <!-- There is meta data we can add to the page to stop searches finding the site.  -->
     <meta name="robots" content="noindex, nofollow">
-    <title>${param.title}</title>
+    <title>${error}${param.title} ${serviceName}</title>
     <meta id="springViewName" name="dcterms.identifier" content="${springViewName}" />
     <meta id="entryPointName" name="entryPointName" content="${entryPointName}" />
     <meta id="request-method" name="request-method" content="${pageContext.request.method}" />

@@ -34,7 +34,7 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
 		
-					<h1 class="form-title heading-large" role="banner">
+					<h1 class="form-title heading-large">
 						<fmt:message bundle="${FieldsBundle}"
 								key="Heading_reportForgottenPassword" />						
 					</h1>
@@ -50,7 +50,7 @@
 						<nds:field path="passwordResetDetails.username">
 							<nds:label />
 							<nds:invalid />
-							<nds:input class="form-control" autofocus="true" />							
+							<nds:input class="form-control" />							
 						</nds:field>
 					</div>
 					<section class="submit">

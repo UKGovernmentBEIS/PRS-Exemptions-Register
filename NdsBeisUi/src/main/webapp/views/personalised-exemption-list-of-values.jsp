@@ -28,7 +28,7 @@
 				<div class="column-full">
 					<jsp:include page="form-error.jsp"/>
 					<section id="forminfowrap">
-						<h1 class="form-title heading-large" role="banner">
+						<h1 class="form-title heading-large">
 								${command.uiData.selectedExemptionTypeText.frvPwsLabel}</h1>
 					</section>
 				</div>

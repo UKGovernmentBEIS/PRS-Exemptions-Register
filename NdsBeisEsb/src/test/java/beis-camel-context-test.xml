@@ -8,7 +8,7 @@
  http://www.springframework.org/schema/beans
  http://www.springframework.org/schema/beans/spring-beans.xsd
  http://camel.apache.org/schema/spring
- http://camel.apache.org/schema/spring/nds-camel-spring-2.17.2.xsd
+ http://camel.apache.org/schema/spring/nds-camel-spring-3.14.5.xsd
  http://camel.apache.org/schema/cxf 
  http://camel.apache.org/schema/cxf/camel-cxf.xsd
  http://cxf.apache.org/jaxrs
@@ -19,8 +19,7 @@
  http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd">
 
 <!-- define some properties that define our configuration environment. -->
-    <bean id="properties" 
-        class="com.northgateps.nds.platform.esb.util.configuration.NdsPropertiesComponent" />	
+	<bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
 
 	<!-- bridge spring property placeholder with Camel -->
 	<!-- you must NOT use the <context:property-placeholder at the same time, only this bridge bean -->

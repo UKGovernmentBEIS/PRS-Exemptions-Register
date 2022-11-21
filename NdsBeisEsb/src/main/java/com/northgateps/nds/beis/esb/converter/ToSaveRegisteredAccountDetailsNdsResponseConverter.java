@@ -8,8 +8,8 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Convert the passed in service responses into a {@link SaveRegisteredAccountDetailsNdsResponse}
- * 
+ * Converter class to convert a standard NDS object to an external back office object.
+ * From MaintainPartyDetailsResponse to SaveRegisteredAccountDetailsNdsResponse.
  */
 @Converter
 @DoNotWeaveLoggingSystem

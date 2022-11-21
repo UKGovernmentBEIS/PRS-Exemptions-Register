@@ -26,13 +26,15 @@
 	</distributionManagement>
 
 	<properties>
-		<maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
-		<maven.site.plugin.version>3.4</maven.site.plugin.version>
-		<maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+		<maven.site.plugin.version>3.9.1</maven.site.plugin.version>
+		<maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
+		<maven.project.info.reports.plugin.version>3.1.1</maven.project.info.reports.plugin.version>
+		<maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
 
 		<nds.platform.version>[0.0.0,1.0.0)</nds.platform.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.plugin.versions.version>2.2</maven.plugin.versions.version>
+		<maven.plugin.versions.version>2.8.1</maven.plugin.versions.version>
+		<wagon-provider-api.version>3.4.3</wagon-provider-api.version>
 		<!-- override the following on command line -->
 		<homepage.url></homepage.url>
 		<distro.url></distro.url>
@@ -47,7 +49,7 @@
 			<modules>	
 				<module>../NdsBeisBackOfficeService</module>
 				<module>../NdsBeisSharedModel</module>
-				<module>../NdsBeisCas</module>
+				<!-- <module>../NdsBeisCas</module>  This is now a Gradle project, build separately -->
 				<module>../NdsBeisEsb</module>
 				<module>../NdsBeisUi</module>
 			</modules>
@@ -85,7 +87,7 @@
 						<dependency>
 						  <groupId>org.apache.maven.wagon</groupId>
 						  <artifactId>wagon-provider-api</artifactId>
-						  <version>2.9</version>
+						  <version>${wagon-provider-api.version}</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -126,7 +128,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
+				<version>${maven.project.info.reports.plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -137,6 +139,8 @@
 					<encoding>UTF8</encoding>
 					<includeDependencySources>true</includeDependencySources>
 					<additionalparam>-Xdoclint:none</additionalparam>
+                    <source>8</source>
+                    <detectJavaApiLink>false</detectJavaApiLink>
 				</configuration>
 				<reportSets>
 					<reportSet>

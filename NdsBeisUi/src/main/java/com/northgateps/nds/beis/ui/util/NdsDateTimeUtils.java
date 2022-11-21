@@ -85,6 +85,7 @@ public class NdsDateTimeUtils {
     /**
      * Formats given date in dateTimeFormat and in Locale's default date format if dateTimeFormat is not defined in properties file.
      * 
+     * @param date is the date-time to be formatted
      * @return formattedDate -formatted date
      */
     public static String dateTimeFormatter(String date) {
@@ -109,6 +110,7 @@ public class NdsDateTimeUtils {
     /**
      * Formats given date in dateTimeFormat and in Locale's default date format if dateTimeFormat is not defined in properties file.
      * 
+     * @param date is the date to be formatted
      * @return formattedDate -formatted date
      */
     public static String dateFormatter(String date) {
@@ -136,6 +138,7 @@ public class NdsDateTimeUtils {
     /**
      * Formats given time in "HH:mm" format
      * 
+     * @param time is the data to be formatted
      * @return formattedTime -formatted time
      */
     public static String timeFormatter(String time) {
@@ -173,9 +176,9 @@ public class NdsDateTimeUtils {
     
     /**
      * Convert ZonedDateTime to a DateTimeField
-     * @param dateTimeField
-     * @param dateTime
-     * @return
+     * @param dateTimeField date where the converted data is stored
+     * @param dateTime date to be converted
+     * @return DateTimeField date converted
      */
     public static DateTimeField convertToDateTimeField(DateTimeField dateTimeField, ZonedDateTime dateTime) {
 

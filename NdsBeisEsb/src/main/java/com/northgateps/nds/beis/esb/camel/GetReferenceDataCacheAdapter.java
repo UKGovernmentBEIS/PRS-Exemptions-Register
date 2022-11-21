@@ -29,5 +29,4 @@ public class GetReferenceDataCacheAdapter extends NdsCacheHandler {
     protected boolean isCallToSubRouteRequired() {
         return false;
     }
-
 }

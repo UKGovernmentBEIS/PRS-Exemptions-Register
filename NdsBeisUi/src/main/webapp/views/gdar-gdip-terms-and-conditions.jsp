@@ -13,6 +13,7 @@
 	var="title" />
 <jsp:include page="head.jsp">
 	<jsp:param name="title" value="${title}" />
+	<jsp:param name="isTitleGdarGdipSuffix" value="true" />
 </jsp:include>
 <body>
 	<nds:form id="pageForm" method="post">

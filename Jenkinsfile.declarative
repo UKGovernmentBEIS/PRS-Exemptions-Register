@@ -1,0 +1,369 @@
+#!/usr/bin/env groovy
+ 
+/*
+ * Jenkins pipeline file for BEIS builds
+ *
+ */
+ 
+pipeline {
+    agent any
+    environment {
+        MAJOR_VERSION_NUMBER = '0.0'
+        FULL_BUILD_VERSION = "${MAJOR_VERSION_NUMBER}.${BUILD_NUMBER}"
+        TEST_DELAY = "180"
+    }
+
+    tools {
+        maven 'Maven'
+    }
+
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr:'5'))
+        timestamps()
+    }
+    
+    stages {
+
+        stage('Build') {
+            agent { label 'beis-build' }
+            steps {
+                milestone(1)
+                checkout scm
+                dir ('code') {
+                    sh '''
+                        git checkout -b rc/beis/${FULL_BUILD_VERSION}
+                        mvn -f NdsSharedPoms/build/pom.xml versions:set -DgroupId=* -DartifactId=sharedpom* -DoldVersion=* -DnewVersion=${FULL_BUILD_VERSION} -DgenerateBackupPoms=false
+                        mvn -f NdsSharedPoms/build/pom.xml -DaltDeploymentRepository=build::default::${BEIS_BUILD_REPO_URL} -DdeployAtEnd=true clean install deploy:deploy -U
+                        mvn -f NdsBeis/pom.xml versions:set -DgroupId=* -DartifactId=beis-* -DoldVersion=* -DnewVersion=${FULL_BUILD_VERSION} -DgenerateBackupPoms=false
+                        mvn -f NdsBeis/pom.xml -DaltDeploymentRepository=build::default::${BEIS_BUILD_REPO_URL} -DdeployAtEnd=true clean install deploy:deploy -U
+                    '''
+                }
+            }
+            post {
+                always {
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: false, recipients: "${BEIS_DEVELOPERS}", sendToIndividuals: false])
+                }
+                success {
+                    junit 'code/**/target/surefire-reports/**/*.xml'
+                    dir ('code') {
+                        sh "git commit -a -m 'New release candidate'"
+                        sh "git push origin rc/beis/${FULL_BUILD_VERSION}"
+                    }
+                    stash includes: '**/target/*.war', name: 'Build WARs'
+                }
+                failure {
+                    dir ('code') {
+                        sh "git checkout -f develop"
+                        sh "git branch -D -r origin/rc/beis/${FULL_BUILD_VERSION}"
+                        sh "git push origin :refs/heads/rc/beis/${FULL_BUILD_VERSION}"
+                        sh "git remote prune origin"
+                    }
+                }
+            }
+        }
+
+        stage('Post Build') {
+            steps {
+                parallel ( "Documentation" : {
+                    node ( 'beis-build' ) {
+                        dir ('code') {
+                            sh "mvn -f NdsBeis/pom.xml package site site:deploy -Dmaven.test.skip=true -Dhomepage.url=http://vm-nds-bld01.global.internal:8008/beis/ -Ddistro.url=scp://vm-nds-bld01.global.internal/var/www/html/beis/"
+                        }
+                    }
+                }, "Docker Image Build" : {
+                    node ( 'beis-docker-build' ) {
+                        checkout changelog: false, poll: false, scm: 
+                            [$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: 
+                                [[$class: 'CheckoutOption', timeout: 60], 
+                                 [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true, timeout: 60], 
+                                 [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'NdsEnvironment/environment/apps/*']]], 
+                                 [$class: 'RelativeTargetDirectory', relativeTargetDir: 'environment']], 
+                            submoduleCfg: [], userRemoteConfigs: [[credentialsId: '4e85b7e0-3a21-44db-8c69-8fd0c603e35e', url: 'jenkins-git@10.102.65.246:/opt/git/nds-env']]]
+                        unstash 'Build WARs'
+                        sh '''
+                            pwd
+                            rm -rf environment/NdsEnvironment/environment/apps/beis/app-servers-config/esb/scratch environment/NdsEnvironment/environment/apps/beis/app-servers-config/ui/scratch environment/NdsEnvironment/environment/apps/beis/app-servers-config/cas/scratch
+                            mkdir -p environment/NdsEnvironment/environment/apps/beis/app-servers-config/esb/scratch environment/NdsEnvironment/environment/apps/beis/app-servers-config/ui/scratch environment/NdsEnvironment/environment/apps/beis/app-servers-config/cas/scratch
+                            cp code/NdsBeisEsb/target/beis-esb-*.war environment/NdsEnvironment/environment/apps/beis/app-servers-config/esb/scratch
+                            cp code/NdsBeisUi/target/beis-ui-*.war environment/NdsEnvironment/environment/apps/beis/app-servers-config/ui/scratch
+                            cp code/NdsBeisCas/target/beis-cas-*.war environment/NdsEnvironment/environment/apps/beis/app-servers-config/cas/scratch
+                        '''
+                        dir ('environment') {
+                            sh '''
+                                if [ $(docker images -q | wc -l) != 0 ] ; then docker rmi -f $(docker images -qa) ; fi
+                                cd NdsEnvironment/environment/apps/beis/app-servers-config/esb
+                                ../../../build-app-base-image.sh ${FULL_BUILD_VERSION} beis-esb NdsBeisEsb
+                                cd ../ui
+                                ../../../build-app-base-image.sh ${FULL_BUILD_VERSION} beis-ui NdsBeisUi
+                                cd ../ldap
+                                ../../../build-appserver-base-image.sh ${FULL_BUILD_VERSION} NdsBeisLdap ldap
+                                cd ../cas
+                                ../../../build-app-base-image.sh ${FULL_BUILD_VERSION} beis-cas NdsBeisCas
+                                cd ../mongodb
+                                ../../../build-base-appserver.sh ${FULL_BUILD_VERSION} NdsBeis mongodb
+                                cd ../proxy
+                                ../../../build-base-appserver.sh ${FULL_BUILD_VERSION} NdsBeis proxy
+                                
+                                export ENVIRONMENT=autotest
+                                cd ..
+                                mkdir -p esb/${ENVIRONMENT} ui/${ENVIRONMENT} ldap/${ENVIRONMENT} cas/${ENVIRONMENT}
+                                cd esb/${ENVIRONMENT}
+                                ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisesb ../beisEsb.properties
+                                cd ../../ldap/${ENVIRONMENT}
+                                ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisldap
+                                cd ../../cas/${ENVIRONMENT}
+                                ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeiscas ../conf/WEB-INF/classes/config/cas.properties
+                                cd ../../ui/${ENVIRONMENT}
+                                ../../../../build-ui-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisui beisUi
+                            '''
+                        }
+                    }
+                    node ('beis-docker-auto-run') {
+                            checkout changelog: false, poll: false, scm: 
+                                [$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: 
+                                    [[$class: 'CheckoutOption', timeout: 60], 
+                                     [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true, timeout: 60], 
+                                     [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'NdsEnvironment/environment/apps/*']]], 
+                                     [$class: 'RelativeTargetDirectory', relativeTargetDir: 'environment']], 
+                                submoduleCfg: [], userRemoteConfigs: [[credentialsId: '4e85b7e0-3a21-44db-8c69-8fd0c603e35e', url: 'jenkins-git@10.102.65.246:/opt/git/nds-env']]]
+                        dir('environment') {
+                            sh '''
+                                cd NdsEnvironment/environment/apps/beis/app-servers-config
+                                ../../run-app+shib-env.sh ${FULL_BUILD_VERSION} autotest ndsbeis
+                                sleep ${TEST_DELAY}
+                            '''
+                            script {
+                                // note for some reason, these environment variables will not be expanded in a multi-line shell statement (i.e. like sh ''' <cmds> '''), but
+                                // does work in a single line shell command
+                                def props = readProperties file: "NdsEnvironment/environment/apps/beis/app-servers-config/scratch/${FULL_BUILD_VERSION}/autotest/env.properties"
+                                AUTOTEST_UI_HOST=props["APP_HOST"]
+                                AUTOTEST_UI_PORT=props["PROXY_HTTPS_PORT"]
+                            }
+                        }
+                    }
+                })            
+            }
+            post {
+                failure {
+                    dir('code') {
+                        sh "git push origin --delete rc/beis/${FULL_BUILD_VERSION}" 
+                    }
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: false, recipients: "${BEIS_DEVELOPERS}", sendToIndividuals: false])
+                }
+            }
+        }
+                
+        stage('Auto Testing') {
+            agent { label 'beis-build' }
+            steps {
+                dir ('code') {
+                    // see above, as to why this is a single line statement, and not run with those below
+                    sh "mvn -f NdsBeisUi/pom.xml failsafe:integration-test serenity:aggregate failsafe:verify -Dfile.encoding='UTF-8' -Dnds.integrationTest.protocol=https -Dnds.integrationTest.skip=false -Dnds.integrationTest.serverHost=${AUTOTEST_UI_HOST} -Dnds.integrationTest.serverPort=${AUTOTEST_UI_PORT} -Dnds.integrationTest.browser=GridFirefox -Dnds.integrationTest.gridServer=10.102.71.58:4444 -Dnds.platform.recaptcha.skip=true -Dserenity.release.types='auto,firefox,javascript' -Dserenity.project.name='Nds Beis Integration Test - Firefox'"
+                    sh '''
+                        ssh javadocs@vm-nds-bld01.global.internal 'mkdir -p /var/www/html/beis/serenity/firefox/'
+                        scp -rq NdsBeisUi/target/site/serenity/* javadocs@vm-nds-bld01.global.internal:/var/www/html/beis/serenity/firefox/
+                    '''
+                }
+            }
+            post {
+                always {
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: "${BEIS_DEVELOPERS}", sendToIndividuals: false])
+                    
+                    // __NDS_ENV_EMAIL_MODSEC_FAILURES (will be a shared function at some point)
+                    node('beis-docker-auto-run')
+                    {
+                        sh '''
+                            export APPLICATION=ndsbeis
+                            export ENVIRONMENT=autotest
+                            cd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+                            export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+                            mkdir -p ${wd}
+                            chmod o+w ${wd}
+                            set +e
+                            echo "# modsec issues" > ${wd}/modsec_issues.env
+                            if [ -d 'proxy' ] ; then 
+                              if sudo bash -c '[[ -s "proxy/httpd/modsec_audit.log" ]]' ; then
+                                echo "#### PROXY MOD_SECURE ERRORS ####" >> ${wd}/modsec_issues.txt
+                                sudo grep -oE '\\" at .*\\[id \\".*\\"\\]' proxy/httpd/modsec_audit.log > ${wd}/modsec_issues.txt
+                                if [ $? = "1" ] ; then 
+                                  echo PROXY_ERRORS=0 >> ${wd}/modsec_issues.env
+                                else
+                                  echo PROXY_ERRORS=1 >> ${wd}/modsec_issues.env
+                                fi
+                              else
+                                echo PROXY_ERRORS=0 >> ${wd}/modsec_issues.env
+                              fi
+                            else
+                              echo PROXY_ERRORS=0 >> ${wd}/modsec_issues.env
+                            fi
+                        '''
+                        script {
+                            def props = readProperties file: "/var/tmp/ndsbeis/${FULL_BUILD_VERSION}/autotest/modsec_issues.env"
+                            if (props["PROXY_ERRORS"]==1) {
+                                emailext attachmentsPattern: '/var/tmp/ndsbeis/${FULL_BUILD_VERSION}/autotest/modsec_issues.txt', body: 'mod_security failures in beis', subject: 'mod_security failures in beis', to: 'richard.tearle@northgateps.com'
+                            }
+                        }
+                    }
+                    // __NDS_ENV_EMAIL_LOG_ERRORS (will be a shared function at some point)
+                    node('beis-docker-auto-run')
+                    {
+                        sh '''
+                            export APPLICATION=ndsbeis
+                            export ENVIRONMENT=autotest
+                            cd /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+                            export wd=/var/tmp/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}
+                            mkdir -p ${wd}
+                            chmod o+w ${wd}
+                            echo "# ui issues" > ${wd}/issues.env
+                            echo > ${wd}/issues.txt
+                            chmod o+w ${wd}/issues.txt
+
+                            if [ -d 'ui' ] ; then 
+                              if grep -q " \\[ERROR] " ui/*.log*; then 
+                                echo "#### UI ERRORS ####" >> ${wd}/issues.txt
+                                grep " \\[ERROR] " ui/*.log* >> ${wd}/issues.txt
+                                echo UI_ERRORS=1 >> ${wd}/issues.env
+                              else
+                                echo UI_ERRORS=0 >> ${wd}/issues.env
+                              fi
+                            else
+                              echo UI_ERRORS=0 >> ${wd}/issues.env
+                            fi
+
+                            if [ -d 'esb' ] ; then
+                              if grep -q " \\[ERROR] " esb/*.log*; then 
+                                echo "#### ESB ERRORS ####" >> ${wd}/issues.txt
+                                grep " \\[ERROR] " esb/*.log* >> ${wd}/issues.txt
+                                echo ESB_ERRORS=1 >> ${wd}/issues.env
+                              else
+                                echo ESB_ERRORS=0 >> ${wd}/issues.env
+                              fi
+                            else
+                              echo ESB_ERRORS=0 >> ${wd}/issues.env
+                            fi
+                        '''
+                        script {
+                            def props = readProperties file: "/var/tmp/ndsbeis/${FULL_BUILD_VERSION}/autotest/issues.env"
+                            if (props["UI_ERRORS"]==1 || props["ESB_ERRORS"]==1) {
+                                emailext attachmentsPattern: '/var/tmp/ndsbeis/${FULL_BUILD_VERSION}/autotest/issues.txt', body: '''Application failures in ${APPLICATION} during ${ENVIRONMENT}. A summary is attached.
+
+The full log files can be found on ${NODE}, under:
+
+UI:     /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/ui/
+ESB: /var/log/${APPLICATION}/${FULL_BUILD_VERSION}/${ENVIRONMENT}/esb/''', subject: 'Application failures in BEIS during autotest', to: "${DEVELOPERS}"
+                            }
+                        }
+                    }
+                }
+                success {
+                    // __NDS_ENV_DELETE_ENVIRONMENT
+                    node('beis-docker-auto-run')
+                    {
+                        sh '''
+                            export APPLICATION=ndsbeis
+                            export ENVIRONMENT=autotest
+                            export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./\\\\.}.*${ENVIRONMENT}
+                            [ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker rm -f $(docker ps -qa --filter name=${ENV_NAME})
+                            export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
+                            [ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker rm -f $(docker ps -qa --filter name=${ENV_NAME})                        
+                        '''
+                    }
+                }
+                failure {
+                    dir ('code') {
+                        sh '''
+                            ssh javadocs@vm-nds-bld01.global.internal "mkdir -p /var/www/html/beis/serenity/${FULL_BUILD_VERSION}/"
+                            scp -rq NdsBeisUi/target/site/serenity/* javadocs@vm-nds-bld01.global.internal:/var/www/html/beis/serenity/${FULL_BUILD_VERSION}/
+                        '''
+                        
+                        // __NDS_ENV_DELETE_OLD_ENVIRONMENTS
+                        node('beis-docker-auto-run')
+                        {
+                            sh '''
+                                export APPLICATION=ndsbeis
+                                export ENVIRONMENT=autotest
+                                cd environment/NdsEnvironment/environment/apps/
+                                bash ./stop-all-old-app-env.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ${APPLICATION}
+                               '''
+                        }
+                        // __NDS_ENV_STOP_ENVIRONMENT
+                        node('beis-docker-auto-run')
+                        {
+                            sh '''
+                                export APPLICATION=ndsbeis
+                                export ENVIRONMENT=autotest
+                                export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./\\\\.}.*${ENVIRONMENT}
+                                [ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker stop $(docker ps -qa --filter name=${ENV_NAME})
+                                export ENV_NAME=${APPLICATION}.*${FULL_BUILD_VERSION//\\./-}.*${ENVIRONMENT}
+                                [ ! -z "$(docker ps -qa --filter name=${ENV_NAME})" ] && docker stop $(docker ps -qa --filter name=${ENV_NAME})                        
+                            '''
+                        }
+                    
+                        emailext attachLog: true, body: '''Auto testing of the BEIS has failed. 
+
+                        The Serenity report can be found here: http://vm-nds-bld03:8008/beis/serenity/${FULL_BUILD_VERSION}/index.html
+                        (This report will be available for a week)
+
+                        The full console output can be found here: http://vm-nds-bld03:8080/job/__BEIS_RUN_AUTOTEST/${BUILD_NUMBER}/consoleFull
+                        ''', compressLog: true, subject: 'Auto test of the BEIS has failed', to: "${BEIS_DEVELOPERS}"
+                    }
+                }
+            }
+        }
+        
+        stage('Manual Testing') {
+            steps {
+                node ('beis-docker-build') {
+                    dir ('environment') {
+                        sh '''
+                            export ENVIRONMENT=manualtest
+                            cd ..
+                            mkdir -p esb/${ENVIRONMENT} ui/${ENVIRONMENT} ldap/${ENVIRONMENT} cas/${ENVIRONMENT}
+                            cd esb/${ENVIRONMENT}
+                            ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisesb ../beisEsb.properties
+                            cd ../../ldap/${ENVIRONMENT}
+                            ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisldap
+                            cd ../../cas/${ENVIRONMENT}
+                            ../../../../build-app-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeiscas ../conf/WEB-INF/classes/config/cas.properties
+                            cd ../../ui/${ENVIRONMENT}
+                            ../../../../build-ui-env-image.sh ${FULL_BUILD_VERSION} ${ENVIRONMENT} ndsbeisui beisUi
+                        '''
+                    }    
+                }
+                emailext attachLog: false, body: "BEIS Manual Test environment can be started, click here, blah blah", subject: "BEIS Manual Test environment can be started", to: "${BEIS_TESTERS}"
+                input "Deploy BEIS Manual Test ${FULL_BUILD_VERSION}"
+                milestone(1)
+                node ('beis-docker-run') {
+                    checkout changelog: false, poll: false, scm: 
+                        [$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: 
+                            [[$class: 'CheckoutOption', timeout: 60], 
+                             [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true, timeout: 60], 
+                             [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'NdsEnvironment/environment/apps/*']]], 
+                             [$class: 'RelativeTargetDirectory', relativeTargetDir: 'environment']], 
+                        submoduleCfg: [], userRemoteConfigs: [[credentialsId: '4e85b7e0-3a21-44db-8c69-8fd0c603e35e', url: 'jenkins-git@10.102.65.246:/opt/git/nds-env']]]
+                    dir ('environment') {
+                        sh '''
+                            cd NdsEnvironment/environment/apps/beis/app-servers-config
+                            [ ! -z "$(docker ps -qa --filter 'name=ndsbeis.*manualtest')" ] && docker stop $(docker ps -qa --filter "name=ndsbeis.*manualtest") && docker rm -f $(docker ps -qa --filter "name=ndsbeis.*manualtest")
+                            ../../run-mt-app+shib-env.sh ${FULL_BUILD_VERSION} manualtest ndsbeis
+                            sleep ${TEST_DELAY}                    
+                        '''
+                        script {
+                            def props = readProperties file: "/var/tmp/ndsbeis/${FULL_BUILD_VERSION}/manualtest/issues.env"
+                            APP_HOST=props["APP_HOST"]
+                            PROXY_HTTPS_PORT=props["PROXY_HTTPS_PORT"]
+                        }
+                        emailext attachLog: false, body: '''A manual test environment for the BEIS has been created. This environment will be available until it is manually replaced by a new one.
+
+Links to the environment:
+
+Application: https://${APP_HOST}:${PROXY_HTTPS_PORT}/NdsBeisUi/
+
+Report the success or failure of the manual testing here: 
+
+http://vm-nds-bld01:8080/job/__BEIS_COMPLETE_MANUALTEST/build''', subject: "BEIS Manual Test environment has been started", to: "${BEIS_TESTERS}"                    }
+                }
+            }
+        }
+    }
+}

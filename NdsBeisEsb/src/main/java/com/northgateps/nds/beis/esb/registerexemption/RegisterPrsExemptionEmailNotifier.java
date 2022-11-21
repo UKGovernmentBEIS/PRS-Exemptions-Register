@@ -26,8 +26,6 @@ public class RegisterPrsExemptionEmailNotifier
 
     /**
      * Sends email to registered email address
-     * 
-     * @throws NdsApplicationException
      */
     @Override
     public HashMap<String, Object> doEmailRequestProcess(RegisterPrsExemptionNdsRequest request,
@@ -56,6 +54,7 @@ public class RegisterPrsExemptionEmailNotifier
     /**
      * Returns success response to the route.
      * 
+     * @throws NdsApplicationException if an error occurs
      */
     @Override
     protected RegisterPrsExemptionNdsResponse doResponseProcess(NdsSoapRequestAdapterExchangeProxy ndsExchange)

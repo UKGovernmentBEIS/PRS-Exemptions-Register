@@ -23,13 +23,9 @@ import com.northgateps.nds.platform.logger.NdsLogger;
 import com.northgateps.nds.platform.loggingsystem.aspect.DoNotWeaveLoggingSystem;
 
 /**
- * Convert the passed in RegisterPrsExemptionNdsRequest to the passed out RegisterPRSExemptionRequest
- * 
- * @param com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionNdsRequest
- * @return class com.northgateps.nds.beis.backoffice.service.registerprsexemption.RegisterPRSExemptionRequest
- * 
+ * Converter class to convert an external back office object to a standard NDS object.
+ * From RegisterPrsExemptionNdsRequest to RegisterPRSExemptionRequest.
  */
-
 @Converter
 @DoNotWeaveLoggingSystem
 public class ToRegisterPRSExemptionRequestConverter {
@@ -39,8 +35,9 @@ public class ToRegisterPRSExemptionRequestConverter {
     /**
      * Convert the passed in RegisterPrsExemptionNdsRequest to the passed out RegisterPRSExemptionRequest
      * 
-     * @param class RegisterPrsExemptionNdsRequest
-     * @return RegisterPRSExemptionRequest
+     * @param registerPrsExemptionNdsRequest request to be converted to RegisterPRSExemptionRequest
+     * @return class RegisterPRSExemptionRequest
+     * @throws DatatypeConfigurationException if error is found
      */
     @Converter
     public RegisterPRSExemptionRequest converting(RegisterPrsExemptionNdsRequest registerPrsExemptionNdsRequest)

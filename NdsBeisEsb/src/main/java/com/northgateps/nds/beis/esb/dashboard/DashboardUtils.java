@@ -15,8 +15,9 @@ public class DashboardUtils {
     /**
      * Takes xml as string and convert that string to a Document
      * 
+     * @param xmlStr xml data stored as string, to be converted
      * @return Document xml document
-     * @throws NdsApplicationException 
+     * @throws NdsApplicationException if error is found
      */
     public static Document convertStringToDocument(String xmlStr) throws NdsApplicationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
