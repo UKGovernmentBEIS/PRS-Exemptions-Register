@@ -35,7 +35,7 @@
 	<properties>
 		<nds.beis.version>[0.0.0,1.0.0)</nds.beis.version>
 		<nds.platform.version>0.0.0-SNAPSHOT</nds.platform.version>
-		<jsoup.version>1.14.3</jsoup.version>
+		<jsoup.version>1.15.3</jsoup.version>
 	</properties>
 
 	<dependencies>
