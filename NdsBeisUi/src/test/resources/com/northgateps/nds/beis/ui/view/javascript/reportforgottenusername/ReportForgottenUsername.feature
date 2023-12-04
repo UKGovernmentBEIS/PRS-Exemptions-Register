@@ -26,7 +26,7 @@ Feature: Report forgotten username
 
 #  Scenario: Process forgotten username with a valid email address
 #    Given I am on the 'report-forgotten-username' page
-    And   I have supplied the email address "example@northgateps.com"
+    And   I have supplied the email address "example@necsws.com"
     When  I select 'Next'
     Then  I will be taken to the 'report-forgotten-username-confirmation' page
 

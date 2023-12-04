@@ -1,0 +1,11 @@
+{
+	"serviceId" : "https://lt-ac38446/NdsBeisUi/",
+	"loginUrl" : "https://lt-ac38446/NdsBeisCas/login",
+	"logoutUrl" : "https://lt-ac38446/NdsBeisCas/logout",
+	"logBackInLocation" : "personalised-dashboard",
+	"name" : "BEIS https",
+	"description" : "BEIS CAS SSL Authentication",
+	"casToUiEncryption.key" : "oigue892ulrejlkntnvmiuxrituerildugdfioguhuhew",
+	"casToUiEncryption.iterations" : 5000,
+	"casToUiEncryption.keyLength" : 128
+}

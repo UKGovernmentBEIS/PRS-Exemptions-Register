@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to printing the exemption details.
@@ -13,7 +13,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PrintExemptionDetailsNdsResponse", propOrder = { "fileName", "fileSize", "source", "contentType" })
 @XmlRootElement(name = "PrintExemptionDetailsNdsResponse")
-public class PrintExemptionDetailsNdsResponse extends AbstractNdsResponse {
+public class PrintExemptionDetailsNdsResponse extends NdsErrorResponse {
     private String fileName;
 
     private long fileSize;

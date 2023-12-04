@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.northgateps.nds.beis.api.DocumentDetails;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to view document.
@@ -14,7 +14,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ViewPdfNdsResponse", propOrder = {"document", "superseded"})
 @XmlRootElement(name = "ViewPdfNdsResponse")
-public class ViewPdfNdsResponse extends AbstractNdsResponse {    
+public class ViewPdfNdsResponse extends NdsErrorResponse {    
  
     private DocumentDetails document;
 

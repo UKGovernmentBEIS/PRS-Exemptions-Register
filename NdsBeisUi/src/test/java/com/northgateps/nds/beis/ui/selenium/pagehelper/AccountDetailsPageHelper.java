@@ -44,8 +44,8 @@ public class AccountDetailsPageHelper extends BasePageHelper<AccountDetailsPageO
         }else{
             pageObject.setTextNdsInputOrgName("dummy");
         }    
-        pageObject.setTextNdsInputEmail("nds-dummyOne@northgateps.com");
-        pageObject.setTextNdsInputConfirmEmail("nds-dummyOne@northgateps.com");
+        pageObject.setTextNdsInputEmail("nds-dummyOne@necsws.com");
+        pageObject.setTextNdsInputConfirmEmail("nds-dummyOne@necsws.com");
         pageObject.setTextNdsInputTelNumber("0115 921 0200");
     }
     

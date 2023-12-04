@@ -40,9 +40,9 @@
         </ul>
     </li>
 
-    <li>Information submitted to the register may be shared with the BEIS Statistical Unit for the purposes of compiling statistical reports relating to the minimum standards regulations. This may include linking the data you provide to Energy Company Obligation (ECO) delivery data or other government held datasets. Information used for these purposes will be anonymised.</li>
+    <li>Information submitted to the register may be shared with the DESNZ Statistical Unit for the purposes of compiling statistical reports relating to the minimum standards regulations. This may include linking the data you provide to Energy Company Obligation (ECO) delivery data or other government held datasets. Information used for these purposes will be anonymised.</li>
     <li>We may use your email address to send you service-related notices (including any notices required by law, in lieu of communication by postal mail).</li>
-    <li>We may use your information for research and evaluation purposes relating to the minimum standards regulations, the operation of the register, and other regulations that BEIS operate in relation to energy use. This may include research or evaluation conducted by third-party agencies, unless you have specifically asked us not to use your contact details as part of research work undertaken on our behalf by a third-party. If you do not want your personal information used in research work undertaken by a third party on our behalf, please email us at <a href="mailto:PRSregisterfeedback@beis.gov.uk" id="link.mailto.prs" target="_blank">PRSregisterfeedback@beis.gov.uk</a> .</li>
+    <li>We may use your information for research and evaluation purposes relating to the minimum standards regulations, the operation of the register, and other regulations that DESNZ operate in relation to energy use. This may include research or evaluation conducted by third-party agencies, unless you have specifically asked us not to use your contact details as part of research work undertaken on our behalf by a third-party. If you do not want your personal information used in research work undertaken by a third party on our behalf, please email us at <a href="mailto:PRSregisterfeedback@energysecurity.gov.uk" id="link.mailto.prs" target="_blank">PRSregisterfeedback@energysecurity.gov.uk</a> .</li>
     <li><span style="font-weight: bold !important">The public register</span> - The minimum standard regulations require the following information to be published on the public page of the register:
         <ul class="list list-bullet">
             <li>the address of the exempt property,</li>
@@ -67,8 +67,8 @@
 </ul>
 
 <h3 class="heading-small">Retention</h3>
-<p class="body-text">NEC Software Solutions UK, or alternative data processor in the event this changes, will retain the personal data for up to a 12 month retention period after their contract expires, following which they will provide BEIS with the personal data in electronic form and erase the personal data from any computers, storage devices and storage media that are to be retained by NEC Software Solutions UK.</p>
-<p class="body-text">BEIS will store your personal data for 7 years after an exemption expires. BEIS may store the personal data beyond that date for statistical purposes.</p>
+<p class="body-text">NEC Software Solutions UK, or alternative data processor in the event this changes, will retain the personal data for up to a 12 month retention period after their contract expires, following which they will provide DESNZ with the personal data in electronic form and erase the personal data from any computers, storage devices and storage media that are to be retained by NEC Software Solutions UK.</p>
+<p class="body-text">DESNZ will store your personal data for 7 years after an exemption expires. DESNZ may store the personal data beyond that date for statistical purposes.</p>
 
 <h3 class="heading-small">Automated decision making</h3>
 <p class="body-text">Your personal data will not be subject to automated decision making.</p>
@@ -98,11 +98,10 @@ SK9 5AF<br>
 <p class="body-text">Any complaint to the Information Commissioner is without prejudice to your right to seek redress through the courts.</p>
 
 <h3 class="heading-small">Contact details</h3>
-<p class="body-text">The data controller for your personal data is the Department for Business, Energy & Industrial Strategy (BEIS). You can
-contact the BEIS Data Protection Officer at:</p>
-<p class="body-text">BEIS Data Protection Officer<br>
-Department for Business, Energy and Industrial Strategy<br>
+<p class="body-text">The data controller for your personal data is the Department for Energy Security and Net Zero (DESNZ). You can contact the DESNZ Data Protection Officer at:</p>
+<p class="body-text">DESNZ Data Protection Officer<br>
+Department for Energy Security and Net Zero<br>
 1 Victoria Street<br>
 London<br>
 SW1H 0ET</p>
-<p class="body-text">Email: <a href="mailto:dataprotection@beis.gov.uk" id="link.mailto.dataprotection" target="_blank">dataprotection@beis.gov.uk</a></p>
+<p class="body-text">Email: <a href="mailto:dataprotection@energysecurity.gov.uk" id="link.mailto.dataprotection" target="_blank">dataprotection@energysecurity.gov.uk</a></p>

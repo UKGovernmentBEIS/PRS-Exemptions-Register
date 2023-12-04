@@ -65,6 +65,6 @@ public class PersonalisedChangeEmailAddressPageHelper extends BasePageHelper<Per
 
     private String generateRandomEmailAddress() {
         final String testMail = generateRandomEmailId(new Random(), "test", 10);
-        return testMail + "@northgateps.com";
+        return testMail + "@necsws.com";
     }
 }

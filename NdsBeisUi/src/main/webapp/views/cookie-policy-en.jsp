@@ -5,7 +5,7 @@
      file, with hard coded Welsh text. This avoids the resource bundle having to containing a 
      large number of text fragments to build the page. --%>
      
-<p>This BEIS website puts small files onto your computer.  These are known as cookies. </p>
+<p>This DESNZ website puts small files onto your computer.  These are known as cookies. </p>
 <p>Cookies are used to:</p>
 <ul class="list list-bullet">
     <li>remember settings and information that you've entered so that you don't have to keep entering them again</li>
@@ -33,7 +33,7 @@ To learn more about cookies and how to manage them, visit <a id="aboutcookies" h
     </tr>
 </table>
 <h3 class="heading-small">Measuring website usage (Google Analytics)</h3>
-<p>We use Google Analytics software to collect information about how you use this BEIS website. We do this to make sure the site is meeting the needs of its users and to understand how we could do it better.</p>
+<p>We use Google Analytics software to collect information about how you use this DESNZ website. We do this to make sure the site is meeting the needs of its users and to understand how we could do it better.</p>
 <p>Google Analytics stores information about:</p>
 <ul class="list list-bullet">
     <li>the pages you visit and how long you spend on each page</li>
@@ -76,7 +76,7 @@ To learn more about cookies and how to manage them, visit <a id="aboutcookies" h
 </table>
 <p>You can <a id="gaoptout" href="https://tools.google.com/dlpage/gaoptout" target="_blank">opt out of Google Analytics cookies <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> on the Google website.</p>
 <h3 class="heading-small">Our introductory message</h3>
-<p>When you first visit this BEIS website you may see a pop-up welcome message. We'll store a cookie so that your computer knows you've seen the message and knows not to show it again.</p>
+<p>When you first visit this DESNZ website you may see a pop-up welcome message. We'll store a cookie so that your computer knows you've seen the message and knows not to show it again.</p>
 <table>
     <tr>
         <th>Name</th>

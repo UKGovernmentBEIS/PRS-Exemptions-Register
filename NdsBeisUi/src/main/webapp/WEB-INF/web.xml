@@ -4,7 +4,10 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
 		http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<display-name>NDS-BEIS</display-name>
-
+	
+	<!-- Possibly fixes More than one fragment with the name [spring_web] was found issue -->
+	<absolute-ordering />
+	
 	<!-- Set up Spring Web Security configured by applicationContext-security.xml -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>

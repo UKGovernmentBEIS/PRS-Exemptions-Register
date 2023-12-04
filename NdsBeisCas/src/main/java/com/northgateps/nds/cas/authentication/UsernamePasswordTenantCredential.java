@@ -36,7 +36,7 @@ public class UsernamePasswordTenantCredential extends RememberMeUsernamePassword
      */
     public UsernamePasswordTenantCredential(final String userName, final String password, final String tenant) {
         setUsername(userName);
-        setPassword(password);
+        setPassword(password.toCharArray());
         
         if (tenant == null) {
         	this.tenant = defaultTenant;

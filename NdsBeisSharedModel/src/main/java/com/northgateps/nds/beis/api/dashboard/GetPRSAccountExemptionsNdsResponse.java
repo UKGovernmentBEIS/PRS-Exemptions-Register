@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.northgateps.nds.beis.api.UserType;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * 
@@ -15,7 +15,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetPRSAccountExemptionsNdsResponse", propOrder = { "dashboardDetails","userType" })
 @XmlRootElement(name = "GetPRSAccountExemptionsNdsResponse")
-public class GetPRSAccountExemptionsNdsResponse extends AbstractNdsResponse {
+public class GetPRSAccountExemptionsNdsResponse extends NdsErrorResponse {
 	private DashboardDetails dashboardDetails;
 	
 	private UserType userType;

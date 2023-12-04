@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import com.northgateps.nds.beis.api.PenaltyTypeDetails;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to hold exemption type text from the back office
@@ -16,7 +16,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetPrsPenaltyRefDataNdsResponse", propOrder = { "penaltyTypeTextList" })
 @XmlRootElement(name = "GetPrsPenaltyRefDataNdsResponse")
-public class GetPrsPenaltyRefDataNdsResponse extends AbstractNdsResponse{
+public class GetPrsPenaltyRefDataNdsResponse extends NdsErrorResponse{
 
     List<PenaltyTypeDetails> penaltyTypeTextList;
 

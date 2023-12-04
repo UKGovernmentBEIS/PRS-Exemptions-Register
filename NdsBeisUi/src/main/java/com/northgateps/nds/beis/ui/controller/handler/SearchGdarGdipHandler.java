@@ -6,6 +6,7 @@ import com.northgateps.nds.beis.ui.model.BeisAllModel;
 import com.northgateps.nds.beis.ui.model.GdipGdarSearch.SearchResultStatus;
 import com.northgateps.nds.beis.ui.model.UiData;
 import com.northgateps.nds.platform.api.FileDetails;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 import com.northgateps.nds.platform.api.NdsResponse;
 import com.northgateps.nds.platform.api.serviceclient.NdsResponseConsumer;
 import com.northgateps.nds.platform.api.serviceclient.UiServiceClient;
@@ -57,11 +58,13 @@ public class SearchGdarGdipHandler extends AbstractViewEventHandler {
             @Override
             public boolean consume(NdsResponse response) {
 
-                ViewPdfNdsResponse searchResponse = (ViewPdfNdsResponse) response;
+                NdsErrorResponse rawResponse = (NdsErrorResponse) response;
 
-                if (searchResponse != null) {
+                if (rawResponse != null) {
 
-                    if (searchResponse.isSuccess()) {
+                    if (rawResponse.isSuccess()) {
+                    	ViewPdfNdsResponse searchResponse = (ViewPdfNdsResponse)response;
+                    	
                         if (searchResponse.getDocument() != null) {
                             // set the document details
                             uiData.getGdarGdipSearch().setFileName(searchResponse.getDocument().getDocumentName());
@@ -76,9 +79,8 @@ public class SearchGdarGdipHandler extends AbstractViewEventHandler {
                         }
 
                         return true;
-                    } else if (searchResponse.getNdsMessages() != null) {
-                        model.setPostSubmitMessage(
-                                new ViewMessage("Error_ESB_withCausedBy", searchResponse.getNdsMessages()));
+                    } else if (rawResponse.getNdsMessages() != null) {
+                        model.setPostSubmitMessage(new ViewMessage("Error_ESB_withCausedBy", rawResponse.getNdsMessages()));
                     } else {
                         model.setPostSubmitMessage(new ViewMessage("Error_No_more_information"));
                     }

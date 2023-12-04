@@ -58,7 +58,9 @@
                 }
 				dockerImageBuild: {
 					node ('beis-docker-build') {
-						utils.dockerBaseImageBuild("beis-NdsBeisCas-${FULL_BUILD_VERSION}")
+						lock (resource: "beis-container-image-build", inversePrecedence: true) {
+							utils.dockerBaseImageBuild("beis-NdsBeisCas-${FULL_BUILD_VERSION}")
+						}
 					}
 					node ('beis-docker-auto-run') {
 						utils.deployDockeredEnvironment("autotest")

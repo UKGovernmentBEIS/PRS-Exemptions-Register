@@ -13,27 +13,24 @@ import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
-
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.camel.test.spring.UseAdviceWith;
-
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
-import com.northgateps.nds.beis.api.BeisRegistrationDetails;
-import com.northgateps.nds.beis.api.BeisUserDetails;
 import com.northgateps.nds.beis.api.UserType;
 import com.northgateps.nds.beis.api.dashboard.DashboardDetails;
 import com.northgateps.nds.beis.api.dashboard.GetPRSAccountExemptionsNdsRequest;
 import com.northgateps.nds.beis.api.dashboard.GetPRSAccountExemptionsNdsResponse;
-import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsRequest;
-import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse;
+import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsRequest;
+import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsResponse;
 import com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsRequest;
 import com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsResponse;
 import com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsResponse.Exemptions;
 import com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsResponse.Exemptions.Exemption;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 import com.northgateps.nds.platform.esb.camel.NdsFileSystemXmlApplicationContext;
 import com.northgateps.nds.platform.esb.security.MockAuthentication;
 import com.northgateps.nds.platform.logger.NdsLogger;
@@ -75,8 +72,7 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
 
-                interceptSendToEndpoint("cxf:bean:beisGetPrsAccountExemptionsService").skipSendToOriginalEndpoint()
-                    .to(MOCK_GET_EXEMPTIONS).process(new Processor() {
+                interceptSendToEndpoint("cxf:bean:beisGetPrsAccountExemptionsService").skipSendToOriginalEndpoint().to(MOCK_GET_EXEMPTIONS).process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
                             //check that the request got the party ref added
@@ -89,19 +85,20 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                     });
 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
+                AdviceWith.adviceWith(context.getRouteDefinition("getPartyDetails_SubRouteForRetrievingRegistrationDetails"), context, new AdviceWithRouteBuilder() {
+                	
                     @Override
                     public void configure() throws Exception {
-                        interceptSendToEndpoint("cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint()
-                            .to(MOCK_GET_PARTYDETAILS).process(new Processor() {
+                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
+                        	
                             @Override
                             public void process(Exchange exchange) throws Exception {
                                 //check that the request got the party ref added
-                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange.getIn().getBody();
-                                assertEquals("Checking party ref", BigInteger.valueOf(9000), request.getAccountId());
+                                GetPartyDetailsRequest request = (GetPartyDetailsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(9000), request.getPartyRef());
                                 
-                                // Mock out a response
-                                exchange.getIn().setBody(createGetPartyDetailsResponse());
+                                // Mock out a response 
+                                exchange.getIn().setBody(createGetPartyDetailsResponseForLandlord());
                             }
                         });
                     }
@@ -112,11 +109,17 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
 
         context.start();
         
-        GetPRSAccountExemptionsNdsResponse response = 
-                (GetPRSAccountExemptionsNdsResponse) apiEndpoint.requestBody(createDashboardNdsRequest("seleniumorg"));
+        NdsErrorResponse response = (NdsErrorResponse) apiEndpoint.requestBody(createDashboardNdsRequest("seleniumorg"));
         assertTrue(response.isSuccess());
-        assertNotNull(response.getDashboardDetails());
-        checkValues(response.getDashboardDetails());
+        
+        if (response instanceof GetPRSAccountExemptionsNdsResponse) {
+        	GetPRSAccountExemptionsNdsResponse exemptionResponse = (GetPRSAccountExemptionsNdsResponse) response;
+        	assertNotNull(exemptionResponse.getDashboardDetails());
+        	checkValues(exemptionResponse.getDashboardDetails());
+        	assertEquals(UserType.LANDLORD, exemptionResponse.getUserType());
+        } else {
+        	fail("Response was not a GetPRSAccountExemptionsNdsResponse : " + response.getNdsMessages());
+        }
         assertMockEndpointsSatisfied();
     }
     
@@ -129,16 +132,14 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
             public void configure() throws Exception {
                 replaceFromWith(TEST_START_NAME);
 
-                interceptSendToEndpoint("cxf:bean:beisGetPrsAccountExemptionsService").skipSendToOriginalEndpoint()
-                        .to(MOCK_GET_EXEMPTIONS).process(new Processor() {
+                interceptSendToEndpoint("cxf:bean:beisGetPrsAccountExemptionsService").skipSendToOriginalEndpoint().to(MOCK_GET_EXEMPTIONS).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
 
                                 //check that the request got the party ref added
-                                GetPRSAccountExemptionsRequest request = (GetPRSAccountExemptionsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(10042) , request.getAgentPartyRef());
+                                GetPRSAccountExemptionsRequest request = (GetPRSAccountExemptionsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(10042), request.getAgentPartyRef());
                                 
                                 // Mock out a response
                                 exchange.getIn().setBody(createGetPrsAccountExemptionsResponse());
@@ -146,21 +147,17 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
+                AdviceWith.adviceWith(context.getRouteDefinition("getPartyDetails_SubRouteForRetrievingRegistrationDetails"), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
-
-                        interceptSendToEndpoint(
-                                "cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                        MOCK_GET_PARTYDETAILS).process(new Processor() {
+                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
                                 
-                              //check that the request got the party ref added
-                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(10042) , request.getAccountId());
+                            	// check that the request got the party ref added
+                                GetPartyDetailsRequest request = (GetPartyDetailsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(10042), request.getPartyRef());
                                 
                                 // Mock out a response
                                 exchange.getIn().setBody(createGetPartyDetailsResponseForAgent());
@@ -168,21 +165,26 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
                     }
                 });
-                
             }
         });
 
         context.start();
         
-        GetPRSAccountExemptionsNdsResponse response = 
-                (GetPRSAccountExemptionsNdsResponse) apiEndpoint.requestBody(createDashboardNdsRequest("seleniumagentuser"));
+        NdsErrorResponse response = (NdsErrorResponse) apiEndpoint.requestBody(createDashboardNdsRequest("seleniumagentuser"));
         assertTrue(response.isSuccess());
-        assertNotNull(response.getDashboardDetails());
-        checkValues(response.getDashboardDetails());
+        
+        if (response instanceof GetPRSAccountExemptionsNdsResponse) {
+        	GetPRSAccountExemptionsNdsResponse exemptionResponse = (GetPRSAccountExemptionsNdsResponse) response;
+        	assertNotNull(exemptionResponse.getDashboardDetails());
+        	checkValues(exemptionResponse.getDashboardDetails());
+        	assertEquals(UserType.AGENT, exemptionResponse.getUserType());
+        } else {
+			fail("Response was not a GetPRSAccountExemptionsNdsResponse : " + response.getNdsMessages());
+		}
+        
         assertMockEndpointsSatisfied();
     }
-    
-    
+
     static GetPRSAccountExemptionsNdsRequest createDashboardNdsRequest(String username) {
 
         GetPRSAccountExemptionsNdsRequest request = new GetPRSAccountExemptionsNdsRequest();
@@ -221,21 +223,18 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
 
         return response;
     }
-        
-    static RetrieveRegisteredDetailsNdsResponse createGetPartyDetailsResponse() {
-        RetrieveRegisteredDetailsNdsResponse response = new RetrieveRegisteredDetailsNdsResponse();
-        response.setBeisRegistrationDetails(new BeisRegistrationDetails());
-        response.getBeisRegistrationDetails().setUserDetails(new BeisUserDetails());
-        response.getBeisRegistrationDetails().getUserDetails().setUserType(UserType.LANDLORD);
+    
+    // this mocks response from uri="cxf:bean:beisGetPartyDetailsService" not the whole sub route!
+    private GetPartyDetailsResponse createGetPartyDetailsResponseForLandlord() {
+        GetPartyDetailsResponse response = new GetPartyDetailsResponse();
+        response.setUserType(UserType.LANDLORD.toString());
         response.setSuccess(true);
         return response;
     }
     
-    static RetrieveRegisteredDetailsNdsResponse createGetPartyDetailsResponseForAgent() {
-        RetrieveRegisteredDetailsNdsResponse response = new RetrieveRegisteredDetailsNdsResponse();
-        response.setBeisRegistrationDetails(new BeisRegistrationDetails());
-        response.getBeisRegistrationDetails().setUserDetails(new BeisUserDetails());
-        response.getBeisRegistrationDetails().getUserDetails().setUserType(UserType.AGENT);
+    private GetPartyDetailsResponse createGetPartyDetailsResponseForAgent() {
+        GetPartyDetailsResponse response = new GetPartyDetailsResponse();
+        response.setUserType(UserType.AGENT.toString());
         response.setSuccess(true);
         return response;
     }
@@ -288,24 +287,21 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
                 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
+                AdviceWith.adviceWith(context.getRouteDefinition("getPartyDetails_SubRouteForRetrievingRegistrationDetails"), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
 
-                        interceptSendToEndpoint(
-                                "cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                        MOCK_GET_PARTYDETAILS).process(new Processor() {
+                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
                                 
                                 //check that the request got the party ref added
-                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(9000) , request.getAccountId());
+                                GetPartyDetailsRequest request = (GetPartyDetailsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(9000), request.getPartyRef());
                                 
                                 // Mock out a response
-                                exchange.getIn().setBody(createGetPartyDetailsResponse());
+                                exchange.getIn().setBody(createGetPartyDetailsResponseForLandlord());
                             }
                         });
                     }
@@ -349,21 +345,18 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
                         });
                 
                 // This sub route is invoked by get prs exemptions and requires mocking
-                AdviceWith.adviceWith(context.getRouteDefinition(routeNameUnderTest), context, new AdviceWithRouteBuilder() {
+                AdviceWith.adviceWith(context.getRouteDefinition("getPartyDetails_SubRouteForRetrievingRegistrationDetails"), context, new AdviceWithRouteBuilder() {
                     @Override
                     public void configure() throws Exception {
 
-                        interceptSendToEndpoint(
-                                "cxf:bean:getPartyDetailsService").skipSendToOriginalEndpoint().to(
-                                        MOCK_GET_PARTYDETAILS).process(new Processor() {
+                        interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
 
                             @Override
                             public void process(Exchange exchange) throws Exception {
                                 
-                              //check that the request got the party ref added
-                                RetrieveRegisteredDetailsNdsRequest request = (RetrieveRegisteredDetailsNdsRequest) exchange
-                                        .getIn().getBody();
-                                assertEquals("Checking party ref",BigInteger.valueOf(10042) , request.getAccountId());
+                            	//check that the request got the party ref added
+                                GetPartyDetailsRequest request = (GetPartyDetailsRequest) exchange.getIn().getBody();
+                                assertEquals("Checking party ref", BigInteger.valueOf(10042) , request.getPartyRef());
                                 
                                 // Mock out a response
                                 exchange.getIn().setBody(createGetPartyDetailsResponseForAgent());
@@ -375,14 +368,21 @@ public class DashboardDetailsRouteTest extends CamelSpringTestSupport {
         });
 
         context.start();
-        GetPRSAccountExemptionsNdsResponse response = (GetPRSAccountExemptionsNdsResponse) apiEndpoint.requestBody(createSingleExemptionNdsRequest("seleniumagentuser","4321"));
+        NdsErrorResponse response = (NdsErrorResponse) apiEndpoint.requestBody(createSingleExemptionNdsRequest("seleniumagentuser","4321"));
         assertTrue(response.isSuccess());
-        assertNotNull(response.getDashboardDetails());
-        assertEquals("checking reference value",response.getDashboardDetails().getExemptionDetailList().get(0).getReferenceId(),"4321");
-        assertEquals("checking response size",response.getDashboardDetails().getExemptionDetailList().size(),1);        
+        
+        if (response instanceof GetPRSAccountExemptionsNdsResponse) {
+        	GetPRSAccountExemptionsNdsResponse exemptionResponse = (GetPRSAccountExemptionsNdsResponse) response;
+        	assertNotNull(exemptionResponse.getDashboardDetails());
+        	
+	        assertEquals("checking reference value", exemptionResponse.getDashboardDetails().getExemptionDetailList().get(0).getReferenceId(), "4321");
+	        assertEquals("checking response size", exemptionResponse.getDashboardDetails().getExemptionDetailList().size(), 1);
+        } else {
+			fail("Response was not a GetPRSAccountExemptionsNdsResponse : " + response.getNdsMessages());
+		}
+        
         assertMockEndpointsSatisfied();
     }
-
     
     static GetPRSAccountExemptionsNdsRequest createSingleExemptionNdsRequest(String username,String exemptionRefNo) {
 

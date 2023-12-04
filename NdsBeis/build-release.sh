@@ -49,7 +49,7 @@ ${maven} -f platform/NdsMavenPlugins/pom.xml -s beis/NdsBeis/release-settings.xm
 
 # BEIS CAS Build
 pushd beis/NdsBeisCas
-${gradle} build --no-daemon --project-prop build-number=${release_version} --project-prop platform-version=${release_version} --project-prop release-repo=http://10.102.65.246:9090/repository/beis-release/
+${gradle} build --no-daemon --project-prop build-number=${release_version} --project-prop platform-version=${release_version} --project-prop release-repo=http://vm-nds-bld01.global.internal:9090/repository/beis-release/
 popd
 
 # BEIS Build

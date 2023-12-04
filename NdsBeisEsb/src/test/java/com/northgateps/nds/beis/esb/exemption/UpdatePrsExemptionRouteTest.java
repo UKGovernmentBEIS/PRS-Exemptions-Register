@@ -22,7 +22,7 @@ import com.northgateps.nds.beis.api.updateexemptiondetails.UpdateExemptionDetail
 import com.northgateps.nds.beis.api.updateexemptiondetails.UpdateExemptionDetailsNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.updateprsexemption.UpdatePRSExemptionResponse;
 import com.northgateps.nds.beis.esb.RouteTestUtils;
-
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 import com.northgateps.nds.platform.logger.NdsLogger;
 
 /**
@@ -90,12 +90,15 @@ public class UpdatePrsExemptionRouteTest extends CamelSpringTestSupport {
         });
 
         context.start();
-        UpdateExemptionDetailsNdsResponse response = (UpdateExemptionDetailsNdsResponse) apiEndpoint.requestBody(
-                createUpdateExemptionDetailsNdsRequest());
-
-        assertTrue(response.isSuccess());
-        assertMockEndpointsSatisfied();
-
+        NdsErrorResponse r = (NdsErrorResponse) apiEndpoint.requestBody(createUpdateExemptionDetailsNdsRequest());
+        
+        if (r instanceof UpdateExemptionDetailsNdsResponse) {
+        	UpdateExemptionDetailsNdsResponse response = (UpdateExemptionDetailsNdsResponse)r; 
+        	assertTrue(response.isSuccess());
+        	assertMockEndpointsSatisfied();
+        } else {
+        	fail(r.getNdsMessages().getExceptionCaught());
+        }
     }
 
     private UpdateExemptionDetailsNdsRequest createUpdateExemptionDetailsNdsRequest() {

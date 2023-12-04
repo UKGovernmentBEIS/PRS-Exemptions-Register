@@ -100,8 +100,8 @@ public class LandlordAddressSteps {
         personalisedLandlordDetailsPageObject = personalisedLandlordDetailsPageHelper.getPageObject();
         assertEquals("First name", "John", personalisedLandlordDetailsPageObject.getTextNdsInputFirstname());
         assertEquals("Surname", "Smith", personalisedLandlordDetailsPageObject.getTextNdsInputSurname());
-        assertEquals("Email", "nds-dummyOne@northgateps.com", personalisedLandlordDetailsPageObject.getTextNdsInputEmailAddress());
-        assertEquals("Confirm Email", "nds-dummyOne@northgateps.com",
+        assertEquals("Email", "nds-dummyOne@necsws.com", personalisedLandlordDetailsPageObject.getTextNdsInputEmailAddress());
+        assertEquals("Confirm Email", "nds-dummyOne@necsws.com",
                 personalisedLandlordDetailsPageObject.getTextNdsInputConfirmEmail());
         assertEquals("Telephone Number", "0115 921 0200", personalisedLandlordDetailsPageObject.getTextNdsInputPhoneNumber());
     }

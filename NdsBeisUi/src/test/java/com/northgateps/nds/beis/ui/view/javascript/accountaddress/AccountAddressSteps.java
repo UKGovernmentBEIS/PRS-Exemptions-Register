@@ -89,8 +89,8 @@ public class AccountAddressSteps {
         accountDetailsPageObject = accountDetailsPageHelper.getPageObject();
         assertEquals("First name", "John", accountDetailsPageObject.getTextNdsInputFirstname());
         assertEquals("Surname", "Smith", accountDetailsPageObject.getTextNdsInputSurname());
-        assertEquals("Email", "nds-dummyOne@northgateps.com", accountDetailsPageObject.getTextNdsInputEmail());
-        assertEquals("Confirm Email", "nds-dummyOne@northgateps.com",
+        assertEquals("Email", "nds-dummyOne@necsws.com", accountDetailsPageObject.getTextNdsInputEmail());
+        assertEquals("Confirm Email", "nds-dummyOne@necsws.com",
                 accountDetailsPageObject.getTextNdsInputConfirmEmail());
         assertEquals("Telephone Number", "0115 921 0200", accountDetailsPageObject.getTextNdsInputTelNumber());
 

@@ -36,7 +36,7 @@
 			<bean class="com.northgateps.nds.platform.ui.interceptor.MandatoryVersionInfoInterceptor" />
 		</mvc:interceptor>
 		<bean class="com.northgateps.nds.platform.ui.controller.ViewNameInModelInterceptor" />
-		<bean class="com.northgateps.nds.platform.ui.controller.ContentSecurityPolicyInterceptor" />
+		<bean class="com.northgateps.nds.beis.ui.security.ContentSecurityPolicyInterceptor" />
 		<bean class="com.northgateps.nds.platform.ui.controller.IeXUaCompatiibleHeaderInterceptor" />
 	</mvc:interceptors>
 
@@ -329,7 +329,7 @@
 						<property name="viewEventHandlers">
 							<map>
 								<entry key="{any}">
-									<bean class="com.northgateps.nds.platform.ui.controller.handler.PasswordResetEventHandler" />
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.PasswordResetEventHandler" />
 								</entry>
 							</map>
 						</property>
@@ -363,7 +363,7 @@
 						<property name="viewEventHandlers">
 							<map>
 								<entry key="{any}">
-									<bean class="com.northgateps.nds.platform.ui.controller.handler.ReportForgottenUsernameEventHandler" />
+									<bean class="com.northgateps.nds.beis.ui.controller.handler.ReportForgottenUsernameEventHandler" />
 								</entry>
 							</map>
 						</property>
@@ -737,6 +737,11 @@
 				</bean>
 				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
 					<property name="presentation" value="sysErr" />
+					<property name="match" value="HISTORY_CONSTRAINT_VIOLATION" />
+					<property name="messageKey" value="Paragraph_ldapPasswordInHistory" />
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr" />
 					<property name="match" value="CONSTRAINT_VIOLATION" />
 					<property name="messageKey" value="Paragraph_passwordInvalidSyntax" />
 				</bean>
@@ -834,6 +839,11 @@
 					<property name="presentation" value="sysErr"/>
 					<property name="match" value=".*LDAP: error code 53.*"/>
 					<property name="messageKey" value="Paragraph_ldapServerInReadOnlyMode"/>
+				</bean>
+				<bean class="com.northgateps.nds.platform.ui.view.RegExMessageReplacer">
+					<property name="presentation" value="sysErr"/>
+					<property name="match" value=".*LDAP: error code 19.*"/>
+					<property name="messageKey" value="Paragraph_ldapPasswordInHistory"/>
 				</bean>
 			</list>
 		</property>

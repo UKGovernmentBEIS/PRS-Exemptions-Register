@@ -53,22 +53,18 @@ public final class MyAccountDetailsHandler extends AbstractViewEventHandler {
         if (user != null) {
 
             if (model.getRegisteredUserDetails() == null) {
-
                 model.populateDefaults();
 
                 RetrieveRegisteredDetailsNdsRequest retrieveRegisteredUserDetailsNdsRequest = new RetrieveRegisteredDetailsNdsRequest();
-
                 retrieveRegisteredUserDetailsNdsRequest.setUsername(user.getUsername());
                 retrieveRegisteredUserDetailsNdsRequest.setTenant(user.getTenant());
 
-                final UiServiceClient uiSvcClient = controllerState.getController().getUiSvcClientFactory().getInstance(
-                        RetrieveRegisteredDetailsNdsResponse.class);
+                final UiServiceClient uiSvcClient = controllerState.getController().getUiSvcClientFactory().getInstance(RetrieveRegisteredDetailsNdsResponse.class);
+                
                 if (!controllerState.isSyncController()) {
-                    uiSvcClient.post(retrieveRegisteredUserDetailsServiceEndPoint,
-                            retrieveRegisteredUserDetailsNdsRequest);
+                    uiSvcClient.post(retrieveRegisteredUserDetailsServiceEndPoint, retrieveRegisteredUserDetailsNdsRequest);
                 } else {
-                    uiSvcClient.postSync(retrieveRegisteredUserDetailsServiceEndPoint,
-                            retrieveRegisteredUserDetailsNdsRequest);
+                    uiSvcClient.postSync(retrieveRegisteredUserDetailsServiceEndPoint, retrieveRegisteredUserDetailsNdsRequest);
                 }
 
                 uiSvcClient.setResponseConsumer(new NdsResponseConsumer() {
@@ -83,41 +79,35 @@ public final class MyAccountDetailsHandler extends AbstractViewEventHandler {
                                                               // controller
                             return false;
                         }
+                        
                         RetrieveRegisteredDetailsNdsResponse retrieveRegisteredUserDetailsNdsResponse = ((RetrieveRegisteredDetailsNdsResponse) (response));
 
                         if (retrieveRegisteredUserDetailsNdsResponse.isSuccess()) {
-
                             fillModelWithData(retrieveRegisteredUserDetailsNdsResponse, model);
-
                             return retrieveRegisteredUserDetailsNdsResponse.isSuccess();
-
                         } else if (retrieveRegisteredUserDetailsNdsResponse.getNdsMessages() != null) {
-
                             List<ValidationViolation> violations = retrieveRegisteredUserDetailsNdsResponse.getNdsMessages().getViolations();
+
                             if (violations != null) {
                                 model.setPostSubmitMessage(ViewMessage.fromViolations(violations));
                             } else {
-                                model.setPostSubmitMessage(
-                                        new ViewMessage(retrieveRegisteredUserDetailsNdsResponse.getNdsMessages()));
+                                model.setPostSubmitMessage(new ViewMessage(retrieveRegisteredUserDetailsNdsResponse.getNdsMessages()));
                             }
+                            
                             return false;
-
                         } else {
-
                             model.setPostSubmitMessage(new ViewMessage("Error_No_more_information"));
                             return false;
                         }
                     }
 
-                    private void fillModelWithData(
-                            RetrieveRegisteredDetailsNdsResponse retrieveRegisteredUserDetailsNdsResponse,
-                            BeisAllModel model) {
+                    private void fillModelWithData(RetrieveRegisteredDetailsNdsResponse retrieveRegisteredUserDetailsNdsResponse, BeisAllModel model) {
 
                         BeisRegistrationDetails registeredUserDetails = new BeisRegistrationDetails();
                         registeredUserDetails.setAccountDetails(new BeisAccountDetails());
                         registeredUserDetails.setUserDetails(new BeisUserDetails());
                         
-                        if(retrieveRegisteredUserDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType().toString().equals("AGENT")){
+                        if (retrieveRegisteredUserDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().getUserType().toString().equals("AGENT")){
                             registeredUserDetails.getAccountDetails().setAgentNameDetails(new AgentNameDetails());
                             registeredUserDetails.getAccountDetails().getAgentNameDetails().setAgentName(
                             retrieveRegisteredUserDetailsNdsResponse.getBeisRegistrationDetails().getAccountDetails().getAgentNameDetails().getAgentName());

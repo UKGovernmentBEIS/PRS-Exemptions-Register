@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 /**
  * 
  * Class contains information about document
@@ -16,7 +16,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlType(name = "DocumentDetails", propOrder = { "documentCode", "documentDescription", "documentName",
         "documentFileType", "documentReference", "binaryData" })
 @XmlRootElement(name = "DocumentDetails")
-public class DocumentDetails extends AbstractNdsResponse {
+public class DocumentDetails extends NdsErrorResponse {
 
     private String documentCode;
 

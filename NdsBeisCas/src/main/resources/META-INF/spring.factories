@@ -1,4 +1,5 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.northgateps.nds.cas.config.NdsCasCoreHttpConfiguration,\
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.apereo.cas.config.CasOverlayOverrideConfiguration,\
+com.northgateps.nds.cas.config.NdsCasCoreHttpConfiguration,\
 com.northgateps.nds.cas.config.NdsCasWebflowContextConfiguration,\
 com.northgateps.nds.cas.config.NdsAuditConfiguration,\
 com.northgateps.nds.cas.config.NdsLdapAuthenticationConfiguration,\

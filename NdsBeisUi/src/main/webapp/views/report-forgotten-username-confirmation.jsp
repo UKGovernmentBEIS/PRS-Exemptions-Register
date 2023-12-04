@@ -28,7 +28,14 @@
 					<jsp:include page="form-error.jsp" />
 					<section id="forminfowrap">
 						<h1 class="form-title heading-large">
-							<fmt:message bundle="${FieldsBundle}" key="Legend_reportForgottenUsernameConfirmation" />
+							<c:choose>
+								<c:when test="${not empty throttled}">
+									A request has already been made, please wait ${throttled} before trying again.
+								</c:when>
+								<c:otherwise>
+									<fmt:message bundle="${FieldsBundle}" key="Legend_reportForgottenUsernameConfirmation" />
+								</c:otherwise>
+							</c:choose>
 						</h1>
 					</section>
 				</div>

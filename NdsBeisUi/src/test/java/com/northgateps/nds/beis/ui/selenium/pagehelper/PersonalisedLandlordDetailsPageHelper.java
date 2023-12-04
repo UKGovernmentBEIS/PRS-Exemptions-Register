@@ -42,8 +42,8 @@ public class PersonalisedLandlordDetailsPageHelper extends BasePageHelper<Person
         }else{
             pageObject.setTextNdsInputOrgName("dummy");
         }    
-        pageObject.setTextNdsInputEmailAddress("nds-dummyOne@northgateps.com");
-        pageObject.setTextNdsInputConfirmEmail("nds-dummyOne@northgateps.com");
+        pageObject.setTextNdsInputEmailAddress("nds-dummyOne@necsws.com");
+        pageObject.setTextNdsInputConfirmEmail("nds-dummyOne@necsws.com");
         pageObject.setTextNdsInputPhoneNumber("0115 921 0200");
     }
     

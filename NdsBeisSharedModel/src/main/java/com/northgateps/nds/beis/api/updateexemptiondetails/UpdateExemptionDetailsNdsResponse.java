@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to update exemption details.
@@ -13,6 +13,6 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "UpdateExemptionDetailsNdsResponse", propOrder = {""})
 @XmlRootElement(name = "UpdateExemptionDetailsNdsResponse")
-public class UpdateExemptionDetailsNdsResponse extends AbstractNdsResponse {
+public class UpdateExemptionDetailsNdsResponse extends NdsErrorResponse {
 
 }

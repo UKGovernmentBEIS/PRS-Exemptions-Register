@@ -243,25 +243,24 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
     @Test
     public void testPasswordResetWithDifferentEmailAddressInBOAndLdap() throws Exception {
         final String emailTextLine1 = "You asked for your PRS exemptions account password to be reset. You now need to set a new password.";
+        
         //mocking getPartyDetails endpoint
         AdviceWith.adviceWith(context.getRouteDefinition(getPartyDetailsRouteName), context, new AdviceWithRouteBuilder() {
+        	
             @Override
             public void configure() throws Exception {
-
-                interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(
-                        MOCK_GET_PARTYDETAILS).process(new Processor() {
+                interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
 
                     @Override
                     public void process(Exchange exchange) throws Exception {
+                    	//check that the request got the party ref added
                         GetPartyDetailsRequest request = (GetPartyDetailsRequest) exchange.getIn().getBody();
                         assertEquals("Checking party ref", BigInteger.valueOf(1366), request.getPartyRef());
                         
                         //set a different email address in backoffice response
                         exchange.getIn().setBody(createGetPartyDetailsResponse("changeemail@beis.com"));
-
                     }
                 });
-
             }
         });
 
@@ -280,7 +279,6 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
                 assertTrue("Check emailTextLine1", body.contains(emailTextLine1));
                 assertEquals("Check email is sent to changed email address", "changeemail@beis.com", 
                               exchange.getIn().getHeader("to"));
-
             }
         });
 
@@ -292,7 +290,6 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
         String resetCode = generateResetCode(username);
         apiEndpoint.sendBody(createResetPasswordNdsRequestWithResetCode(username, resetCode));
         assertMockEndpointsSatisfied();
-
     }
     
     
@@ -305,8 +302,7 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
             @Override
             public void configure() throws Exception {
 
-                interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(
-                        MOCK_GET_PARTYDETAILS).process(new Processor() {
+                interceptSendToEndpoint("cxf:bean:beisGetPartyDetailsService").skipSendToOriginalEndpoint().to(MOCK_GET_PARTYDETAILS).process(new Processor() {
 
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -315,10 +311,8 @@ public class BeisPasswordResetRouteTest extends BeisRegistrationCamelSpringTestS
                         
                         //set the same email in response which is present in ldap
                         exchange.getIn().setBody(createGetPartyDetailsResponse("a@beis.com"));
-
                     }
                 });
-
             }
         });
 

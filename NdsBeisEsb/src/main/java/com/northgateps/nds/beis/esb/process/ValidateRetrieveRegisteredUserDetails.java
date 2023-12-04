@@ -21,8 +21,7 @@ public class ValidateRetrieveRegisteredUserDetails extends ValidateCamelRouteBea
      * @throws NdsBusinessException if an error is found
      * @throws NdsApplicationException if the following expected data are missing: username and tenant
      */
-    public RetrieveRegisteredDetailsNdsRequest validate(final RetrieveRegisteredDetailsNdsRequest request)
-            throws NdsBusinessException, NdsApplicationException {
+    public RetrieveRegisteredDetailsNdsRequest validate(final RetrieveRegisteredDetailsNdsRequest request) throws NdsBusinessException, NdsApplicationException {
 
         logger.info("Validating retrieve registered user details");
         if (request.getUsername() == null) {

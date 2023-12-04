@@ -23,7 +23,7 @@ public class GetUserTypePartyDetailsAdapter {
             RetrieveRegisteredDetailsNdsResponse ndsResponse = (RetrieveRegisteredDetailsNdsResponse) exchange.getIn().getBody();
             String userType = ndsResponse.getBeisRegistrationDetails().getUserDetails().getUserType().toString();
 
-            if (userType.equals("Landlord")) {
+            if (userType.equalsIgnoreCase("Landlord")) {
                 request.setUserType(UserType.LANDLORD);
             } else {
                 request.setUserType(UserType.AGENT);
@@ -46,7 +46,6 @@ public class GetUserTypePartyDetailsAdapter {
         retrieveRegisteredDetailsNdsRequest.setUsername(ndsRequest.getUsername());
         retrieveRegisteredDetailsNdsRequest.setTenant(ndsRequest.getTenant());
         return retrieveRegisteredDetailsNdsRequest;
-
     }
 
 }

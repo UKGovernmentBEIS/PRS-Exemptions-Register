@@ -26,8 +26,8 @@
 			<header>
 				<!-- This needs to link back to the sign on page which will be CAS so will be a link not a back button which
 				     uses the navigation framework -->
-				<a href="${contextUi}/personalised-dashboard?tenant=${command.tenant}" class="link-back back" role="back" id="Back.link"> <fmt:message
-						bundle="${FieldsBundle}" key="Button_BACK" />
+				<a href="${contextUi}/personalised-dashboard?tenant=${command.tenant}" class="link-back back" role="back" id="Back.link">
+					<fmt:message bundle="${FieldsBundle}" key="Button_BACK" />
 				</a>								
 			</header>		
 			<div class="grid-row">
@@ -35,12 +35,10 @@
 					<jsp:include page="form-error.jsp"/>
 		
 					<h1 class="form-title heading-large">
-						<fmt:message bundle="${FieldsBundle}"
-								key="Heading_reportForgottenPassword" />						
+						<fmt:message bundle="${FieldsBundle}" key="Heading_reportForgottenPassword" />						
 					</h1>
 					<p>
-						<fmt:message bundle="${FieldsBundle}"
-								key="SubHeading_reportForgottenPassword" />
+						<fmt:message bundle="${FieldsBundle}" key="SubHeading_reportForgottenPassword" />
 					</p>
 				</div>
 			</div>
@@ -55,10 +53,8 @@
 					</div>
 					<section class="submit">
 						<div>
-							<button type="submit" name="action" id="button.next" value="NEXT"
-								class="button next">
-								<fmt:message bundle="${FieldsBundle}"
-									key="Button_make_password_reset_request" />
+							<button type="submit" name="action" id="button.next" value="NEXT" class="button next">
+								<fmt:message bundle="${FieldsBundle}" key="Button_make_password_reset_request" />
 							</button>
 						</div>
 					</section>

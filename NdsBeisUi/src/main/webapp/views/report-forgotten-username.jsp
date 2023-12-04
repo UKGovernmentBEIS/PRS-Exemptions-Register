@@ -26,9 +26,8 @@
 			<header>
 				<!-- This needs to link back to the sign on page which will be CAS so will be a link not a back
 	                             button which uses the navigation framework -->
-				<a href="${contextUi}/personalised-dashboard?tenant=${command.tenant}"
-					class="link-back back" role="back" id="back"> <fmt:message
-						bundle="${FieldsBundle}" key="Button_BACK" />
+				<a href="${contextUi}/personalised-dashboard?tenant=${command.tenant}" class="link-back back" role="back" id="back">
+					<fmt:message bundle="${FieldsBundle}" key="Button_BACK" />
 				</a>
 			</header>
 			<div class="grid-row">
@@ -40,16 +39,14 @@
 						</h1>
 					</section>
 					<p>
-						<fmt:message bundle="${FieldsBundle}"
-								key="Legend_reportForgottenUsername" />
+						<fmt:message bundle="${FieldsBundle}" key="Legend_reportForgottenUsername" />
 					</p>
 				</div>
 			</div>
 			<div class="grid-row">
 				<div class="column-full">				
 					<div class="form-group">
-						<nds:field path="forgottenUsernameDetails.emailAddress"
-							labeldecoration="required">
+						<nds:field path="forgottenUsernameDetails.emailAddress" labeldecoration="required">
 							<nds:label />
 							<nds:invalid />
 							<nds:input class="form-control" />							
@@ -58,8 +55,7 @@
 					
 					<section class="submit">
 						<div class="form-group">
-							<button type="submit" name="action" value="NEXT" id="button.next"
-								class="button next">
+							<button type="submit" name="action" value="NEXT" id="button.next" class="button next">
 								<fmt:message bundle="${FieldsBundle}" key="Button_NEXT" />
 							</button>
 						</div>

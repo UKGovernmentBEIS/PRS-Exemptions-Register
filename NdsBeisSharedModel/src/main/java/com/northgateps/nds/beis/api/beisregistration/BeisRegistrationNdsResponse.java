@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to registering a new user
@@ -17,6 +17,6 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BeisRegistrationNdsResponse", propOrder = {})
 @XmlRootElement(name = "BeisRegistrationNdsResponse")
-public class BeisRegistrationNdsResponse extends AbstractNdsResponse {
+public class BeisRegistrationNdsResponse extends NdsErrorResponse {
 
 }

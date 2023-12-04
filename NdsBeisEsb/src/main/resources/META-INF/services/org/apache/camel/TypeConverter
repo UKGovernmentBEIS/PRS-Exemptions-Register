@@ -1,1 +1,4 @@
 com.northgateps.nds.beis.esb.converter
+com.northgateps.nds.platform.esb.addresssearch
+com.northgateps.nds.platform.esb.proondemand.addresssearch
+com.northgateps.nds.platform.esb.nas.addresssearch

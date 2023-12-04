@@ -749,8 +749,7 @@ public class SaveRegisteredAccountDetailsRouteTest extends BeisRegistrationCamel
         // set up the update details
         final SaveRegisteredAccountDetailsNdsRequest request = createUpdateEmailRequest(registeredUser, userType);
 
-        SaveRegisteredAccountDetailsNdsResponse response = (SaveRegisteredAccountDetailsNdsResponse) apiEndpoint.requestBody(
-                request);
+        SaveRegisteredAccountDetailsNdsResponse response = (SaveRegisteredAccountDetailsNdsResponse) apiEndpoint.requestBody(request);
 
         assertTrue(response.isSuccess());
 

@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://camel.apache.org/schema/cxf"
-	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:cxfcore="http://cxf.apache.org/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jaxrs="http://camel.apache.org/schema/cxf/jaxrs"
+	xmlns:jaxws="http://camel.apache.org/schema/cxf/jaxws"
+	xmlns:cxfcore="http://cxf.apache.org/core"
 	xmlns:ndsext="http://www.northgateps.com/schema/spring/nds-camel-extensions"
 	xmlns:http="http://cxf.apache.org/transports/http/configuration"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:camel="http://camel.apache.org/schema/spring"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-3.14.5.xsd
-		 http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+		 http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/nds-camel-spring-3.18.4.xsd
+		 http://camel.apache.org/schema/cxf/jaxws http://camel.apache.org/schema/cxf/jaxws/camel-cxf.xsd
+		 http://camel.apache.org/schema/cxf/jaxrs http://camel.apache.org/schema/cxf/jaxrs/camel-cxf.xsd
 		 http://cxf.apache.org/core  http://cxf.apache.org/schemas/core.xsd
 		 http://www.northgateps.com/schema/spring/nds-camel-extensions http://www.northgateps.com/schema/spring/nds-camel-extensions-1.0.xsd
 		 http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
 		 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<import resource="classpath:addressSearch-routeContext.xml" />
+	<!-- NB we set jaxrs as the rest server namespace and jaxws as the soap? server namespace but cxf: is a protocol
+		(used in <to> sections) for SOAP connections so what I'm saying is, don't get it confused with the namespaces.
+		(Obviously REST connections use http like a sensible system should. -->
+		
+	<!-- access other contexts - note, this doesn't actually load them or make them available, that's later on.  Search <routeContextRef -->
+	<!-- <import resource="classpath:addressSearch-routeContext.xml" />  
 	<import resource="classpath:directory-persistence-routeContext.xml" />
-	<import resource="classpath:generateReference-persistence-routeContext.xml" />
+	<import resource="classpath:generateReference-persistence-routeContext.xml" />-->  
+
 
 	<!-- setup JMX -->
 	<import resource="classpath:nds-spring-jmx.xml" />
@@ -35,9 +45,7 @@
         <constructor-arg name="password" value="${ndsdb.password}" />
     </bean>
 
-    <bean id="prepareSecurity"
-		class="com.northgateps.nds.platform.esb.util.security.NdsPrepareSecurityAuthenticationHeader" />
-		
+    <bean id="prepareSecurity" class="com.northgateps.nds.platform.esb.util.security.NdsPrepareSecurityAuthenticationHeader" />
 	<bean id="constrainedValuesCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetConstrainedValuesCacheAdapter" />
 	<bean id="prsExemptionRefDataCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetPrsExemptionRefDataCacheAdapter" />
 	<bean id="prsPenaltyRefDataCacheAdapter" class="com.northgateps.nds.beis.esb.camel.GetPrsPenaltyRefDataCacheAdapter" />
@@ -89,11 +97,10 @@
 		<!-- https://issues.apache.org/jira/browse/CXF-6554 -->
 		<property name="limit" value="-1" />
 	</bean>
-	<bean id="loggingInInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor"
-		parent="abstractLoggingInterceptor" />
-	<bean id="loggingOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"
-		parent="abstractLoggingInterceptor" />
 
+	<bean id="loggingInInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor" parent="abstractLoggingInterceptor" />
+	<bean id="loggingOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor" parent="abstractLoggingInterceptor" />
+	
 	<cxfcore:bus>
 		<cxfcore:inInterceptors>
 			<ref bean="loggingInInterceptor" />
@@ -109,82 +116,75 @@
 		</cxfcore:inFaultInterceptors>
 	</cxfcore:bus>
 
-	<cxf:rsServer id="getPartiallyRegisteredDetailsService"
+	<jaxrs:rsServer id="getPartiallyRegisteredDetailsService"
 		address="/getPartiallyRegisteredDetailsService"
 		serviceClass="com.northgateps.nds.beis.api.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="dashboardService" address="/dashboardService"
+	<jaxrs:rsServer id="dashboardService" address="/dashboardService"
 		serviceClass="com.northgateps.nds.beis.api.dashboard.DashboardServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="retrieveRegisteredDetailsService"
+	<jaxrs:rsServer id="retrieveRegisteredDetailsService"
 		address="/retrieveRegisteredDetailsService"
 		serviceClass="com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="saveRegisteredAccountDetailsService"
+	<jaxrs:rsServer id="saveRegisteredAccountDetailsService"
 		address="/saveRegisteredAccountDetailsService"
 		serviceClass="com.northgateps.nds.beis.api.saveregisteredaccountdetails.SaveRegisteredAccountDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="prsExemptionSearchService" address="/prsExemptionSearchService"
+	<jaxrs:rsServer id="prsExemptionSearchService" address="/prsExemptionSearchService"
 		serviceClass="com.northgateps.nds.beis.api.PRSExemptionSearchInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="prsPenaltySearchService" address="/prsPenaltySearchService"
+	<jaxrs:rsServer id="prsPenaltySearchService" address="/prsPenaltySearchService"
 		serviceClass="com.northgateps.nds.beis.api.PRSPenaltySearchInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="prsExemptionUpdateService" address="/prsExemptionUpdateService"
+	<jaxrs:rsServer id="prsExemptionUpdateService" address="/prsExemptionUpdateService"
 		serviceClass="com.northgateps.nds.beis.api.updateexemptiondetails.UpdateExemptionDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="viewDocumentGdarGdipService" address="/viewDocumentGdarGdipService"
+	<jaxrs:rsServer id="viewDocumentGdarGdipService" address="/viewDocumentGdarGdipService"
 		serviceClass="com.northgateps.nds.beis.api.viewdocument.ViewPdfServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-    <!-- 
-        Increase the default number of outgoing CXF connections which use the http bean under the hood
-      -->
+    
+    <!-- Increase the default number of outgoing CXF connections which use the http bean under the hood -->
     <bean id="httpClientConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager"> 
         <property name="maxTotal" value="500" /> 
         <property name="defaultMaxPerRoute" value="200" /> 
@@ -194,291 +194,369 @@
         <property name="clientConnectionManager" ref="httpClientConnectionManager" /> 
     </bean>
 	
-	<bean id="prsExemptionSearchAdapter"
-		class="com.northgateps.nds.beis.esb.adapter.PRSExemptionSearchAdapter" />
-	<bean id="prsPenaltySearchAdapter"
-		class="com.northgateps.nds.beis.esb.adapter.PRSPenaltySearchAdapter" />
-
-	<bean id="prsExemptionUpdateAdapter"
-		class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateAdapter" />
-
-	<bean id="infrastructureErrorProcessor"
-		class="com.northgateps.nds.platform.esb.exception.InfrastructureErrorProcessor" />
-	<bean id="applicationDefaultErrorProcessor"
-		class="com.northgateps.nds.platform.esb.exception.ApplicationDefaultErrorProcessor" />
-	<bean id="smtpErrorRecoveryProcessor"
-		class="com.northgateps.nds.platform.esb.exception.SmtpErrorRecoveryProcessor">
-	</bean>
-
-	<bean id="validateGetPartiallyRegisteredDetails"
-		class="com.northgateps.nds.beis.esb.process.ValidateGetPartiallyRegisteredDetailsNdsRequest" />
-	<bean id="getPartiallyRegisteredDetailsLdapAdapter"
-		class="com.northgateps.nds.beis.esb.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsLdapComponent" />
-
-	<bean id="getPrsAccountExemptionsAdapter"
-		class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsAdapter" />
-	<bean id="getPrsAccountExemptionsLookupIdAdapter"
-		class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsLookupIdComponent" />
-	<bean id="validateGetPrsAccountExemptionsRequest"
-		class="com.northgateps.nds.beis.esb.process.ValidateGetPRSAccountExemptionsNdsRequest">
-	</bean>
-	<bean id="validateRegisterPrsExemptionNdsRequest"
-		class="com.northgateps.nds.beis.esb.process.ValidateRegisterPrsExemptionNdsRequest">
+	<bean id="prsExemptionSearchAdapter" class="com.northgateps.nds.beis.esb.adapter.PRSExemptionSearchAdapter" />
+	<bean id="prsPenaltySearchAdapter" class="com.northgateps.nds.beis.esb.adapter.PRSPenaltySearchAdapter" />
+	<bean id="prsExemptionUpdateAdapter" class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateAdapter" />
+	<bean id="infrastructureErrorProcessor" class="com.northgateps.nds.platform.esb.exception.InfrastructureErrorProcessor" />
+	<bean id="applicationDefaultErrorProcessor" class="com.northgateps.nds.platform.esb.exception.ApplicationDefaultErrorProcessor" />
+	<bean id="smtpErrorRecoveryProcessor" class="com.northgateps.nds.platform.esb.exception.SmtpErrorRecoveryProcessor" />
+	<bean id="validateGetPartiallyRegisteredDetails" class="com.northgateps.nds.beis.esb.process.ValidateGetPartiallyRegisteredDetailsNdsRequest" />
+	<bean id="getPartiallyRegisteredDetailsLdapAdapter" class="com.northgateps.nds.beis.esb.getpartiallyregistereddetails.GetPartiallyRegisteredDetailsLdapComponent" />
+	<bean id="getPrsAccountExemptionsAdapter" class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsAdapter" />
+	<bean id="getPrsAccountExemptionsLookupIdAdapter" class="com.northgateps.nds.beis.esb.dashboard.GetPrsAccountExemptionsLookupIdComponent" />
+	<bean id="validateGetPrsAccountExemptionsRequest" class="com.northgateps.nds.beis.esb.process.ValidateGetPRSAccountExemptionsNdsRequest" />
+	<bean id="validateRegisterPrsExemptionNdsRequest" class="com.northgateps.nds.beis.esb.process.ValidateRegisterPrsExemptionNdsRequest">
 		<property name="scriptsLoader">
 			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
 		</property>
 		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
 	</bean>
 	
-	<bean id="validatePRSExemptionSearchNdsRequest"
-		class="com.northgateps.nds.beis.esb.process.ValidatePRSExemptionSearchNdsRequest">
+	<bean id="validatePRSExemptionSearchNdsRequest" class="com.northgateps.nds.beis.esb.process.ValidatePRSExemptionSearchNdsRequest">
 		<property name="scriptsLoader">
 			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
 		</property>
 		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
 	</bean>
 	
-	<bean id="validatePRSPenaltySearchNdsRequest"
-		class="com.northgateps.nds.beis.esb.process.ValidatePRSPenaltySearchNdsRequest">
+	<bean id="validatePRSPenaltySearchNdsRequest" class="com.northgateps.nds.beis.esb.process.ValidatePRSPenaltySearchNdsRequest">
 		<property name="scriptsLoader">
 			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
 		</property>
 		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
 	</bean>
 
-	<bean id="beisRegistrationLdapAdapter"
-		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationLdapComponent" />
-	<bean id="purgeDocumentsAdapter"
-		class="com.northgateps.nds.beis.esb.purgedocuments.PurgeDocumentsPersistenceAdapter" />
-
-	<bean id="retrieveRegisteredDetailsAdapter"
-		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsLdapComponent" />
-
-	<bean id="retrieveRegisteredDetailsSoapAdapter"
-		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsSoapAdapter" />
-	<bean id="registerPrsExemptionAdapter"
-		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionPersistenceAdapter" />
-	<bean id="deleteUploadedFilesAdapter"
-		class="com.northgateps.nds.platform.esb.fileresourceoperation.DeleteUploadedFilesPersistenceAdapter">
+	<bean id="beisRegistrationLdapAdapter" class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationLdapComponent" />
+	<bean id="purgeDocumentsAdapter" class="com.northgateps.nds.beis.esb.purgedocuments.PurgeDocumentsPersistenceAdapter" />
+	<bean id="retrieveRegisteredDetailsAdapter" class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsLdapComponent" />
+	<bean id="retrieveRegisteredDetailsSoapAdapter" class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsSoapAdapter" />
+	<bean id="registerPrsExemptionAdapter" class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionPersistenceAdapter" />
+	<bean id="deleteUploadedFilesAdapter" class="com.northgateps.nds.platform.esb.fileresourceoperation.DeleteUploadedFilesPersistenceAdapter">
         <constructor-arg value="reference number" />    
     </bean>
     
-    <bean id="statisticsAdapter"
-		class="com.northgateps.nds.beis.esb.statistics.StatisticsPersistenceAdapter" />
+    <bean id="statisticsAdapter" class="com.northgateps.nds.beis.esb.statistics.StatisticsPersistenceAdapter" />
 
-	<bean id="validateRetrieveRegisteredUserDetails"
-		class="com.northgateps.nds.beis.esb.process.ValidateRetrieveRegisteredUserDetails">
-		<property name="scriptsLoader">
-			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
-		</property>
-	</bean>
-
-	<bean id="validateBeisRegistration"
-		class="com.northgateps.nds.beis.esb.process.ValidateBeisRegistration">
+	<bean id="validateBeisRegistration" class="com.northgateps.nds.beis.esb.process.ValidateBeisRegistration">
 		<property name="scriptsLoader">
 			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
 		</property>
 		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
 	</bean>
-	<bean id="beisregistrationEmailAdapter"
-		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationEmailAdapter">
+	<bean id="beisregistrationEmailAdapter" class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationEmailAdapter">
 		<property name="templateLoader" ref="emailTemplateLoader" />
 	</bean>
 
-
-	<bean id="wsSecurity-passwordCallback"
-		class="com.northgateps.nds.platform.esb.security.PasswordCallbackForWsSecurity">
+	<bean id="wsSecurity-passwordCallback" class="com.northgateps.nds.platform.esb.security.PasswordCallbackForWsSecurity">
 		<constructor-arg value="${beis.secret}" />
 	</bean>
 	<http:conduit name="*.http-conduit">
       <http:client ReceiveTimeout="${app.route.receiveTimeout}" ConnectionTimeout="${app.route.ConnectionTimeout}"/>
     </http:conduit>
 
-	<bean id="ws-security-client"
-		class="com.northgateps.nds.platform.esb.security.SecurityOutInterceptorForWsSecurity">
+	<bean id="ws-security-client" class="com.northgateps.nds.platform.esb.security.SecurityOutInterceptorForWsSecurity">
 		<constructor-arg value="${beis.userId}" />
 		<constructor-arg ref="wsSecurity-passwordCallback" />
 	</bean>
-	<bean id="beisRegistrationSoapAdapter"
-		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationSoapAdapter" />
-
-	<bean id="beisRegistrationUpdateAccountIdLdapAdapter"
-		class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapComponent" />
-
-	<bean id="saveRegisteredAccountDetailsSoapAdapter"
-		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsSoapAdapter" />
-
-	<bean id="saveRegisteredAccountDetailsAccountIdLdapAdapter"
-		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsAccountIdLdapComponent" />
-
-	<bean id="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter"
-		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent" />
-
-	<bean id="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter"
-		class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent" />
-
-	<bean id="getConstrainedValuesAdapter"
-		class="com.northgateps.nds.beis.esb.getconstrainedvalues.GetConstrainedValuesAdapter" />
-
-	<bean id="validateSaveRegisteredAccountDetails"
-		class="com.northgateps.nds.beis.esb.process.ValidateSaveRegisteredAccountDetails">
-		<property name="scriptsLoader">
-			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
-		</property>
-		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
-	</bean>
-
-	<bean id="validatePrsExemptionUpdateRequest"
-		class="com.northgateps.nds.beis.esb.process.ValidatePrsExemptionUpdateRequest">
-		<property name="scriptsLoader">
-			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
-		</property>
-		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
-	</bean>
-
-	<bean id="prsExemptionUpdateLookupIdAdapter"
-		class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateLookupIdComponent" />
-
-	<bean id="saveRegisteredAccountDetailsAdapter"
-		class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsComponent" />
-		
-	<bean id="updateEmailAddressInLdapAdapter" 
-	     class="com.northgateps.nds.beis.esb.registration.UpdateEmailAddressInLdapComponent" />
 	
-	<bean id="ndsExchangeUtilities"
-		class="com.northgateps.nds.platform.esb.adapter.NdsExchangeUtilities" />
+	<bean id="beisRegistrationSoapAdapter" class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationSoapAdapter" />
+	<bean id="beisRegistrationUpdateAccountIdLdapAdapter" class="com.northgateps.nds.beis.esb.beisregistration.BeisRegistrationUpdateAccountIdLdapComponent" />
+	<bean id="saveRegisteredAccountDetailsSoapAdapter" class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsSoapAdapter" />
+	<bean id="saveRegisteredAccountDetailsAccountIdLdapAdapter" class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsAccountIdLdapComponent" />
+	<bean id="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter" class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsRetrieveAccountIdLdapComponent" />
+	<bean id="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" class="com.northgateps.nds.beis.esb.registration.RetrieveRegisteredDetailsRetrieveAccountIdLdapComponent" />
+	<bean id="getConstrainedValuesAdapter" class="com.northgateps.nds.beis.esb.getconstrainedvalues.GetConstrainedValuesAdapter" />
+
+	<bean id="validateSaveRegisteredAccountDetails" class="com.northgateps.nds.beis.esb.process.ValidateSaveRegisteredAccountDetails">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+
+	<bean id="validatePrsExemptionUpdateRequest" class="com.northgateps.nds.beis.esb.process.ValidatePrsExemptionUpdateRequest">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+
+	<bean id="prsExemptionUpdateLookupIdAdapter" class="com.northgateps.nds.beis.esb.updateexemption.PrsExemptionUpdateLookupIdComponent" />
+	<bean id="saveRegisteredAccountDetailsAdapter" class="com.northgateps.nds.beis.esb.registration.SaveRegisteredAccountDetailsComponent" />
+	<bean id="updateEmailAddressInLdapAdapter" class="com.northgateps.nds.beis.esb.registration.UpdateEmailAddressInLdapComponent" />
+	<bean id="ndsExchangeUtilities" class="com.northgateps.nds.platform.esb.adapter.NdsExchangeUtilities" />
 
 	<!-- File upload specific -start -->
-	<bean id="fileAddAdapter"
-		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileAddPersistenceAdapter" />
+	<bean id="fileAddAdapter" class="com.northgateps.nds.platform.esb.fileresourceoperation.FileAddPersistenceAdapter" />
 
-	<bean id="fileDeleteAdapter"
-		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileDeletePersistenceAdapter" />
+	<bean id="fileDeleteAdapter" class="com.northgateps.nds.platform.esb.fileresourceoperation.FileDeletePersistenceAdapter" />
 
-	<bean id="fileReadAdapter"
-		class="com.northgateps.nds.platform.esb.fileresourceoperation.FileReadPersistenceAdapter" />
-	<bean id="getPrsExemptionRefDataAdapter"
-		class="com.northgateps.nds.beis.esb.getprsexemptionrefdata.GetPrsExemptionRefDataAdapter" />
-    <bean id="getPrsPenaltyRefDataAdapter"
-		class="com.northgateps.nds.beis.esb.getprspenaltyrefdata.GetPrsPenaltyRefDataAdapter" />
-	<bean id="viewDocumentAdapter"
-		class="com.northgateps.nds.beis.esb.viewdocument.ViewDocumentAdapter" />
-	<bean id="getReferenceValuesAdapter"
-		class="com.northgateps.nds.beis.esb.getreferencevalues.GetReferenceValuesAdapter" />
-	<bean id="registerExemptionLookupIdAdapter"
-		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionLookupIdComponent" />
-	<bean id="registerPrsExemptionEmailNotifier"
-		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailNotifier">
+	<bean id="fileReadAdapter" class="com.northgateps.nds.platform.esb.fileresourceoperation.FileReadPersistenceAdapter" />
+	<bean id="getPrsExemptionRefDataAdapter" class="com.northgateps.nds.beis.esb.getprsexemptionrefdata.GetPrsExemptionRefDataAdapter" />
+    <bean id="getPrsPenaltyRefDataAdapter" class="com.northgateps.nds.beis.esb.getprspenaltyrefdata.GetPrsPenaltyRefDataAdapter" />
+	<bean id="viewDocumentAdapter" class="com.northgateps.nds.beis.esb.viewdocument.ViewDocumentAdapter" />
+	<bean id="getReferenceValuesAdapter" class="com.northgateps.nds.beis.esb.getreferencevalues.GetReferenceValuesAdapter" />
+	<bean id="registerExemptionLookupIdAdapter" class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionLookupIdComponent" />
+	<bean id="registerPrsExemptionEmailNotifier" class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailNotifier">
 		<property name="templateLoader" ref="emailTemplateLoader" />
 	</bean>
-	<bean id="registerPrsExemptionEmailAgentNotifier"
-		class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailAgentNotifier">
+	<bean id="registerPrsExemptionEmailAgentNotifier" class="com.northgateps.nds.beis.esb.registerexemption.RegisterPrsExemptionEmailAgentNotifier">
 		<property name="templateLoader" ref="emailTemplateLoader" />
 	</bean>
 
-	<bean id="printExemptionDetailsAdapter"
-		class="com.northgateps.nds.beis.esb.adapter.PrintExemptionDetailsAdapter" />
-
-	<bean id="updateEmailInLdapAndBackOfficeAdapter"
-		class="com.northgateps.nds.beis.esb.updateemail.UpdateEmailInLdapAndBackOfficeAdapter" />
-
-	<bean id="validateViewDocument"
-		class="com.northgateps.nds.beis.esb.process.ValidateViewPdfDocumentRequest">
+	<bean id="printExemptionDetailsAdapter" class="com.northgateps.nds.beis.esb.adapter.PrintExemptionDetailsAdapter" />
+	<bean id="updateEmailInLdapAndBackOfficeAdapter" class="com.northgateps.nds.beis.esb.updateemail.UpdateEmailInLdapAndBackOfficeAdapter" />
+	<bean id="validateViewDocument" class="com.northgateps.nds.beis.esb.process.ValidateViewPdfDocumentRequest">
 		<property name="scriptsLoader">
 			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
 		</property>
 		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
 	</bean>
 	
-	<bean id="getUserTypePartyDetailsAdapter"
-		class="com.northgateps.nds.beis.esb.dashboard.GetUserTypePartyDetailsAdapter" />
-		
+	<bean id="getUserTypePartyDetailsAdapter" class="com.northgateps.nds.beis.esb.dashboard.GetUserTypePartyDetailsAdapter" />
 	<bean id="getUserEmailAddressAdapter" class="com.northgateps.nds.beis.esb.registration.GetUserEmailAddressAdapter" />
-	
-	<bean id="statisticsEmailAdapter"
-		class="com.northgateps.nds.beis.esb.statistics.StatisticsEmailAdapter">
+	<bean id="statisticsEmailAdapter" class="com.northgateps.nds.beis.esb.statistics.StatisticsEmailAdapter">
 		<property name="templateLoader" ref="emailTemplateLoader" />
 	</bean>
+	
+	<!-- addressSearch-routeContext.xml beans start -->
+	    
+	<!-- QAS Proweb Adapters -->
+ 	<bean id="qasSearchSoapAdapter" class="com.northgateps.nds.platform.esb.addresssearch.QasSearchSoapAdapter"/>
+	<bean id="qasGetAddressSoapAdapter" class="com.northgateps.nds.platform.esb.addresssearch.QasGetAddressSoapAdapter"/>
+	
+	<!-- QAS Pro On-demand Adapters -->
+	<bean id="qasSearchProOndemandSoapAdapter" class="com.northgateps.nds.platform.esb.proondemand.addresssearch.QasSearchProOndemandSoapAdapter"/>
+	<bean id="qasGetAddressProOndemandSoapAdapter" class="com.northgateps.nds.platform.esb.proondemand.addresssearch.QasGetAddressProOndemandSoapAdapter"/>
+	
+	<!-- QAS HTTP Header interceptor -->
+	<bean id="qasHttpHeaderInterceptor" class="com.northgateps.nds.platform.esb.proondemand.addresssearch.QasHttpHeaderInterceptor" />
 
-	<cxf:rsServer id="fileAddService" address="/fileAddService"
+	<!-- NAS Adapters -->
+	<bean id="nasAddressSearchAdapter" class="com.northgateps.nds.platform.esb.nas.addresssearch.NasAddressSearchAdapter" />
+	<bean id="nasAddressDetailAdapter" class="com.northgateps.nds.platform.esb.nas.addresssearch.NasAddressDetailAdapter" />
+	<bean id="ndsTrustAllCerts" class="com.northgateps.nds.platform.security.NdsTrustAllCerts"/>
+
+	<bean id="nas-wsSecurity-passwordCallback" class="com.northgateps.nds.platform.esb.security.PasswordCallbackForWsSecurity">
+		<constructor-arg value="${address.search.nas.secret}" />
+	</bean>
+
+	<bean id="nas-ws-security-client" class="com.northgateps.nds.platform.esb.security.SecurityOutInterceptorForWsSecurity">
+		<constructor-arg value="${address.search.nas.userid}" />
+		<constructor-arg ref="nas-wsSecurity-passwordCallback" />
+	</bean>
+	
+	<!-- addressSearch-routeContext beans end -->
+	<!-- directory-persistence-routeContext beans start -->
+    <bean id="emailTemplateLoader" class="com.northgateps.nds.platform.esb.email.EmailTemplateLoader"/>
+    <bean id="registrationLdapComponent" class="com.northgateps.nds.platform.esb.registration.RegistrationLdapComponent" />
+    <bean id="registrationDbAdapter" class="com.northgateps.nds.platform.esb.registration.RegistrationPersistenceAdapter" />
+    <bean id="activateRegistrationLdapComponent" class="com.northgateps.nds.platform.esb.registration.ActivateRegistrationLdapComponent" />
+    <bean id="retrieveRegisteredUserDetailsComponent" class="com.northgateps.nds.platform.esb.registration.RetrieveRegisteredUserDetailsComponent" />
+    <bean id="retrieveRegisteredUserDetailsPersistenceComponent" class="com.northgateps.nds.platform.esb.registration.RetrieveRegisteredUserDetailsPersistenceComponent" />
+    <bean id="retrieveUserAccountDetailsAdapter" class="com.northgateps.nds.platform.esb.registration.RetrieveUserAccountDetailsPersistenceAdapter" />
+    <bean id="saveRegisteredUserDetailsComponent" class="com.northgateps.nds.platform.esb.registration.SaveRegisteredUserDetailsComponent" />
+    <bean id="saveRegisteredUserPersistenceComponent" class="com.northgateps.nds.platform.esb.registration.SaveRegisteredUserPersistenceComponent" />
+    <bean id="userAccountAuditAdapter" class="com.northgateps.nds.platform.esb.useraccountaudit.UserAccountAuditPersistenceAdapter" />
+    <bean id="userAccountStatisticsAdapter" class="com.northgateps.nds.platform.esb.statistics.UserAccountStatisticsPersistenceAdapter" />
+    <bean id="logEventAdapter" class="com.northgateps.nds.platform.esb.logevent.LogEventPersistenceAdapter" />
+    
+    <bean id="registrationEmailAdapter" class="com.northgateps.nds.platform.esb.registration.RegistrationEmailAdapter">
+        <property name="templateLoader" ref="emailTemplateLoader"/>
+    </bean>    
+
+    <bean id="updateEmailLdapComponent" class="com.northgateps.nds.platform.esb.updateemail.UpdateEmailLdapComponent" />
+        
+    <bean id="updateEmailNotifierToOldAddressAdapter" class="com.northgateps.nds.platform.esb.updateemail.UpdateEmailNotifierToOldAddressAdapter">
+        <property name="templateLoader" ref="emailTemplateLoader"/>
+    </bean>
+    
+    <bean id="updateEmailNotifierToNewAddressAdapter" class="com.northgateps.nds.platform.esb.updateemail.UpdateEmailNotifierToNewAddressAdapter">
+        <property name="templateLoader" ref="emailTemplateLoader"/>
+    </bean> 
+
+    <bean id="changePasswordLdapComponent" class="com.northgateps.nds.platform.esb.changepassword.ChangePasswordLdapComponent" />
+    <bean id="changePasswordPersistenceComponent" class="com.northgateps.nds.platform.esb.changepassword.ChangePasswordPersistenceComponent" />  
+    <bean id="activatePasswordResetPersistenceComponent" class="com.northgateps.nds.platform.esb.changepassword.ActivatePasswordResetPersistenceComponent" />  
+    <bean id="passwordResetLdapComponent" class="com.northgateps.nds.platform.esb.passwordreset.PasswordResetLdapComponent" />
+    <bean id="activatePasswordResetLdapComponent" class="com.northgateps.nds.platform.esb.passwordreset.ActivatePasswordResetLdapComponent" />
+
+    <bean id="passwordResetEmailAdapter" class="com.northgateps.nds.platform.esb.passwordreset.PasswordResetEmailAdapter">
+        <property name="templateLoader" ref="emailTemplateLoader"/>
+    </bean>
+    
+	<bean id="deleteUserAccountComponent" class="com.northgateps.nds.platform.esb.deleteuseraccount.DeleteUserAccountComponent" />
+	<bean id="deleteDormantUserAccountAdapter" class="com.northgateps.nds.platform.esb.deleteuseraccount.DeleteDormantUserAccountPersistenceAdapter" />		
+		
+	<bean id="deleteUserAccountEmailNotifier" class="com.northgateps.nds.platform.esb.deleteuseraccount.DeleteUserAccountEmailNotifier">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+	</bean>
+	
+    <bean id="validatePasswordReset" class="com.northgateps.nds.platform.esb.process.ValidatePasswordReset">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateActivatePasswordReset" class="com.northgateps.nds.platform.esb.process.ValidateActivatePasswordReset">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateUpdateEmail" class="com.northgateps.nds.platform.esb.process.ValidateUpdateEmail">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateChangePassword" class="com.northgateps.nds.platform.esb.process.ValidateChangePassword">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateRegistration" class="com.northgateps.nds.platform.esb.process.ValidateRegistration">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateActivateRegistration" class="com.northgateps.nds.platform.esb.process.ValidateActivateRegistration">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateLogEvent" class="com.northgateps.nds.platform.esb.process.ValidateLogEvent">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+       
+    <bean id="validateDeleteUserAccount" class="com.northgateps.nds.platform.esb.deleteuseraccount.ValidateDeleteUserAccount">
+		<property name="scriptsLoader">
+			<bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+		</property>
+		<property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+	</bean>
+        
+    <bean id="ndsDirectoryErrorRecoveryProcessor" class="com.northgateps.nds.platform.esb.exception.NdsDirectoryErrorRecoveryProcessor" />
+    <bean id="businessErrorProcessor" class="com.northgateps.nds.platform.esb.exception.BusinessErrorProcessor" />
+
+    <bean id="validateForgotUsername" class="com.northgateps.nds.platform.esb.forgotusername.ValidateForgotUsername">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="forgotUsernameLdapComponent" class="com.northgateps.nds.platform.esb.forgotusername.ForgotUsernameLdapComponent" />
+
+    <bean id="forgotUsernameEmailAdapter" class="com.northgateps.nds.platform.esb.forgotusername.ForgotUsernameEmailAdapter">
+        <property name="templateLoader" ref="emailTemplateLoader"/>
+    </bean>
+    
+    <bean id="sendEmailToDormantUsersAdapter" class="com.northgateps.nds.platform.esb.senddormantuseremail.SendEmailToDormantUsersPersistenceAdapter" />
+	<bean id="sendEmailToDormantUsersLdapComponent" class="com.northgateps.nds.platform.esb.senddormantuseremail.SendEmailToDormantUsersLdapComponent" />
+	<bean id="sendEmailToDormantUsersEmailNotifier" class="com.northgateps.nds.platform.esb.senddormantuseremail.SendEmailToDormantUsersEmailNotifier">
+		<property name="templateLoader" ref="emailTemplateLoader" />
+		<property name="userMessageService">
+			<bean class="com.northgateps.nds.platform.esb.adapter.serviceprovider.DefaultSmtpEmailService" />
+		</property>
+	</bean>
+	
+    <bean id="directoryInternalRoutePolicy" class="com.northgateps.nds.platform.esb.routepolicy.InternalRoutePolicy" />
+	<!-- directory-persistence-routeContext beans end -->
+
+	<!-- generateReference-persistence-routeContext beans start -->	
+    <bean id="generateReferenceHelper"
+		class="com.northgateps.nds.platform.esb.generatereference.GenerateReferencePersistenceHelper" />
+    <bean id="generateReferenceAdapter"
+		class="com.northgateps.nds.platform.esb.generatereference.GenerateReferencePersistenceAdapter" >
+		<property name="generateReferenceHelper" ref="generateReferenceHelper"/>
+	</bean>
+	<!-- generateReference-persistence-routeContext beans end -->
+	
+	<jaxrs:rsServer id="fileAddService" address="/fileAddService"
 		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileAddServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="fileReadService" address="/fileReadService"
+	<jaxrs:rsServer id="fileReadService" address="/fileReadService"
 		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileReadServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="fileDeleteService" address="/fileDeleteService"
+	<jaxrs:rsServer id="fileDeleteService" address="/fileDeleteService"
 		serviceClass="com.northgateps.nds.platform.api.fileresourceoperation.FileDeleteServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="getConstrainedValuesService" address="/getConstrainedValuesService"
+	<jaxrs:rsServer id="getConstrainedValuesService" address="/getConstrainedValuesService"
 		serviceClass="com.northgateps.nds.beis.api.getconstrainedvalues.GetConstrainedValuesServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="getExemptionTypeTextService" address="/getExemptionTypeTextService"
+	<jaxrs:rsServer id="getExemptionTypeTextService" address="/getExemptionTypeTextService"
 		serviceClass="com.northgateps.nds.beis.api.getexemptiontypetext.GetExemptionTypeTextServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="20">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="beisregistrationService" address="/beisregistrationService"
+	<jaxrs:rsServer id="beisregistrationService" address="/beisregistrationService"
 		serviceClass="com.northgateps.nds.beis.api.beisregistration.BeisRegistrationServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:rsServer id="printExemptionDetailsService" address="/printExemptionDetailsService"
+	<jaxrs:rsServer id="printExemptionDetailsService" address="/printExemptionDetailsService"
 		serviceClass="com.northgateps.nds.beis.api.printexemptiondetails.PrintExemptionDetailsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
-			<bean
-				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:cxfEndpoint id="beisGetPrsAccountExemptionsService"
+	<jaxws:cxfEndpoint id="beisGetPrsAccountExemptionsService"
 		address="{{beis.getPrsAccountExemptionsApiUrl}}"
 		xmlns:beisGetPrsAccountExemptions="http://www.northgateps.com/GetPRSAccountExemptions.wsdl"
 		serviceName="beisGetPrsAccountExemptions:MaintainPartyDetailsWSDLPort"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions.GetPRSAccountExemptionsWSDLPort"
 		endpointName="beisGetPrsAccountExemptions:GetPRSAccountExemptionsWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:cxfEndpoint id="beisMaintainPartyDetailsService"
+	<jaxws:cxfEndpoint id="beisMaintainPartyDetailsService"
 		address="{{beis.maintainPartyDetailsApiUrl}}"
 		xmlns:beisMaintainPartyDetails="http://www.northgateps.com/MaintainPartyDetails.wsdl"
 		serviceName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
@@ -486,248 +564,722 @@
 		endpointName="beisMaintainPartyDetails:MaintainPartyDetailsWSDLPort"
 		
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:cxfEndpoint id="beisGetPartyDetailsService"
+	<jaxws:cxfEndpoint id="beisGetPartyDetailsService"
 		address="{{beis.getPartyDetailsApiUrl}}"
 		xmlns:beisGetPartyDetails="http://www.northgateps.com/GetPartyDetails.wsdl"
 		serviceName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsWSDLPort"
 		endpointName="beisGetPartyDetails:GetPartyDetailsWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:rsServer id="registerPrsExemptionService" address="/registerPrsExemptionService"
+	<jaxrs:rsServer id="registerPrsExemptionService" address="/registerPrsExemptionService"
 		serviceClass="com.northgateps.nds.beis.api.registerprsexemption.RegisterPrsExemptionServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="1200">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean
 				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:cxfEndpoint id="prsExemptionSearchServiceEndPoint"
+	<jaxws:cxfEndpoint id="prsExemptionSearchServiceEndPoint"
 		address="{{beis.prsExemptionSearchServiceApiUrl}}"
 		xmlns:prsExemptionSearch="http://www.northgateps.com/PRSExemptionSearch.wsdl"
 		serviceName="prsExemptionSearch:PRSExemptionSearchWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.prsexemptionsearch.PRSExemptionSearchWSDLPort"
 		endpointName="prsExemptionSearch:PRSExemptionSearchWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:cxfEndpoint id="prsPenaltySearchServiceEndPoint"
+	<jaxws:cxfEndpoint id="prsPenaltySearchServiceEndPoint"
 		address="{{beis.prsPenaltySearchServiceApiUrl}}"
 		xmlns:prsPenaltySearch="http://www.northgateps.com/PRSPenaltySearch.wsdl"
 		serviceName="prsPenaltySearch:PRSPenaltySearchWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.prspenaltysearch.PRSPenaltySearchWSDLPort"
 		endpointName="prsPenaltySearch:PRSPenaltySearchWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:cxfEndpoint id="prsExemptionUpdateServiceEndPoint"
+	<jaxws:cxfEndpoint id="prsExemptionUpdateServiceEndPoint"
 		address="{{beis.prsExemptionUpdateServiceApiUrl}}"
 		xmlns:prsExemptionUpdate="http://www.northgateps.com/UpdatePRSExemption.wsdl"
 		serviceName="prsExemptionUpdate:UpdatePRSExemptionWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.updateprsexemption.UpdatePRSExemptionWSDLPort"
 		endpointName="prsExemptionUpdate:UpdatePRSExemptionWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:cxfEndpoint id="viewDocumentGDIPGDARServiceEndPoint"
+	<jaxws:cxfEndpoint id="viewDocumentGDIPGDARServiceEndPoint"		
 		address="{{beis.viewDocumentGDIPGDARServiceApiUrl}}"
 		xmlns:viewDocumentGDIPGDAR="http://www.northgateps.com/ViewDocumentGDIPGDAR.wsdl"
 		serviceName="viewDocumentGDIPGDAR:ViewDocumentGDIPGDAR"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.viewdocumentgdipgdar.ViewDocumentGDIPGDAR"
 		endpointName="viewDocumentGDIPGDAR:ViewDocumentGDIPGDARSOAP"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
 
-	<cxf:cxfEndpoint id="exemptionRegistrationService"
+	<jaxws:cxfEndpoint id="exemptionRegistrationService"
 		address="{{beis.registerPrsExemptionApiUrl}}"
 		xmlns:registerPrsExemption="http://www.northgateps.com/RegisterPRSExemption.wsdl"
 		serviceName="registerPrsExemption:RegisterPRSExemptionWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.registerprsexemption.RegisterPRSExemptionWSDLPort"
 		endpointName="registerPrsExemption:RegisterPRSExemptionWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 
-	<cxf:rsServer id="getPrsExemptionRefDataService" address="/getPrsExemptionRefDataService"
+	<jaxrs:rsServer id="getPrsExemptionRefDataService" address="/getPrsExemptionRefDataService"
 		serviceClass="com.northgateps.nds.beis.api.getprsexemptionrefdata.GetPrsExemptionRefDataServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="20">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean
 				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:cxfEndpoint id="getPrsExemptionRefDataEndPoint"
+	<jaxws:cxfEndpoint id="getPrsExemptionRefDataEndPoint"
 		address="{{beis.getPrsExemptionRefDataApiUrl}}"
 		xmlns:getPrsExemptionRefData="http://www.northgateps.com/GetPRSExemptionReferenceData.wsdl"
 		serviceName="getPrsExemptionRefData:RegisterPRSExemptionWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata.GetPRSExemptionReferenceDataWSDLPort"
 		endpointName="getPrsExemptionRefData:RegisterPRSExemptionWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 	
-	<cxf:rsServer id="getPrsPenaltyRefDataService" address="/getPrsPenaltyRefDataService"
+	<jaxrs:rsServer id="getPrsPenaltyRefDataService" address="/getPrsPenaltyRefDataService"
 		serviceClass="com.northgateps.nds.beis.api.getprspenaltyrefdata.GetPrsPenaltyRefDataServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="20">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean
 				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 	
-	<cxf:cxfEndpoint id="getPrsPenaltyRefDataEndPoint"
+	<jaxws:cxfEndpoint id="getPrsPenaltyRefDataEndPoint"
 		address="{{beis.getPrsPenaltyRefDataApiUrl}}"
 		xmlns:getPrsPenaltyRefData="http://www.northgateps.com/GetPRSPenaltyReferenceData.wsdl"
 		serviceName="getPrsPenaltyRefData:GetPRSPenaltyReferenceDataWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata.GetPRSPenaltyReferenceDataWSDLPort"
 		endpointName="getPrsPenaltyRefData:GetPRSPenaltyReferenceDataWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 	
 
-	<cxf:rsServer id="getReferenceValuesService" address="/getReferenceValuesService"
+	<jaxrs:rsServer id="getReferenceValuesService" address="/getReferenceValuesService"
 		serviceClass="com.northgateps.nds.beis.api.getreferencevalues.GetReferenceValuesNdsServiceInterface"
 		loggingFeatureEnabled="true" loggingSizeLimit="20">
-		<cxf:providers>
+		<jaxrs:providers>
 			<bean
 				class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-		</cxf:providers>
-	</cxf:rsServer>
+		</jaxrs:providers>
+	</jaxrs:rsServer>
 
-	<cxf:cxfEndpoint id="beisGetReferenceValuesService"
+	<jaxws:cxfEndpoint id="beisGetReferenceValuesService"
 		address="{{beis.getReferenceValuesApiUrl}}" xmlns:getReferenceValues="northgate-is.com/GetReferenceValues.wsdl"
 		serviceName="getReferenceValues:GetReferenceValuesWSDLService"
 		serviceClass="com.northgateps.nds.beis.backoffice.service.getreferencevalues.GetReferenceValuesWSDLPort"
 		endpointName="getReferenceValues:GetReferenceValuesWSDLPort"
 		loggingFeatureEnabled="true">
-		<cxf:properties>
+		<jaxws:properties>
 			<entry key="dataFormat" value="PAYLOAD" />
-		</cxf:properties>
-		<cxf:outInterceptors>
+		</jaxws:properties>
+		<jaxws:outInterceptors>
 			<ref bean="ws-security-client" />
-		</cxf:outInterceptors>
-	</cxf:cxfEndpoint>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
 	
-	<cxf:rsServer id="beisPasswordResetService" address="/beisPasswordResetService"
+	<jaxrs:rsServer id="beisPasswordResetService" address="/beisPasswordResetService"
         serviceClass="com.northgateps.nds.beis.api.passwordreset.BeisPasswordResetServiceInterface"
         loggingFeatureEnabled="true" loggingSizeLimit="1200">
-        <cxf:providers>
+        <jaxrs:providers>
             <bean
                 class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
-        </cxf:providers>
-    </cxf:rsServer>
-    
-    
-    <!-- registry settings for secure email sending -->
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+     
 	<camel:sslContextParameters id="smtpSslContext">
 		<camel:serverParameters clientAuthentication="WANT" />
 	</camel:sslContextParameters>
 
-	
 
+	<!-- Seems to be a BEIS almost duplicate of the platform version but NB uses the BEIS version of the request class not the platform one.
+		Previous versions of camel may have been able to convert between them (since they're basically the same) but now can't do that.
+		To clarify - using the BEIS version. -->
+    <bean id="validateRetrieveRegisteredUserDetails" class="com.northgateps.nds.beis.esb.process.ValidateRetrieveRegisteredUserDetails">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+    
+    <bean id="validateSaveRegisteredUserDetails" class="com.northgateps.nds.platform.esb.process.ValidateSaveRegisteredUserDetails">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <bean id="validateUserAccountAudit" class="com.northgateps.nds.platform.esb.process.ValidateUserAccountAudit">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+ 
+     <bean id="validateUserAccountStatistics" class="com.northgateps.nds.platform.esb.process.ValidateUserAccountStatistics">
+        <property name="scriptsLoader">
+            <bean class="com.northgateps.nds.platform.util.scripts.ScriptsLoader" />
+        </property>
+        <property name="modelAnnotationsProvider" ref="ModelAnnotationsProvider" />
+    </bean>
+
+    <jaxrs:rsServer id="registrationService" address="/registrationService"
+        serviceClass="com.northgateps.nds.platform.api.registration.RegistrationServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="activateRegistrationService" address="/activateRegistrationService"
+        serviceClass="com.northgateps.nds.platform.api.activateregistration.ActivateRegistrationServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="retrieveRegisteredUserDetailsService" address="/retrieveRegisteredUserDetailsService"
+        serviceClass="com.northgateps.nds.platform.api.retrieveregistereduserdetails.RetrieveRegisteredUserDetailsServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="saveRegisteredUserDetailsService" address="/saveRegisteredUserDetailsService"
+        serviceClass="com.northgateps.nds.platform.api.saveregistereduserdetails.SaveRegisteredUserDetailsServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+    
+    <jaxrs:rsServer id="userAccountAuditService" address="/userAccountAuditService"
+        serviceClass="com.northgateps.nds.platform.api.useraccountaudit.UserAccountAuditServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="logEventService" address="/logEventService"
+        serviceClass="com.northgateps.nds.platform.api.logevent.LogEventServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+    
+    <jaxrs:rsServer id="updateEmailService" address="/updateEmailService"
+        serviceClass="com.northgateps.nds.platform.api.updateemail.UpdateEmailServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="changePasswordService" address="/changePasswordService"
+        serviceClass="com.northgateps.nds.platform.api.changepassword.ChangePasswordServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="deleteUserAccountService" address="/deleteUserAccountService"
+        serviceClass="com.northgateps.nds.platform.api.deleteuseraccount.DeleteUserAccountServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="passwordResetService" address="/passwordResetService"
+        serviceClass="com.northgateps.nds.platform.api.passwordreset.PasswordResetServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="activatePasswordResetService" address="/activatePasswordResetService"
+        serviceClass="com.northgateps.nds.platform.api.activatepasswordreset.ActivatePasswordResetServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="forgotUsernameService" address="/forgotUsernameService"
+                  serviceClass="com.northgateps.nds.platform.api.forgottenusername.ReportForgottenUsernameServiceInterface"
+                  loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+   
+
+		
+	<!-- NDS Platform Postcode search service -->
+	<jaxrs:rsServer id="addressSearchService" address="/addressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.addressSearch.AddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+	
+	<!-- NDS Platform Moniker search service -->
+	<jaxrs:rsServer id="specificAddressSearchService" address="/specificAddressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.specificaddresssearch.SpecificAddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+
+	<!-- CXF Postcode endpoint for QAS Proweb web services hosted locally -->
+	<jaxws:cxfEndpoint id="addressSearchServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="addressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="addressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Moniker endpoint for QAS Proweb web services hosted locally - xmlns:specificAddressSearchService="http://www.qas.com/web-2009-08" -->
+	<jaxws:cxfEndpoint id="specificAddressSearchServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="specificAddressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="specificAddressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+	
+	<!-- CXF Postcode endpoint for QAS Pro On-demand web services hosted on Cloud -->
+	<jaxws:cxfEndpoint id="addressSearchProOndemandServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="addressSearchService:QASOnDemandIntermediary"
+		serviceClass="com.northgateps.nds.platform.external.service.proondemand.qas.QAPortType"
+		endpointName="addressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+			<entry key="synchronous" value="true" />
+		</jaxws:properties>
+	    <jaxws:outInterceptors>
+	        <ref bean="qasHttpHeaderInterceptor"/>
+	    </jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+ 
+ 	<!-- CXF Moniker endpoint for QAS Pro On-demand web services hosted on Cloud  -->
+	<jaxws:cxfEndpoint id="specificAddressSearchProOndemandServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="specificAddressSearchService:QASOnDemandIntermediary"
+		serviceClass="com.northgateps.nds.platform.external.service.proondemand.qas.QAPortType"
+		endpointName="specificAddressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+            <entry key="synchronous" value="true" />
+		</jaxws:properties>
+	    <jaxws:outInterceptors>
+	        <ref bean="qasHttpHeaderInterceptor"/>
+	    </jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Postcode endpoint for NAS search web services hosted in FL -->
+	<jaxws:cxfEndpoint id="addressSearchNasServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="NASAddressSearchService"
+		serviceClass="com.northgateps.nds.platform.external.service.nasaddresssearch.NASAddressSearchWSDLPort"
+		endpointName="NASAddressSearchWSDLPort"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+		<jaxws:outInterceptors>
+			<ref bean="nas-ws-security-client"/>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Detail endpoint for NAS detail search web services hosted in FL -->
+	<jaxws:cxfEndpoint id="addressDetailNasServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="NASAddressDetailService"
+		serviceClass="com.northgateps.nds.platform.external.service.nasaddressdetail.NASAddressDetailWSDLPort"
+		endpointName="NASAddressDetailWSDLPort"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+		<jaxws:outInterceptors>
+			<ref bean="nas-ws-security-client"/>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+
+		<!-- NDS Platform Postcode search service -->
+	<jaxrs:rsServer id="addressSearchService" address="/addressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.addressSearch.AddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+	
+	<!-- NDS Platform Moniker search service -->
+	<jaxrs:rsServer id="specificAddressSearchService" address="/specificAddressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.specificaddresssearch.SpecificAddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+
+	<!-- CXF Postcode endpoint for QAS Proweb web services hosted locally -->
+	<jaxws:cxfEndpoint id="addressSearchServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="addressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="addressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Moniker endpoint for QAS Proweb web services hosted locally - xmlns:specificAddressSearchService="http://www.qas.com/web-2009-08" -->
+	<jaxws:cxfEndpoint id="specificAddressSearchServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="specificAddressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="specificAddressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+
+	<!-- addressSearch-routeContext jaxr/ws start -->
+	<!-- NDS Platform Postcode search service -->
+	<jaxrs:rsServer id="addressSearchService" address="/addressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.addressSearch.AddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+	
+	<!-- NDS Platform Moniker search service -->
+	<jaxrs:rsServer id="specificAddressSearchService" address="/specificAddressSearchService"
+		          serviceClass="com.northgateps.nds.platform.api.specificaddresssearch.SpecificAddressSearchInterface"
+		          loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+ 	 	 	<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper"/>
+ 	 	</jaxrs:providers>
+	</jaxrs:rsServer>
+
+	<!-- CXF Postcode endpoint for QAS Proweb web services hosted locally -->
+	<jaxws:cxfEndpoint id="addressSearchServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="addressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="addressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Moniker endpoint for QAS Proweb web services hosted locally - xmlns:specificAddressSearchService="http://www.qas.com/web-2009-08" -->
+	<jaxws:cxfEndpoint id="specificAddressSearchServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="specificAddressSearchService:ProWeb"
+		serviceClass="com.northgateps.nds.platform.external.service.qas.QAPortType"
+		endpointName="specificAddressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+	</jaxws:cxfEndpoint>
+	
+	<!-- CXF Postcode endpoint for QAS Pro On-demand web services hosted on Cloud -->
+	<jaxws:cxfEndpoint id="addressSearchProOndemandServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="addressSearchService:QASOnDemandIntermediary"
+		serviceClass="com.northgateps.nds.platform.external.service.proondemand.qas.QAPortType"
+		endpointName="addressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+			<entry key="synchronous" value="true" />
+		</jaxws:properties>
+	    <jaxws:outInterceptors>
+	        <ref bean="qasHttpHeaderInterceptor"/>
+	    </jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+ 
+ 	<!-- CXF Moniker endpoint for QAS Pro On-demand web services hosted on Cloud  -->
+	<jaxws:cxfEndpoint id="specificAddressSearchProOndemandServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="specificAddressSearchService:QASOnDemandIntermediary"
+		serviceClass="com.northgateps.nds.platform.external.service.proondemand.qas.QAPortType"
+		endpointName="specificAddressSearchService:QAPortType"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+            <entry key="synchronous" value="true" />
+		</jaxws:properties>
+	    <jaxws:outInterceptors>
+	        <ref bean="qasHttpHeaderInterceptor"/>
+	    </jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Postcode endpoint for NAS search web services hosted in FL -->
+	<jaxws:cxfEndpoint id="addressSearchNasServiceEndpoint"
+		address="{{address.search.service.addressSearchUrl}}"
+		serviceName="NASAddressSearchService"
+		serviceClass="com.northgateps.nds.platform.external.service.nasaddresssearch.NASAddressSearchWSDLPort"
+		endpointName="NASAddressSearchWSDLPort"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+		<jaxws:outInterceptors>
+			<ref bean="nas-ws-security-client"/>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+
+	<!-- CXF Detail endpoint for NAS detail search web services hosted in FL -->
+	<jaxws:cxfEndpoint id="addressDetailNasServiceEndpoint"
+		address="{{address.search.service.addressDetailUrl}}"
+		serviceName="NASAddressDetailService"
+		serviceClass="com.northgateps.nds.platform.external.service.nasaddressdetail.NASAddressDetailWSDLPort"
+		endpointName="NASAddressDetailWSDLPort"
+		loggingFeatureEnabled="true">
+		<jaxws:properties>
+			<entry key="dataFormat" value="PAYLOAD" />
+		</jaxws:properties>
+		<jaxws:outInterceptors>
+			<ref bean="nas-ws-security-client"/>
+		</jaxws:outInterceptors>
+	</jaxws:cxfEndpoint>
+	<!-- addressSearch-routeContext jaxr/ws end -->
+	<!-- directory-persistence-routeContext jaxr/ws start -->
+    <jaxrs:rsServer id="registrationService" address="/registrationService"
+        serviceClass="com.northgateps.nds.platform.api.registration.RegistrationServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="activateRegistrationService" address="/activateRegistrationService"
+        serviceClass="com.northgateps.nds.platform.api.activateregistration.ActivateRegistrationServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="retrieveRegisteredUserDetailsService" address="/retrieveRegisteredUserDetailsService"
+        serviceClass="com.northgateps.nds.platform.api.retrieveregistereduserdetails.RetrieveRegisteredUserDetailsServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="saveRegisteredUserDetailsService" address="/saveRegisteredUserDetailsService"
+        serviceClass="com.northgateps.nds.platform.api.saveregistereduserdetails.SaveRegisteredUserDetailsServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+    
+    <jaxrs:rsServer id="userAccountAuditService" address="/userAccountAuditService"
+        serviceClass="com.northgateps.nds.platform.api.useraccountaudit.UserAccountAuditServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="logEventService" address="/logEventService"
+        serviceClass="com.northgateps.nds.platform.api.logevent.LogEventServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+    
+    <jaxrs:rsServer id="updateEmailService" address="/updateEmailService"
+        serviceClass="com.northgateps.nds.platform.api.updateemail.UpdateEmailServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="changePasswordService" address="/changePasswordService"
+        serviceClass="com.northgateps.nds.platform.api.changepassword.ChangePasswordServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="deleteUserAccountService" address="/deleteUserAccountService"
+        serviceClass="com.northgateps.nds.platform.api.deleteuseraccount.DeleteUserAccountServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="passwordResetService" address="/passwordResetService"
+        serviceClass="com.northgateps.nds.platform.api.passwordreset.PasswordResetServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="activatePasswordResetService" address="/activatePasswordResetService"
+        serviceClass="com.northgateps.nds.platform.api.activatepasswordreset.ActivatePasswordResetServiceInterface"
+        loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+
+    <jaxrs:rsServer id="forgotUsernameService" address="/forgotUsernameService"
+                  serviceClass="com.northgateps.nds.platform.api.forgottenusername.ReportForgottenUsernameServiceInterface"
+                  loggingFeatureEnabled="true" loggingSizeLimit="1200">
+        <jaxrs:providers>
+            <bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+        </jaxrs:providers>
+    </jaxrs:rsServer>
+	<!-- directory-persistence-routeContext jaxr/ws end -->
+	
+	<!-- generateReference-persistence-routeContext jaxrs start -->
+	<jaxrs:rsServer id="generateReferenceService" address="/generateReferenceService"
+		serviceClass="com.northgateps.nds.platform.api.generatereference.GenerateReferenceServiceInterface"
+		loggingFeatureEnabled="true" loggingSizeLimit="1200">
+		<jaxrs:providers>
+			<bean class="com.northgateps.nds.platform.esb.exception.CamelExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:rsServer>
+	<!-- generateReference-persistence-routeContext jaxrs end -->
+	
 	<!-- The camel route context -->
 	<camelContext id="camel" xmlns="http://camel.apache.org/schema/spring"
 		errorHandlerRef="defaultEH" allowUseOriginalMessage="true" loadTypeConverters="true">
 		<ndsext:ndsStandardExceptionHandlers />
-
 
 		<globalOptions>
 			<globalOption key="CamelLogDebugBodyMaxChars" value="10000" />
 		</globalOptions>
 
 		<errorHandler id="defaultEH" useOriginalMessage="true">
-			<redeliveryPolicy maximumRedeliveries="2"
-				redeliveryDelay="1000" retryAttemptedLogLevel="WARN" />
+			<redeliveryPolicy maximumRedeliveries="2" redeliveryDelay="1000" retryAttemptedLogLevel="WARN" />
 		</errorHandler>
 
 		<!-- Import routes here -->
-		<routeContextRef ref="addressSearchRoutes" />
-		<routeContextRef ref="directoryRoutes" />
-		<routeContextRef ref="generateReferenceRoutes" />
+		
+		<!-- routeContextRef ref="addressSearchRoutes" />  -->
+		<!-- <routeContextRef ref="directoryRoutes" /> -->
+		<!-- <routeContextRef ref="generateReferenceRoutes" /> -->
+		
 
 		<dataFormats>
-			<jaxb id="jaxb-registerPrsExemptionResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.registerprsexemption" />
-			<bindy id="csvBindyConstrainedValueRecord" type="Csv"
-				classType="com.northgateps.nds.beis.esb.getconstrainedvalues.CsvConstrainedValueRecord" />
-			<jaxb id="jaxb-getPrsAccountExemptionsResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions" />
-			<jaxb id="jaxb-prsExemptionSearchResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.prsexemptionsearch" />
-			<jaxb id="jaxb-prsPenaltySearchResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.prspenaltysearch" />
-			<jaxb id="jaxb-maintainPartyDetailsResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.maintainpartydetails" />
-			<jaxb id="jaxb-getPartyDetailsResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.getpartydetails" />
-			<jaxb id="jaxb-prsExemptionUpdateResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.updateprsexemption" />
-			<jaxb id="jaxb-getPrsExemptionRefDataResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata" />
-			<jaxb id="jaxb-getPrsPenaltyRefDataResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata" />
-			<jaxb id="jaxb-viewPdfResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.viewdocumentgdipgdar" />
-			<jaxb id="jaxb-getReferenceValuesResponse"
-				contextPath="com.northgateps.nds.beis.backoffice.service.getreferencevalues" />
+			<jaxb id="jaxb-registerPrsExemptionResponse" contextPath="com.northgateps.nds.beis.backoffice.service.registerprsexemption" />
+			<bindy id="csvBindyConstrainedValueRecord" type="Csv" classType="com.northgateps.nds.beis.esb.getconstrainedvalues.CsvConstrainedValueRecord" />
+			<jaxb id="jaxb-getPrsAccountExemptionsResponse" contextPath="com.northgateps.nds.beis.backoffice.service.getprsaccountexemptions" />
+			<jaxb id="jaxb-prsExemptionSearchResponse" contextPath="com.northgateps.nds.beis.backoffice.service.prsexemptionsearch" />
+			<jaxb id="jaxb-prsPenaltySearchResponse" contextPath="com.northgateps.nds.beis.backoffice.service.prspenaltysearch" />
+			<jaxb id="jaxb-maintainPartyDetailsResponse" contextPath="com.northgateps.nds.beis.backoffice.service.maintainpartydetails" />
+			<jaxb id="jaxb-getPartyDetailsRequest" contextPath="com.northgateps.nds.beis.backoffice.service.getpartydetails" />
+			<jaxb id="jaxb-getPartyDetailsResponse" contextPath="com.northgateps.nds.beis.backoffice.service.getpartydetails" />
+			<jaxb id="jaxb-prsExemptionUpdateResponse" contextPath="com.northgateps.nds.beis.backoffice.service.updateprsexemption" />
+			<jaxb id="jaxb-getPrsExemptionRefDataResponse" contextPath="com.northgateps.nds.beis.backoffice.service.getprsexemptionreferencedata" />
+			<jaxb id="jaxb-getPrsPenaltyRefDataResponse" contextPath="com.northgateps.nds.beis.backoffice.service.getprspenaltyreferencedata" />
+			<jaxb id="jaxb-viewPdfResponse" contextPath="com.northgateps.nds.beis.backoffice.service.viewdocumentgdipgdar" />
+			<jaxb id="jaxb-getReferenceValuesResponse" contextPath="com.northgateps.nds.beis.backoffice.service.getreferencevalues" />
 		</dataFormats>
 
 		<onException>
@@ -740,7 +1292,7 @@
 		</onException>
 
 		<route id="getPartiallyRegisteredDetailsServiceRoute" trace="true" streamCache="true">
-			<from uri="{{apiGetPartiallyRegisteredDetailsEndpoint}}" />
+			<from uri="cxfrs:bean:getPartiallyRegisteredDetailsService?bindingStyle=SimpleConsumer" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateGetPartiallyRegisteredDetails" method="validate" />
 				<bean id="getPartiallyRegisteredDetailsLdapComponent.process" ref="getPartiallyRegisteredDetailsLdapAdapter" method="process" />
@@ -754,8 +1306,9 @@
 				<bean ref="validateGetPrsAccountExemptionsRequest" method="validate" />
 				<bean ref="getPrsAccountExemptionsLookupIdAdapter" method="process" />
 				<bean ref="getUserTypePartyDetailsAdapter" method="createPartyDetailsRequest" />
-				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
-				<to uri="direct:getPartyDetails" />
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'getPrsAccountExemptionsServiceRoute')" />
+				<to uri="direct:getPartyDetails" /> <!-- returns a RetrieveRegisteredDetailsNdsResponse in body -->
+
 				<bean ref="validateGetPrsAccountExemptionsRequest" method="validateUserDataInBackoffice" />
 				<bean ref="getUserTypePartyDetailsAdapter" method="getUserType" /> 
 				<bean ref="getPrsAccountExemptionsAdapter" method="processRequest" />
@@ -772,8 +1325,7 @@
 			<from uri="{{apiRetrieveRegisteredDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateRetrieveRegisteredUserDetails" method="validate" />
-				<bean id="retrieveRegisteredDetailsRetrieveAccountIdLdapComponent.process" ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter"
-					method="process" />
+				<bean id="retrieveRegisteredDetailsRetrieveAccountIdLdapComponent.process" ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" method="process" />
 				<to uri="direct:getPartyDetails" />
 			</policy>
 		</route>
@@ -783,8 +1335,7 @@
 			<from uri="direct:getPartyDetails" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<to uri="cxf:bean:beisGetPartyDetailsService" />
 				<!-- SO it looks like we are actually getting the correct xml string back and it is placed in the body,
 					but it looks like there is some multi-threading that is going in in between the logger below and the unmarshal which
@@ -792,18 +1343,16 @@
 				<unmarshal>
 					<custom ref="jaxb-getPartyDetailsResponse" />
 				</unmarshal>
-				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!" loggingLevel="DEBUG" />
 				<bean ref="retrieveRegisteredDetailsSoapAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!" loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
 		<route id="getConstrainedValuesRoute" streamCache="true">
 			<from uri="{{apiGetConstrainedValuesService}}" />
 			<policy ref="generalSecurityPolicy">
-				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'getConstrainedValuesRoute')" />
 
 				<!-- read the constrained values from file/cache -->
 				<bean ref="constrainedValuesCacheAdapter" method="doCaching" /> 
@@ -822,8 +1371,7 @@
 			<policy ref="directorySecurityPolicy">
 				<bean ref="validateBeisRegistration" method="validate" />
 				<bean id="beisRegistrationLdapComponent.checkUsername" ref="beisRegistrationLdapAdapter" method="checkUsername" />
-				<!-- Write the user details first to LDAP so we have use details even 
-					if the later call to the back office fails. -->
+				<!-- Write the user details first to LDAP so we have use details even  if the later call to the back office fails. -->
 				<bean id="beisRegistrationLdapComponent.process" ref="beisRegistrationLdapAdapter" method="process" />
 				<!-- Send an email with an activation url for the account -->
 				<bean ref="beisregistrationEmailAdapter" method="processRequest" />
@@ -838,10 +1386,8 @@
 							setup the account id to be written -->
 						<simple>${exchangeProperty.accountId} != null</simple>
 						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
-						<bean id="beisRegistrationUpdateAccountIdLdapComponent.process" ref="beisRegistrationUpdateAccountIdLdapAdapter"
-							method="process" />
-						<bean id="beisRegistrationUpdateAccountIdLdapComponent.processResponse" ref="beisRegistrationUpdateAccountIdLdapAdapter"
-							method="processResponse" />
+						<bean id="beisRegistrationUpdateAccountIdLdapComponent.process" ref="beisRegistrationUpdateAccountIdLdapAdapter" method="process" />
+						<bean id="beisRegistrationUpdateAccountIdLdapComponent.processResponse" ref="beisRegistrationUpdateAccountIdLdapAdapter" method="processResponse" />
 					</when>
 				</choice>
 			</policy>
@@ -852,25 +1398,25 @@
 			<from uri="direct:maintainPartyDetails" />
 			<policy ref="generalSecurityPolicy">
 				<bean ref="beisRegistrationSoapAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<to uri="cxf:bean:beisMaintainPartyDetailsService" />
 				<unmarshal>
 					<custom ref="jaxb-maintainPartyDetailsResponse" />
 				</unmarshal>
-				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!" loggingLevel="DEBUG" />
 				<bean ref="beisRegistrationSoapAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!" loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
 		<route id="saveRegisteredAccountDetailsServiceRoute" trace="true" streamCache="true">
 			<from uri="{{apiSaveRegisteredAccountDetailsEndpoint}}" />
 			<policy ref="directorySecurityPolicy">
+				<log message="saveRegisteredAccountDetailsServiceRoute" loggingLevel="DEBUG" />
 				<bean ref="prepareSecurity" method="setAuthenticationHeader" />
-				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				
+				<!-- Have to use "updateEmailServiceSubroute" as the data is used by the updateEmailServiceSubroute -->
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'updateEmailServiceSubroute')" />
 				<bean ref="validateSaveRegisteredAccountDetails" method="validate" />
 
 				<!-- Update send the notification email to the new address if we're updating it -->
@@ -879,7 +1425,7 @@
 					<when>
 						<simple>${exchangeProperty.updateEmail} == true</simple>
 						<log message="### Send email to new address ###" loggingLevel="DEBUG" />
-						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'updateEmailServiceSubroute')" />
 						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processRequest" />
 
 						<bean id= "beisUpdateEmailLdapComponent.fetchEntryFromLdap" ref="updateEmailLdapComponent" method="fetchEntryFromLdap"/>
@@ -889,19 +1435,18 @@
 					</when>
 				</choice>
 
-				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'updateEmailServiceSubroute')" />
 				<!-- Update LDAP -->
 				<bean id="saveRegisteredAccountDetailsLdapComponent.process" ref="saveRegisteredAccountDetailsAdapter" method="process" />
 
-				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'updateEmailServiceSubroute')" />
 				<log message="Partially Registered exchange property is : ${exchangeProperty.partiallyRegistered}" loggingLevel="INFO" />
 
 				<!-- Put the account id into the request if we are not dealing with a partial registration -->
 				<choice>
 					<when>
 						<simple>${exchangeProperty.partiallyRegistered} == false</simple>
-						<bean id="saveRegisteredAccountDetailsRetrieveAccountIdLdapComponent.process" ref="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter"
-							method="process" />
+						<bean id="saveRegisteredAccountDetailsRetrieveAccountIdLdapComponent.process" ref="saveRegisteredAccountDetailsRetrieveAccountIdLdapAdapter" method="process" />
 					</when>
 				</choice>
 
@@ -920,11 +1465,9 @@
 						<!-- Only try and update ldap if the previous call has successfully 
 							setup the account id to be written -->
 						<simple>${exchangeProperty.accountId} != null</simple>
-						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
-						<bean id="saveRegisteredAccountDetailsAccountIdLdapComponent.process" ref="saveRegisteredAccountDetailsAccountIdLdapAdapter"
-							method="process" />
-						<bean id="saveRegisteredAccountDetailsAccountIdLdapComponent.processResponse" ref="saveRegisteredAccountDetailsAccountIdLdapAdapter"
-							method="processResponse" />
+						<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'updateEmailServiceSubroute')" />
+						<bean id="saveRegisteredAccountDetailsAccountIdLdapComponent.process" ref="saveRegisteredAccountDetailsAccountIdLdapAdapter" method="process" />
+						<bean id="saveRegisteredAccountDetailsAccountIdLdapComponent.processResponse" ref="saveRegisteredAccountDetailsAccountIdLdapAdapter" method="processResponse" />
 					</when>
 				</choice>
 
@@ -932,7 +1475,7 @@
 				<choice>
 					<when>
 						<simple>${exchangeProperty.updateEmail} == true</simple>
-						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'updateEmailServiceSubroute')" />
 						<log message="### Send email to old address ###" loggingLevel="DEBUG" />
 						<bean ref="updateEmailInLdapAndBackOfficeAdapter" method="processRequest" />
 
@@ -951,19 +1494,18 @@
 				
 				<!-- Get the email address from ldap and set in exchange -->
 				<bean id="beisPasswordResetLdapComponent.process" ref="passwordResetLdapComponent" method="process" />
-				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'beisPasswordResetServiceRoute')" />
 				
 				<!--  Create request to get email address from backoffice -->
 				<bean ref="getUserEmailAddressAdapter" method="createMyAccountDetailsRequest" />
 
 				<!--  Get party ref from ldap for the user -->
-				<bean id="retrieveRegisteredDetailsRetrieveAccountId.process" 
-							ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" method="process" />
+				<bean id="retrieveRegisteredDetailsRetrieveAccountId.process" ref="retrieveRegisteredDetailsRetrieveAccountIdLdapAdapter" method="process" />
 
 				<to uri="direct:getPartyDetails" />
 				<bean ref="getUserEmailAddressAdapter" method="getEmailAddress" />
 				
-				<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'beisPasswordResetServiceRoute')" />
 				<!-- Check if update in ldap is required or not -->
 				<choice>
 					<when>
@@ -977,6 +1519,9 @@
 				<removeHeaders pattern="ResponseContext" />
 				<to uri="smtp://{{smtp.host.server}}" />
 				<bean id="beisPasswordResetLdapComponent.processResponse" ref="passwordResetLdapComponent" method="processResponse" />
+				
+				<!-- this is probably only for the tests -->
+				<bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
 			</policy>
 		</route>
 
@@ -1001,40 +1546,32 @@
 				<log message="${threadName} &gt;&gt;&gt; Start of route:"
 					loggingLevel="INFO" />
 				<bean ref="fileAddAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!" loggingLevel="INFO" />
 				<bean ref="fileAddAdapter" method="storeFile" />
 				<bean ref="fileAddAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!" loggingLevel="INFO" />
 			</policy>
 		</route>
 
 		<route id="fileReadRoute" trace="true" streamCache="true">
 			<from uri="{{apiFileReadService}}" />
 			<policy ref="generalSecurityPolicy">
-				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!" loggingLevel="INFO" />
 				<bean ref="fileReadAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!" loggingLevel="INFO" />
 				<bean ref="fileReadAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!" loggingLevel="INFO" />
 			</policy>
 		</route>
 
 		<route id="fileDeleteRoute" trace="true" streamCache="true">
 			<from uri="{{apiFileDeleteService}}" />
 			<policy ref="generalSecurityPolicy">
-				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; Start of route:  ${body}  !!" loggingLevel="INFO" />
 				<bean ref="fileDeleteAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; Start of adapter:  ${body}  !!" loggingLevel="INFO" />
 				<bean ref="fileDeleteAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!"
-					loggingLevel="INFO" />
+				<log message="${threadName} &gt;&gt;&gt; end of adapter:  ${body}  !!" loggingLevel="INFO" />
 			</policy>
 		</route>
 
@@ -1059,17 +1596,14 @@
 			<policy ref="generalSecurityPolicy">
 			 <bean ref="validatePRSPenaltySearchNdsRequest" method="validate" />
 			 <bean ref="prsPenaltySearchAdapter" method="processRequest" />
-				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processRequest ${body} headers are ${headers} !!" loggingLevel="DEBUG" />
 				<to uri="cxf:bean:prsPenaltySearchServiceEndPoint" />
 				<unmarshal>
 					<custom ref="jaxb-prsPenaltySearchResponse" />
 				</unmarshal>
-				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; After service, before adapter ${body} !!" loggingLevel="DEBUG" />
 				<bean ref="prsPenaltySearchAdapter" method="processResponse" />
-				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!"
-					loggingLevel="DEBUG" />
+				<log message="${threadName} &gt;&gt;&gt; processed processResponse ${body} !!" loggingLevel="DEBUG" />
 			</policy>
 		</route>
 
@@ -1107,8 +1641,8 @@
 			<from uri="{{apiRegisterPrsExemptionEndpoint}}" />
 			<policy ref="generalSecurityPolicy">				
 				<bean ref="validateRegisterPrsExemptionNdsRequest" method="validate" />				
-				<bean ref="registerExemptionLookupIdAdapter" method="process" />				
-				<bean ref="ndsExchangeUtilities" method="storeOriginalMessage" />				
+				<bean ref="registerExemptionLookupIdAdapter" method="process" />
+				<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'Register_PRS_Exemption_Route')" />
 				<bean ref="registerPrsExemptionAdapter" method="processRequest" />				
 				<to uri="cxf:bean:exemptionRegistrationService" />				
 				<unmarshal>
@@ -1119,20 +1653,19 @@
 					<when>					
 						<simple>${exchangeProperty.exemptionRegisteredSuccessfully} == true</simple>
 						<log message="Deleting uploaded files from db" />                        
-						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'Register_PRS_Exemption_Route')" />
 						<bean ref="deleteUploadedFilesAdapter" method="deleteFiles" />
 						<!-- Checks if email notification is true to trigger email -->
-						<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage" />
+						<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'Register_PRS_Exemption_Route')" />
 						<bean ref="registerPrsExemptionEmailNotifier" method="processRequest" />
-						<!-- exception processor will handle any smtp exceptions and break 
-							out of route -->
+						<!-- exception processor will handle any smtp exceptions and break out of route -->
 						<to uri="smtp://{{smtp.host.server}}" />
 						<bean ref="registerPrsExemptionEmailNotifier" method="processResponse" />
 						<choice>
 							<when>
 								<!-- Checks if user is agent to trigger email -->
 								<simple>${exchangeProperty.isUserAgent} == true</simple>
-								<bean ref="ndsExchangeUtilities" method="restoreOriginalMessage"/>
+								<bean ref="ndsExchangeUtilities" method="peekMessageToIn(*, 'Register_PRS_Exemption_Route')" />
 								<bean ref="registerPrsExemptionEmailAgentNotifier" method="processRequest" />					
 								<to uri="smtp://{{smtp.host.server}}" />
 								<bean ref="registerPrsExemptionEmailAgentNotifier" method="processResponse" />
@@ -1218,17 +1751,432 @@
 				<setHeader name="Content-Type">
 				  <constant>text/html</constant>
 				</setHeader>
-				<to uri="smtp://{{smtp.host.server}}" />
-				<bean ref="statisticsEmailAdapter" method="processResponse" />
+				
+				<log message="admin.email.address list is ${properties:admin.email.address}" loggingLevel="INFO" />
+				<choice>
+					<when>
+						<simple>"${properties:admin.email.address} != null" &amp;&amp; ${properties:admin.email.address} != ''</simple>
+						<to uri="smtp://{{smtp.host.server}}" />
+						<bean ref="statisticsEmailAdapter" method="processResponse" />
+					</when>
+					<otherwise>
+						<log message="admin.email.address is empty so not sending statistics email" loggingLevel="INFO" />
+					</otherwise>
+				</choice>
+				
 				<bean id="statisticsAdapter.insertAuditRecord" ref="statisticsAdapter" method="insertAuditRecord" />
 				<bean id="statisticsAdapter.purgeAuditRecords" ref="statisticsAdapter" method="purgeAuditRecords" />
 			</when>						
 		</route>
-    
-		<!-- Simple SMTP send without retries. Remove this route if adding the userComms-routeContext.xml to the imports -->        
-		<route id="noRetrySmtpSendSubRoute">
-			<from uri="direct:resilientSmtpSendEndpoint" />
-			<to uri="smtp://{{smtp.host.server}}" />
+  
+
+		<route id="sendEmailToDormantUsersRoute">
+			<from uri="direct:sendEmailToDormantUsersRoute" />
+			<bean id="sendEmailToDormantUsersAdapter.processRecords" ref="sendEmailToDormantUsersAdapter" method="processRecords" />
+			<choice>
+				<when>
+				    <!-- loop round the list in the SendEmailToDormantUsersRequest  -->
+                    <!-- For readability, "&amp;&amp;" is the valid xml for "&&" -->
+				 	<simple>${body} is "com.northgateps.nds.platform.api.senddormantuseremail.SendEmailToDormantUsersRequest" &amp;&amp; ${body.dormantUserDetailsList} != null &amp;&amp; ${body.dormantUserDetailsList.size} > 0</simple>
+					<bean id="sendEmailToDormantUsersLdapComponent.process" ref="sendEmailToDormantUsersLdapComponent" method="process" />
+					<bean ref="ndsExchangeUtilities" method="pushMessage(*, 'sendEmailToDormantUsersAdapter')" />
+					<loop>
+						<simple>${body.dormantUserDetailsList.size}</simple>
+						<bean ref="ndsExchangeUtilities" method="peekMessageToOut(*, 'sendEmailToDormantUsersAdapter')" />
+						<bean ref="sendEmailToDormantUsersEmailNotifier" method="processRequest" />
+                        <choice>
+                            <when>
+                                <simple>${in.header.to} != ''</simple>
+                                <to uri="direct:directorySmtpSendEndpoint" />        
+                            </when>
+                        </choice>
+						<bean ref="sendEmailToDormantUsersEmailNotifier" method="processResponse" />
+					</loop>
+				</when>
+			</choice>
+			<bean id="sendEmailToDormantUsersAdapter.saveWarningDates" ref="sendEmailToDormantUsersAdapter" method="saveWarningDates" />
+			<bean id="sendEmailToDormantUsersAdapter.insertAuditRecord" ref="sendEmailToDormantUsersAdapter" method="insertAuditRecord" />
+			<bean id="sendEmailToDormantUsersAdapter.purgeAuditRecords" ref="sendEmailToDormantUsersAdapter" method="purgeAuditRecords" />
 		</route>
+
+		<!-- addressSearch-routeContext routes start -->
+
+		<!-- Postcode search service route -->
+		<route id="addressSearchServiceRoute" trace="true" streamCache="true">
+			<from uri="{{address.search.doSearchEndpoint}}"/>
+			<policy ref="addressSearchSecurityPolicy">
+                <log message="${body}" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.addressSearchServiceRoute" />
+				<log message="Expected operation 1-BEFORE invoking QasSearchSoapAdapter" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.addressSearchServiceRoute" />
+				<choice>
+					 <when>
+						  <simple>"${properties:address.search.provider}" == 'QASPROWEB'</simple>
+						  <log message="QASPROWEB === Address Search ===============================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.addressSearchServiceRoute" />
+						  <bean ref="qasSearchSoapAdapter" method="processRequest"/>
+						  <to uri="cxf:bean:addressSearchServiceEndpoint" />
+						  <bean ref="qasSearchSoapAdapter" method="processResponse" />
+					 </when>
+					 <when>
+						  <simple>"${properties:address.search.provider}" == 'QASONDEMAND'</simple>
+						  <log message="QASONDEMAND === Address Search =============================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.addressSearchServiceRoute" />
+						  <bean ref="qasSearchProOndemandSoapAdapter" method="processRequest"/>
+						  <to uri="cxf:bean:addressSearchProOndemandServiceEndpoint" />
+						  <bean ref="qasSearchProOndemandSoapAdapter" method="processResponse" />
+					 </when>
+					<when>
+						<simple>"${properties:address.search.provider} == 'NAS'"</simple>
+						<log message="NAS === Address Search =====================================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.addressSearchServiceRoute" />
+						<bean ref="nasAddressSearchAdapter" method="processRequest" />
+						<to uri="cxf:bean:addressSearchNasServiceEndpoint" />
+						<bean ref="nasAddressSearchAdapter" method="processResponse" />
+					</when>
+				</choice>
+				
+				<bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
+			</policy>
+		</route>
+		
+		<!-- Moniker search service route -->
+		<route id="specificAddressSearchServiceRoute" trace="true" streamCache="true">
+			<from uri="{{address.search.doGetAddressEndpoint}}"/>
+			<policy ref="addressSearchSecurityPolicy">
+				<log message="${body}" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.specificAddressSearchServiceRoute" />
+				<log message="Expected operation 1-BEFORE invoking QasGetAddressSoapAdapter ADAPTER" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.specificAddressSearchServiceRoute" />
+				<choice>
+					 <when>
+						  <simple>"${properties:address.search.provider}" == 'QASPROWEB'</simple>
+                          <log message="QASPROWEB === Specific Address =============================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.specificAddressSearchServiceRoute" />
+						  <bean ref="qasGetAddressSoapAdapter" method="processRequest"/>
+						  <to uri="cxf:bean:specificAddressSearchServiceEndpoint" />
+						  <bean ref="qasGetAddressSoapAdapter" method="processResponse" />
+					 </when>
+					 <when>
+						  <simple>"${properties:address.search.provider}" == 'QASONDEMAND'</simple>
+                          <log message="QASONDEMAND === Specific Address ==========================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.specificAddressSearchServiceRoute" />
+						  <bean ref="qasGetAddressProOndemandSoapAdapter" method="processRequest"/>
+						  <to uri="cxf:bean:specificAddressSearchProOndemandServiceEndpoint" />
+						  <bean ref="qasGetAddressProOndemandSoapAdapter" method="processResponse"/>
+					 </when>
+					<when>
+						<simple>"${properties:address.search.provider} == 'NAS'"</simple>
+                        <log message="NAS === Specific Address ==================================================>" loggingLevel="DEBUG" logName="com.northgateps.nds.esb.route.specificAddressSearchServiceRoute" />
+						<bean ref="nasAddressDetailAdapter" method="processRequest" />
+						<to uri="cxf:bean:addressDetailNasServiceEndpoint" />
+						<bean ref="nasAddressDetailAdapter" method="processResponse" />
+					</when>
+				</choice>
+				
+				<bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
+			</policy>
+		</route>
+		<!-- addressSearch-routeContext.xml routes end -->
+		
+		<!-- directory-persistence-routeContext routes start -->
+        <route id="registrationServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiRegistrationEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <to uri="direct:registrationSubRoute"/>
+            </policy>
+        </route>
+        
+        <route id="directorySmtpSubRoute" trace="true" streamCache="true" routePolicyRef="directoryInternalRoutePolicy">
+            <from uri="direct:directorySmtpSendEndpoint" />
+            <doTry>
+                <log message="Sending single attempt email"
+                     loggingLevel="DEBUG" 
+                     logName="com.northgateps.nds.esb.route.directorySmtpSubRoute" />
+                <to uri="smtp://{{smtp.host.server}}" />
+                <doCatch>
+                    <exception>javax.mail.MessagingException</exception>
+                    <bean ref="smtpErrorRecoveryProcessor" method="rethrow" />
+                </doCatch>
+            </doTry>
+        </route>
+
+        <route id="directoryFailableSmtpSubRoute" trace="true" streamCache="true" routePolicyRef="directoryInternalRoutePolicy">
+            <from uri="direct:directoryFailableSmtpSendEndpoint" />
+            <doTry>
+                <log message="Sending single attempt email"
+                     loggingLevel="DEBUG" 
+                     logName="com.northgateps.nds.esb.route.directoryFailableSmtpSubRoute" />
+                <to uri="smtp://{{smtp.host.server}}" />
+                <doCatch>
+                    <exception>javax.mail.MessagingException</exception>
+                    <bean ref="smtpErrorRecoveryProcessor" method="rethrow" />
+                </doCatch>
+            </doTry>
+        </route>
+        
+        <route id="registrationServiceSubRoute" trace="true" streamCache="true">
+            <from uri="direct:registrationSubRoute" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateRegistration" method="validate" />
+                <!-- bean ref="ndsExchangeUtilities" method="storeOriginalMessage"/-->
+                <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'registrationServiceSubRoute')" />
+                <bean id="registrationLdapComponent.checkUsername" ref="registrationLdapComponent" method="checkUsername" />
+                <bean id="registrationLdapComponent.process" ref="registrationLdapComponent" method="process" />
+                <bean ref="registrationEmailAdapter" method="processRequest" />
+                <!-- no email send retries, because the registration should fail if the email can't be sent -->
+                <to uri="smtp://{{smtp.host.server}}" />
+                <!-- bean ref="ndsExchangeUtilities" method="restoreOriginalMessage"/-->
+                <bean ref="ndsExchangeUtilities" method="popMessage(*, 'registrationServiceSubRoute')" />
+                <bean id="registrationDbAdapter.processRequest" ref="registrationDbAdapter" method="processRequest" />
+                <bean id="registrationDbAdapter.processResponse" ref="registrationDbAdapter" method="processResponse" />
+                <bean id="registrationLdapComponent.processResponse" ref="registrationLdapComponent" method="processResponse" />
+                <bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
+            </policy>
+        </route>
+
+        <route id="activateRegistrationServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiActivateRegistrationEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateActivateRegistration" method="validate" />
+                <bean id="activateRegistrationLdapComponent.process" ref="activateRegistrationLdapComponent" method="process" />
+                <bean id="activateRegistrationLdapComponent.processResponse" ref="activateRegistrationLdapComponent" method="processResponse" />
+            </policy>
+        </route>
+
+        <route id="updateEmailServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiUpdateEmailEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <to uri="direct:updateEmailServiceSubroute"/>
+            </policy>
+        </route>
+
+        <route id="updateEmailServiceSubroute" trace="true" streamCache="true">
+            <from uri="direct:updateEmailServiceSubroute"/>
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateUpdateEmail" method="validate"/>
+                <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'updateEmailServiceSubroute')" />
+                <!-- copy the existing email address -->
+                <bean id="updateEmailLdapComponent.fetchEntryFromLdap" ref="updateEmailLdapComponent" method="fetchEntryFromLdap"/>
+                <!-- Send to new email address. Route will abort if this fails -->
+                <to uri="direct:sendEmailToNewAddressSubRoute"/>
+                <bean ref="ndsExchangeUtilities" method="popMessage(*, 'updateEmailServiceSubroute')" />
+                <!-- it will resume here if no exceptions and will update user on LDAP -->
+                <bean id="updateEmailLdapComponent.process" ref="updateEmailLdapComponent" method="process"/>
+                <!-- Send notification of change to old email address. Email send will retry silently on failure -->
+                <to uri="direct:sendEmailToOldAddressSubRoute"/>
+                
+                <bean id="updateEmailLdapComponent.processResponse" ref="updateEmailLdapComponent" method="processResponse"/>
+            </policy>
+        </route>
+
+        <route id="sendEmailToOldAddressSubRoute" trace="true" streamCache="true">
+            <from uri="direct:sendEmailToOldAddressSubRoute"/>
+            <doTry>
+                <policy ref="directorySecurityPolicy">
+                    <!-- sends an email to the old email address and to the new email address -->
+                    <bean ref="updateEmailNotifierToOldAddressAdapter" method="processRequest"/>
+                    <!-- send with retries, don't tell user of failure because LDAP is updated anyway. -->
+                    <to uri="direct:directorySmtpSendEndpoint"/>
+                    <bean ref="ndsExchangeUtilities" method="popMessage(*, 'updateEmailServiceSubroute')" />
+                </policy>
+                <doCatch>
+                    <exception>javax.mail.SendFailedException</exception>
+                    <exception>javax.mail.MessagingException</exception>
+                    <log message="Email to Old address failed its initial attempt" loggingLevel="DEBUG"
+                         logName="com.northgateps.nds.esb.route.sendEmailToOldAddressSubRoute" />
+                </doCatch>
+            </doTry>
+        </route>
+
+        <route id="sendEmailToNewAddressSubRoute" trace="true" streamCache="true">
+            <from uri="direct:sendEmailToNewAddressSubRoute"/>
+            <policy ref="directorySecurityPolicy">
+                <!-- sends an email to the new email address -->
+                <bean ref="updateEmailNotifierToNewAddressAdapter" method="processRequest"/>
+                <!-- send without retries, so the update email request fails and LDAP does not get updated -->
+                <to uri="smtp://{{smtp.host.server}}" />
+            </policy>
+        </route>
+
+        <route id="changePasswordServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiChangePasswordEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateChangePassword" method="validate" />
+                <bean id="changePasswordPersistenceComponent.check" ref="changePasswordPersistenceComponent" method="check" />
+                <bean id="changePasswordLdapComponent.process" ref="changePasswordLdapComponent" method="process" />
+                <bean id="changePasswordPersistenceComponent.process" ref="changePasswordPersistenceComponent" method="process" />
+                <bean id="changePasswordLdapComponent.processResponse" ref="changePasswordLdapComponent" method="processResponse" />
+                <bean id="changePasswordPersistenceComponent.augmentResponse" ref="changePasswordPersistenceComponent" method="augmentResponse" />
+            </policy>
+        </route>
+        
+        <route id="deleteAccountServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiDeleteUserAccountEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateDeleteUserAccount" method="validate" />
+                <to uri="direct:deleteUserAccount" />
+            </policy>
+        </route>
+        
+        <route id="passwordResetServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiPasswordResetEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validatePasswordReset" method="validate" />
+                <bean id="passwordResetLdapComponent.process" ref="passwordResetLdapComponent" method="process" />
+                <bean id="passwordResetEmailAdapter.processRequest" ref="passwordResetEmailAdapter" method="processRequest" />
+                <!-- Don't use resilient send, because there's no way to tell the user the email may or may
+                     not be sent, without exposing whether the username is valid or not -->
+                <to uri="smtp://{{smtp.host.server}}" />
+                <bean id="passwordResetLdapComponent.processResponse" ref="passwordResetLdapComponent" method="processResponse" />
+                
+                <bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
+            </policy>
+        </route>
+
+        <route id="activatePasswordResetServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiActivatePasswordResetEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateActivatePasswordReset" method="validate" />
+                <bean id="activatePasswordResetPersistenceComponent.check" ref="activatePasswordResetPersistenceComponent" method="check" />
+                <bean id="activatePasswordResetLdapComponent.process" ref="activatePasswordResetLdapComponent" method="process" />
+                <bean id="activatePasswordResetPersistenceComponent.process" ref="activatePasswordResetPersistenceComponent" method="process" />
+                <bean id="activatePasswordResetLdapComponent.processResponse" ref="activatePasswordResetLdapComponent" method="processResponse" />
+                <bean id="activatePasswordResetPersistenceComponent.augmentResponse" ref="activatePasswordResetPersistenceComponent" method="augmentResponse" />
+                
+            </policy>
+        </route>
+
+        <route id="retrieveRegisteredUserDetailsServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiRetrieveRegisteredUserDetailsEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateRetrieveRegisteredUserDetails" method="validate" />
+                <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'retrieveRegisteredUserDetailsServiceRoute')" />
+                <bean id="retrieveRegisteredUserDetailsPersistenceComponent.prepare" ref="retrieveRegisteredUserDetailsPersistenceComponent" method="prepare" />
+                <bean ref="retrieveUserAccountDetailsAdapter" method="processRequest" />
+                <bean ref="ndsExchangeUtilities" method="popMessage(*, 'retrieveRegisteredUserDetailsServiceRoute')" />
+                <bean id="retrieveRegisteredUserDetailsComponent.process" ref="retrieveRegisteredUserDetailsComponent" method="process" />
+                <bean id="retrieveRegisteredUserDetailsComponent.processResponse" ref="retrieveRegisteredUserDetailsComponent" method="processResponse" />                
+                <bean id="retrieveRegisteredUserDetailsPersistenceComponent.augmentResponse" ref="retrieveRegisteredUserDetailsPersistenceComponent" method="augmentResponse" />
+            </policy>
+        </route>
+
+        <route id="saveRegisteredUserDetailsServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiSaveRegisteredUserDetailsEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateSaveRegisteredUserDetails" method="validate" />
+                <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'saveRegisteredUserDetailsServiceRoute')" />
+                <bean id="saveRegisteredUserDetailsComponent.process" ref="saveRegisteredUserDetailsComponent" method="process" />
+                <bean ref="ndsExchangeUtilities" method="popMessage(*, 'saveRegisteredUserDetailsServiceRoute')" />
+                <bean id="saveRegisteredUserPersistenceComponent.process" ref="saveRegisteredUserPersistenceComponent" method="process" />
+                <bean id="saveRegisteredUserDetailsComponent.processResponse" ref="saveRegisteredUserDetailsComponent" method="processResponse" />
+            </policy>
+        </route>
+
+        <route id="forgotUsernameServiceRoute" trace="true" streamCache="true" >
+            <from uri="{{apiForgottenUsernameEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateForgotUsername" method="validate" />
+                <bean id="forgotUsernameLdapComponent.process" ref="forgotUsernameLdapComponent" method="process" />
+                <choice>
+                    <when>
+                        <simple>${exchangeProperty.userNamesOfEmailAddress} != null</simple>
+                        <bean ref="forgotUsernameEmailAdapter" method="processRequest" />
+                        <!-- Don't use resilient send, because there's no way to tell the user the email may or may
+                             not be sent, without exposing whether the email belongs to a user or not -->
+                        <to uri="smtp://{{smtp.host.server}}" />
+                    </when>
+                </choice>
+                <bean id="forgotUsernameLdapComponent.processResponse" ref="forgotUsernameLdapComponent" method="processResponse" />
+                <bean ref="ndsExchangeUtilities" method="convertBodyToXml(*)" />
+            </policy>
+        </route>
+        
+        <route id="userAccountAuditServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiUserAccountAuditEndpoint}}" />
+            <policy ref="auditSecurityPolicy">
+                <bean ref="validateUserAccountAudit" method="validate" />
+                <bean ref="userAccountAuditAdapter" method="processRequest" />
+                <bean ref="userAccountAuditAdapter" method="processResponse" />
+            </policy>
+        </route> 
+        
+        <route id="logEventServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiLogEventEndpoint}}" />
+            <policy ref="directorySecurityPolicy">
+                <bean ref="validateLogEvent" method="validate" />
+                <bean ref="logEventAdapter" method="processRequest" />
+                <bean ref="logEventAdapter" method="processResponse" />
+            </policy>
+        </route> 
+
+		<route id="deleteUserAccountServiceRoute" trace="true" streamCache="true">
+			<from uri="direct:deleteUserAccount" />
+				<bean ref="validateDeleteUserAccount" method="validate" />
+				<bean id="deleteUserAccountComponent.process" ref="deleteUserAccountComponent" method="process" />
+				<choice>
+					<when>
+						<simple>${exchangeProperty.userLdapDetailsDeleted} == true</simple>
+						<bean ref="deleteUserAccountEmailNotifier" method="processRequest" />
+                        <doTry>
+                            <log message="Sending Email confirming deletion"
+                                 loggingLevel="DEBUG" 
+                                 logName="com.northgateps.nds.esb.route.deleteUserAccountServiceRoute" />
+                            <to uri="direct:directoryFailableSmtpSendEndpoint" />
+                            <doCatch>
+                                <exception>javax.mail.MessagingException</exception>
+                                <log message="Caught Email confirming deletion Send Exception"
+                                     loggingLevel="DEBUG" 
+                                     logName="com.northgateps.nds.esb.route.deleteUserAccountServiceRoute" />
+                                <bean ref="smtpErrorRecoveryProcessor" method="process" />
+                                <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'emailErrorDetails')" />
+                            </doCatch>
+                        </doTry>
+					</when>
+				</choice>
+				<bean id="deleteUserAccountComponent.processResponse" ref="deleteUserAccountComponent" method="processResponse" />
+		</route>
+		
+		<route id="userAccountStatisticsSubRoute" trace="true" streamCache="true">
+			<from uri="direct:userAccountStatistics" />
+			<bean ref="validateUserAccountStatistics" method="validate" />
+			<bean id="userAccountStatisticsAdapter.processRequest" ref="userAccountStatisticsAdapter" method="processRequest" />
+			<bean id="userAccountStatisticsAdapter.processResponse" ref="userAccountStatisticsAdapter" method="processResponse" />
+		</route>
+		
+		<route id="deleteDormantUserAccountRoute">
+			<from uri="direct:deleteDormantUserAccount" />
+			<bean id="deleteDormantUserAccountAdapter.processRecords" ref="deleteDormantUserAccountAdapter" method="processRecords" />
+            <choice>
+				<when>
+				    <simple>${exchangeProperty.batchJobMetaData} != null </simple>                  
+			        <bean ref="ndsExchangeUtilities" method="pushMessage(*, 'deleteDormantUserAccount')" />
+			        <choice>
+        				<when>
+		              		<!-- loop round the list in the DeleteDormantUserAccountNdsRequest  -->
+				 	        <simple>${in.body} is "com.northgateps.nds.platform.api.deleteuseraccount.DeleteDormantUserAccountNdsRequest" &amp;&amp; ${in.body.dormantUsersList} != null &amp;&amp; ${in.body.dormantUsersList.size} > 0</simple>
+				            <loop>
+					            <simple>${in.body.dormantUsersList.size}</simple>
+					            <bean ref="ndsExchangeUtilities" method="peekMessageToOut(*, 'deleteDormantUserAccount')" />
+					            <bean id="deleteDormantUserAccountAdapter.processRequest" ref="deleteDormantUserAccountAdapter" method="processRequest" />
+					            <to uri="direct:deleteUserAccount" />
+				           </loop>
+			            </when>
+			        </choice>
+			        <bean id="deleteDormantUserAccountAdapter.processResponse" ref="deleteDormantUserAccountAdapter" method="processResponse" />
+			        <bean id="deleteDormantUserAccountAdapter.insertAuditRecord" ref="deleteDormantUserAccountAdapter" method="insertAuditRecord" />
+			        <bean id="deleteDormantUserAccountAdapter.purgeAuditRecords" ref="deleteDormantUserAccountAdapter" method="purgeAuditRecords" />
+			    </when>
+			</choice>
+		</route>
+
+		<!-- directory-persistence-routeContext routes end -->
+		
+		<!-- generateReference-persistence-routeContext routes start -->
+		<route id="generateReferenceServiceRoute" trace="true" streamCache="true">
+            <from uri="{{apiGenerateReferenceEndpoint}}" />
+            <policy ref="generateReferenceSecurityPolicy">
+	            <bean ref="generateReferenceAdapter" method="processRequest" />
+	            <bean ref="generateReferenceAdapter" method="processResponse" />
+			</policy>
+        </route>
+        
+        <route id="generateReferenceInternalServiceRoute" trace="true" streamCache="true">
+            <from uri="direct:generateReferenceEndpoint" />
+	            <bean ref="generateReferenceAdapter" method="processRequest" />
+	            <bean ref="generateReferenceAdapter" method="processResponse" />
+        </route>
+		<!-- generateReference-persistence-routeContext routes end -->
 	</camelContext>
 </beans>

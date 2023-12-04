@@ -3,7 +3,7 @@
 <emailTemplate>
 	<template type="RegistrationEmailTemplate" language="en">
 		<from>noreply@beis.gov.uk</from>
-		<to>dummy@northgateps.com</to>
+		<to>dummy@necsws.com</to>
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Account activation</subject>
@@ -25,7 +25,7 @@
 	</template>    
     <template type="PasswordResetEmailTemplate" language="en">
         <from>noreply@beis.gov.uk</from>
-        <to>dummy@northgateps.com</to>
+        <to>dummy@necsws.com</to>
         <cc></cc>
         <bcc></bcc>
         <subject>Password reset</subject>
@@ -79,7 +79,7 @@
 
 	<template type="ForgottenUsernameEmailTemplate" language="en">
 		<from>noreply@beis.gov.uk</from>
-		<to>dummy@northgateps.com</to>
+		<to>dummy@necsws.com</to>
 		<cc></cc>
 		<bcc></bcc>
 		<subject>Username reminder</subject>
@@ -93,7 +93,7 @@
         </body>
 	</template>
 	<template type="RegisterExemptionEmailTemplate" language="en">
-		<from>noreply@northgateps.com</from>
+		<from>noreply@necsws.com</from>
 		<to></to>
 		<cc></cc>
 		<bcc></bcc>
@@ -111,7 +111,7 @@
         </body>
     </template>
 	<template type="RegisterAgentExemptionEmailTemplate" language="en">
-		<from>noreply@northgateps.com</from>
+		<from>noreply@necsws.com</from>
 		<to></to>
 		<cc></cc>
 		<bcc></bcc>
@@ -133,7 +133,7 @@
         </body>
 	</template>
 	<template type="StatisticsTemplate" language="en">
-        <from>noreply@northgateps.com</from>
+        <from>noreply@necsws.com</from>
         <to></to>
         <cc></cc>
         <bcc></bcc>
@@ -156,7 +156,7 @@
     </template>
     
     <template type="DeleteUserAccountEmailTemplate" language="en">
-		<from>noreply@northgateps.com</from>
+		<from>noreply@necsws.com</from>
 		<to></to>
 		<cc></cc>
 		<bcc></bcc>
@@ -173,4 +173,4 @@
     
 </emailTemplate>
 
-<!-- 	NOTE:ensure email is dummy@northgateps.com when pushing code -->
+<!-- 	NOTE:ensure email is dummy@necsws.com when pushing code -->

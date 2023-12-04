@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * The response from the ESB detailing the Penalty search result
@@ -15,7 +15,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PRSPenaltySearchNdsResponse", propOrder = { "getPenaltySearchResponseDetail" })
 @XmlRootElement(name = "PRSPenaltySearchNdsResponse")
-public class PRSPenaltySearchNdsResponse extends AbstractNdsResponse {
+public class PRSPenaltySearchNdsResponse extends NdsErrorResponse {
 
     private GetPenaltySearchResponseDetail getPenaltySearchResponseDetail;
 

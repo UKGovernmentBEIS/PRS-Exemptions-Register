@@ -30,7 +30,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.util.xml.StringSource;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -133,7 +133,7 @@ public class PrintExemptionDetailsAdapter {
         String unescapedPwsText = StringEscapeUtils.unescapeHtml4(escapedPwsText);
 
         // Use a relaxed parser to clean up poorly structured HTML, then convert it to XHTML so we can treat it as XML.
-        return Jsoup.clean(unescapedPwsText, "", Whitelist.relaxed(),
+        return Jsoup.clean(unescapedPwsText, "", Safelist.relaxed(),
                 new org.jsoup.nodes.Document.OutputSettings().syntax(
                         org.jsoup.nodes.Document.OutputSettings.Syntax.xml).prettyPrint(false));
     }

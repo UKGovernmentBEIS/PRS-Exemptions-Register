@@ -1,13 +1,14 @@
 package com.northgateps.nds.cas.config;
 
-import org.apereo.cas.web.flow.CasWebflowConstants;
 import org.apereo.cas.CentralAuthenticationService;
 import org.apereo.cas.authentication.principal.ServiceFactory;
 import org.apereo.cas.configuration.CasConfigurationProperties;
 import org.apereo.cas.logout.LogoutExecutionPlan;
 import org.apereo.cas.services.ServicesManager;
+import org.apereo.cas.ticket.registry.TicketRegistry;
 import org.apereo.cas.web.cookie.CasCookieBuilder;
 import org.apereo.cas.web.flow.CasWebflowConfigurer;
+import org.apereo.cas.web.flow.CasWebflowConstants;
 import org.apereo.cas.web.flow.CasWebflowExecutionPlan;
 import org.apereo.cas.web.flow.CasWebflowExecutionPlanConfigurer;
 import org.apereo.cas.web.flow.config.CasWebflowContextConfiguration;
@@ -29,6 +30,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.engine.builder.support.FlowBuilderServices;
 import org.springframework.webflow.execution.Action;
+
 import com.northgateps.nds.cas.configuration.NdsConfigurationProperties;
 import com.northgateps.nds.cas.web.flow.LogoutAndRedirectExternallyAction;
 import com.northgateps.nds.cas.web.flow.NdsDefaultWebflowConfigurer;
@@ -60,22 +62,24 @@ public class NdsCasWebflowContextConfiguration extends CasWebflowContextConfigur
     private ServiceFactory webApplicationServiceFactory;
     @Autowired
     @Qualifier("centralAuthenticationService")
-    private ObjectProvider<CentralAuthenticationService> centralAuthenticationService;
+    private CentralAuthenticationService centralAuthenticationService;
     @Autowired
     @Qualifier("ticketGrantingTicketCookieGenerator")
-    private ObjectProvider<CasCookieBuilder> ticketGrantingTicketCookieGenerator;
+    private CasCookieBuilder ticketGrantingTicketCookieGenerator;
     @Autowired
     @Qualifier("argumentExtractor")
-    private ObjectProvider<ArgumentExtractor> argumentExtractor;
+    private ArgumentExtractor argumentExtractor;
     @Autowired
     @Qualifier("servicesManager")
-    private ObjectProvider<ServicesManager> servicesManager;
+    private ServicesManager servicesManager;
     @Autowired
     @Qualifier("logoutExecutionPlan")
-    private ObjectProvider<LogoutExecutionPlan> logoutExecutionPlan;
+    private LogoutExecutionPlan logoutExecutionPlan;
     @Autowired
     @Qualifier("defaultWebflowConfigurer")
     private CasWebflowConfigurer defaultWebflowConfigurer;
+    @Autowired
+    private TicketRegistry ticketRegistry;
     
     /**
      * Manages the default login form webflow.
@@ -118,10 +122,9 @@ public class NdsCasWebflowContextConfiguration extends CasWebflowContextConfigur
     @RefreshScope
     @Bean
     public Action logoutAction() {
-        final LogoutAction a = new LogoutAndRedirectExternallyAction(centralAuthenticationService.getObject(), 
-        		ticketGrantingTicketCookieGenerator.getObject(), argumentExtractor.getObject(),
-                servicesManager.getObject(), logoutExecutionPlan.getObject(), 
-        		casProperties);
+    	
+        final LogoutAction a = new LogoutAndRedirectExternallyAction(ticketRegistry, ticketGrantingTicketCookieGenerator,
+                        argumentExtractor, servicesManager, logoutExecutionPlan, casProperties);
         return a;                
     }
 

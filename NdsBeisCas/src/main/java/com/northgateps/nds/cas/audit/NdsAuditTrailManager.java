@@ -42,11 +42,6 @@ public class NdsAuditTrailManager extends AbstractStringAuditTrailManager {
     }
 
     @Override
-    public Set<AuditActionContext> getAuditRecordsSince(LocalDate arg0) {
-        throw new RuntimeException("Method not yet supported");
-    }
-
-    @Override
     public void removeAll() {
         throw new RuntimeException("Method not yet supported");
     }

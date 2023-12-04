@@ -44,7 +44,7 @@ buildscript {
         classpath "io.freefair.gradle:maven-plugin:${project.gradleFreeFairPluginVersion}"
         classpath "io.freefair.gradle:lombok-plugin:${project.gradleFreeFairPluginVersion}"
         classpath "io.spring.gradle:dependency-management-plugin:${project.gradleDependencyManagementPluginVersion}"
-        classpath "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:${project.jibVersion}"
+        classpath "com.google.cloud.tools:jib-gradle-plugin:${project.jibVersion}"
 
         classpath "de.undercouch:gradle-download-task:${project.gradleDownloadTaskVersion}"
         classpath "org.apereo.cas:cas-server-core-api-configuration-model:${project.'cas.version'}"
@@ -78,7 +78,14 @@ repositories {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
         mavenContent { snapshotsOnly() }
     }
-    maven { url 'https://build.shibboleth.net/nexus/content/repositories/releases/' }
+    maven {
+        url 'https://build.shibboleth.net/nexus/content/repositories/releases/'
+        mavenContent { releasesOnly() }
+    }
+    maven {
+        url "https://build.shibboleth.net/nexus/content/repositories/snapshots"
+        mavenContent { snapshotsOnly() }
+    }
     maven {
         url "https://repo.spring.io/milestone"
         mavenContent { releasesOnly() }
@@ -106,6 +113,12 @@ configurations.all {
         }
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
+    exclude(group: "cglib", module: "cglib")
+    exclude(group: "cglib", module: "cglib-full")
+    exclude(group: "org.slf4j", module: "slf4j-log4j12")
+    exclude(group: "org.slf4j", module: "slf4j-simple")
+    exclude(group: "org.slf4j", module: "jcl-over-slf4j")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-to-slf4j")
 }
 
 war {
@@ -162,6 +175,7 @@ dependencies {
 	implementation "org.apereo.cas:cas-server-support-actions-core"
 	implementation "org.apereo.cas:cas-server-support-ldap"
 	implementation "org.apereo.cas:cas-server-support-ldap-core"
+	implementation "org.apereo.cas:cas-server-support-pm-core"
 	implementation "org.apereo.cas:cas-server-support-pm-webflow"
 	
 	implementation "org.ldaptive:ldaptive:2.1.0"

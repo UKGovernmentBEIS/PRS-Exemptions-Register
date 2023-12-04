@@ -36,7 +36,7 @@
       <Policies>
         <SizeBasedTriggeringPolicy size="10 MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="10"/>
+      <DefaultRolloverStrategy max="100"/>
     </RollingFile>
 
     <Rewrite name="rewriteMessage">
@@ -57,7 +57,7 @@
     <Logger name="com.northgateps.nds.platform.ui.security.cas" />
 
     <!-- # Can show up configuration errors. Turn on following Spring security logger to investigate -->
-    <Logger name="org.springframework.security" level="debug" />
+    <Logger name="org.springframework.security" level="info" />
 
     <!-- # Gets information leading up to exceptions in NDS code -->
     <Logger name="com.northgateps.nds.platform.loggingsystem.NdsLoggingSystem" level="debug" />
@@ -65,13 +65,16 @@
     <!-- # Show session warnings -->
     <Logger name="com.northgateps.nds.platform.ui.controller" level="warn" />
 
+	<!-- Set to WARN to log resources called without version numbers -->
+	<Logger name="com.northgateps.nds.platform.ui.interceptor.MandatoryVersionInfoInterceptor" level="OFF" />
+
     <!-- # Leave this line commented out.  We don't generally want it but it's useful for 
          # debugging errors eg 404/blank page. (JSP runtime errors from this class come out 
          # as debug messages sadly) -->
     <!-- <Logger name="org.springframework.web.servlet.DispatcherServlet" level="debug" /> -->
     
     <!-- # Shows low level logging for UI->ESB connections -->
-    <Logger name="org.apache.http.impl.nio" level="trace" />
+    <Logger name="org.apache.http.impl.nio" level="INFO" />
 
     <Root level="info">
       <AppenderRef ref="rewriteMessage" />

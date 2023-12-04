@@ -11,7 +11,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 
-import org.apache.camel.component.cxf.CxfPayload;
+import org.apache.camel.component.cxf.common.CxfPayload;
 import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringTestSupport;
@@ -70,8 +70,6 @@ public class GetPrsExemptionRefDataRouteTest extends CamelSpringTestSupport {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody(createGetPrsExemptionRefDataResponse());
-                        CxfPayload<?> payload = exchange.getIn().getBody(CxfPayload.class);
-                        exchange.getIn().setBody(payload);
                     }
                 });
             }

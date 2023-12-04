@@ -16,11 +16,15 @@
     <!-- There is meta data we can add to the page to stop searches finding the site.  -->
     <meta name="robots" content="noindex, nofollow">
     <title>${error}${param.title} ${serviceName}</title>
-    <meta id="springViewName" name="dcterms.identifier" content="${springViewName}" />
+	<meta id="springViewName" name="dcterms.identifier" content="${springViewName}" />
     <meta id="entryPointName" name="entryPointName" content="${entryPointName}" />
     <meta id="request-method" name="request-method" content="${pageContext.request.method}" />
     <meta id="skipRefreshPagePreservation" name="skipRefreshPagePreservation" content="${skipRefreshPagePreservation}" />
-
+	
+	<!-- IDs looked for by the google_gtag script -->
+	<meta id="gaId" name="gaId" content="${gaTrackId}" />
+	<script src="${contextUi}/assets/javascripts/google_gtag${minify}.js?version=${version}"></script>
+	
 	<c:if test="${clientValuesRestore}">
 	    <meta id="clientValuesRestore" name="clientValuesRestore" content="true" />
 	</c:if>

@@ -28,10 +28,9 @@
 			<div class="grid-row">
 				<div class="column-full">
 					<jsp:include page="form-error.jsp" />					
-						<h1 class="form-title heading-large">
-							<fmt:message bundle="${FieldsBundle}"
-								key="Heading_Select_Landlord_Type_Agent" />
-						</h1>					
+					<h1 class="form-title heading-large">
+						<fmt:message bundle="${FieldsBundle}" key="Heading_Select_Landlord_Type_Agent" />
+					</h1>					
 				</div>
 			</div>			
 			<div class="grid-row divider">

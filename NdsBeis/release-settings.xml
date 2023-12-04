@@ -1,15 +1,25 @@
 <settings>
   <interactiveMode>false</interactiveMode>
   <localRepository>${user.home}/.m2/beis_release_repository</localRepository>
+  <proxies>
+    <proxy>
+      <id>npsProxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>10.102.160.19</host>
+      <port>8080</port>
+      <nonProxyHosts>*.global.internal|*.development.local</nonProxyHosts>
+    </proxy>
+  </proxies>
   <mirrors>
     <mirror>
         <id>release-build</id>
-        <url>http://10.102.65.246:9090/repository/beis-release/</url>
+        <url>http://vm-nds-bld01.global.internal:9090/repository/beis-release/</url>
         <mirrorOf>build</mirrorOf>
     </mirror>
     <mirror>
         <id>internal</id>
-        <url>http://10.102.65.246:9090/repository/internal</url>
+        <url>http://vm-nds-bld01.global.internal:9090/repository/internal</url>
         <mirrorOf>!release-build,external:*</mirrorOf>
     </mirror>
   </mirrors>
@@ -21,10 +31,15 @@
       </activation>
       <!-- place repo xml here -->
   <repositories>
-    <repository>
+     <repository>
+        <id>netbeans</id>
+        <name>NetBeans</name>
+        <url>http://netbeans.apidesign.org/maven2/</url>
+     </repository>
+     <repository>
         <id>build</id>
         <name>Archiva Managed Build Repository</name>
-        <url>http://10.102.65.246:9090/repository/beis-release/</url>
+        <url>http://vm-nds-bld01.global.internal:9090/repository/beis-release/</url>
         <releases>
             <enabled>true</enabled>
         </releases>
@@ -35,7 +50,7 @@
     <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>http://10.102.65.246:9090/repository/internal/</url>
+      <url>http://vm-nds-bld01.global.internal:9090/repository/internal/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -48,7 +63,7 @@
     <pluginRepository>
       <id>build</id>
       <name>Archiva Managed Build Repository</name>
-      <url>http://10.102.65.246:9090/repository/beis-release/</url>
+      <url>http://vm-nds-bld01.global.internal:9090/repository/beis-release/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -59,7 +74,7 @@
     <pluginRepository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>http://10.102.65.246:9090/repository/internal/</url>
+      <url>http://vm-nds-bld01.global.internal:9090/repository/internal/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -93,7 +108,7 @@
       <password>passw0rd</password>
     </server>
     <server>
-      <id>10.102.65.246</id>
+      <id>vm-nds-bld01.global.internal</id>
       <username>jenkins</username>
       <password>passw0rd</password>
     </server>

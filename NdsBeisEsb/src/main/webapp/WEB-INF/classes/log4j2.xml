@@ -36,7 +36,7 @@
       <Policies>
         <SizeBasedTriggeringPolicy size="10 MB"/>
       </Policies>
-      <DefaultRolloverStrategy max="10"/>
+      <DefaultRolloverStrategy max="100"/>
     </RollingFile>
 
     <Rewrite name="rewriteMessage">
@@ -49,11 +49,11 @@
   <Loggers>
     <Logger name="org.apache.camel.component.mock" />
     <Logger name="com.northgateps" />
-    <Logger name="com.northgateps.nds.platform.loggingsystem.NdsLoggingSystem" level="debug" />
+    <Logger name="com.northgateps.nds.platform.loggingsystem.NdsLoggingSystem" level="info" />
     <Logger name="org.apache.camel" />
     <Logger name="org.apache.cxf" />
     <Logger name="org.springframework.web.servlet.mvc" />
-
+    
     <Root level="info">
       <AppenderRef ref="rewriteMessage" />
     </Root>

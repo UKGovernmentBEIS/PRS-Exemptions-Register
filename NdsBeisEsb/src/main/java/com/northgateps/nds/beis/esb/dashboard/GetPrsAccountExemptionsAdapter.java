@@ -39,6 +39,7 @@ public class GetPrsAccountExemptionsAdapter extends
 		try {
 			ndsExchange.setOperationName("GetPRSAccountExemptionsWSDL");
 
+			// @see RetrieveRegisteredDetailsSoapAdapter.doResponseProcess where it's set
 			request.setUserType((UserType) ndsExchange.getAnExchangeProperty(RetrieveRegisteredDetailsSoapAdapter.USER_TYPE));   
 
             // Create the type converter

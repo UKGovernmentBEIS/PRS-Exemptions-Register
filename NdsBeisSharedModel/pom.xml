@@ -45,6 +45,15 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- 
+			TODO: this should be changed to the jakarta version eventually when upgrading to a camel version which has also made the switch.
+			Copied from platform-esb/pom.xml
+		--> 
+		<dependency>
+		    <groupId>javax.ws.rs</groupId>
+		    <artifactId>javax.ws.rs-api</artifactId>
+		    <version>2.1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

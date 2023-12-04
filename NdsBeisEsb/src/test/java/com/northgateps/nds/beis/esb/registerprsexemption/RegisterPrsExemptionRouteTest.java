@@ -175,7 +175,7 @@ public class RegisterPrsExemptionRouteTest extends CamelSpringTestSupport {
         OrganisationNameDetail organisationNameDetail = new OrganisationNameDetail();
         organisationNameDetail.setOrgName("Agent Organisation Test");
         landlordDetails.setOrganisationNameDetail(organisationNameDetail);
-        landlordDetails.setEmailAddress("dummy@northgateps.com");
+        landlordDetails.setEmailAddress("dummy@necsws.com");
         landlordDetails.setLandlordAddress(address);
         landlordDetails.setPhoneNumber("0123456789");        
         exemptionDetails.setLandlordDetails(landlordDetails);

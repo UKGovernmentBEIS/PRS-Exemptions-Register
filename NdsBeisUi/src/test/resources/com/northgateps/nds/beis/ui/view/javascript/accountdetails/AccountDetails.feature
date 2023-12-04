@@ -32,8 +32,8 @@ Scenario: Process account details for Person
 	And I will remain on the account-details page
 	
 #Unconfirmed email address
-	When I have supplied an email address as "nds-dummyOne@northgateps.com"
-	And I have supplied a different confirm email address as "dumy@northgateps.com"
+	When I have supplied an email address as "nds-dummyOne@necsws.com"
+	And I have supplied a different confirm email address as "dumy@necsws.com"
 	And I select Next
 	Then I will receive the message "You must make the email address and confirm email address the same"
 	And I will remain on the account-details page

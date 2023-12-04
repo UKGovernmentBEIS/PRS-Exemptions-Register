@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.northgateps.nds.beis.api.UpdateBeisRegistrationDetails;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * This class will return the partially registered details
@@ -15,7 +15,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetPartiallyRegisteredDetailsNdsResponse", propOrder = {"partiallyRegisteredDetails"})
 @XmlRootElement(name = "GetPartiallyRegisteredDetailsNdsResponse")
-public class GetPartiallyRegisteredDetailsNdsResponse extends AbstractNdsResponse{
+public class GetPartiallyRegisteredDetailsNdsResponse extends NdsErrorResponse{
     
     protected UpdateBeisRegistrationDetails partiallyRegisteredDetails;
     

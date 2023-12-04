@@ -143,6 +143,7 @@
 					<!-- The dev properties files are excluded so that they don't get to the test/live servers where they can be confusing. -->
 					<!-- If you need to run the war file locally outside of Eclipse, you'll need to add the properties file manually. -->
 					<packagingExcludes>**/*.p12, **/*.jceks, **/*.dev.properties</packagingExcludes>
+
 				</configuration>
 			</plugin>
 
@@ -475,23 +476,6 @@
                             <goal>minify</goal>
                         </goals>
                     </execution>
-					<execution>
-						<id>nds-google-analytics</id>
-						<phase>generate-resources</phase>
-						<configuration>
-							<webappSourceDir>${project.basedir}</webappSourceDir>
-							<webappTargetDir>${project.basedir}/src/main/webapp/generated-assets</webappTargetDir>
-							<jsSourceDir>target/generated-sources/WEB-INF/classes/assets/javascripts</jsSourceDir>
-							<jsSourceFiles>
-								<jsSourceFile>nds-google-analytics.platform.js</jsSourceFile>
-							</jsSourceFiles>
-							<jsFinalFile>nds-google-analytics.platform.js</jsFinalFile>
-							<jsTargetDir>/javascripts</jsTargetDir>
-						</configuration>
-						<goals>
-							<goal>minify</goal>
-						</goals>
-					</execution>  
 					
 					<execution>
 						<id>nds-geographic-address</id>

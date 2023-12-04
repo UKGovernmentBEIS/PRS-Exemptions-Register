@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to statistics
@@ -14,7 +14,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StatisticsNdsResponse", propOrder = {})
 @XmlRootElement(name = "StatisticsNdsResponse")
-public class StatisticsNdsResponse extends AbstractNdsResponse {
+public class StatisticsNdsResponse extends NdsErrorResponse {
 
 }
 

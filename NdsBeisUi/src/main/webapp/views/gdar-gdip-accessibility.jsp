@@ -32,9 +32,9 @@
         <div class="column-two-thirds">
           <div class="form-group">
 <p class="body-text">This website is run by <a
-  href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy"
-  id="link.dbeis" target="_blank">Department of Business, Energy and Industrial Strategy
-  <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> (BEIS).</p>
+  href="https://www.gov.uk/government/organisations/department-for-energy-security-and-net-zero"
+  id="link.dbeis" target="_blank">Department for Energy Security and Net Zero - GOV.UK (www.gov.uk)
+  <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> (DESNZ).</p>
 <p class="body-text">We want as many people as possible to be able to use this website. For example, that means you
   should be able to:</p>
 <ul class="list list-bullet">
@@ -50,7 +50,7 @@
   use if you have a disability.</p>
 
 <h2 class="heading-medium">Technical information about this website’s accessibility</h2>
-<p class="body-text">BEIS is committed to making its website accessible, in accordance with the Public Sector Bodies
+<p class="body-text">DESNZ is committed to making its website accessible, in accordance with the Public Sector Bodies
   (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.</p>
 <p class="body-text">This website is fully compliant with the <a href="https://www.w3.org/TR/WCAG21/" id="link.wcag"
     target="_blank">Web Content Accessibility Guidelines version 2.1
@@ -72,7 +72,7 @@
     <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a>.</p>
 
 <h2 class="heading-medium">How we tested this website</h2>
-<p class="body-text">This website was last tested in August 2022. The test was carried out by accessibility
+<p class="body-text">This website was last tested in October 2023. The test was carried out by accessibility
   specialists in the NEC testing team.</p>
 <p class="body-text">The team tested the most used customer journeys through the website and a sample of the different
   types of page.</p>
@@ -82,7 +82,7 @@
   easy read, audio recording or braille:</p>
 <ul class="list list-bullet">
   <li>email <a href="mailto:GDRegister@beis.gov.uk" id="link.mailto.gdr2" target="_blank">GDRegister@beis.gov.uk</a></li>
-  <li>call the digital helpline on 0333 234 3422</li>
+  <li>call the digital helpline on 0800 098 7950</li>
 </ul>
 
 <p class="body-text">We’ll consider your request and get back to you in 10 days.</p>

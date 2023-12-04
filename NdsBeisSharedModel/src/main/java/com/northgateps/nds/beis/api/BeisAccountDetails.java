@@ -35,8 +35,13 @@ public class BeisAccountDetails extends AbstractValidatableModel {
     @RequiredFieldMetadata(dependencies = {
             @FieldDependency(path = "~~.userType", values = { "AGENT" }, comparator = "contains") })
     private AgentNameDetails agentNameDetails;   
-  
-  
+
+    /*
+     * back office saves in a 100 character field, ITU says actual length of phone nos is 15 
+     * but we allow + and spaces so this is arbitrarily in between to enforce a limit without
+     * being too prescriptive.
+     */
+    @StringLengthFieldMetadata(maxLength = 25)
     @InternationalPhoneNumberFieldMetadata
     @RequiredFieldMetadata
     private String telNumber;

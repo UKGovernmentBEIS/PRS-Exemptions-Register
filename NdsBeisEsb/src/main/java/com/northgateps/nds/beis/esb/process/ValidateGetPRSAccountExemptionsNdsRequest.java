@@ -29,12 +29,10 @@ public class ValidateGetPRSAccountExemptionsNdsRequest extends ValidateCamelRout
         logger.info("Validating dashboard request");
 
         if (request.getUsername() == null) {
-            throw new NdsApplicationException(
-                    "Error in validating the GetPRSAccountExemptionsNdsRequest : USERNAME IS NULL ");
+            throw new NdsApplicationException("Error in validating the GetPRSAccountExemptionsNdsRequest : USERNAME IS NULL ");
         }
         if (request.getTenant() == null) {
-            throw new NdsApplicationException(
-                    "Error in validating the GetPRSAccountExemptionsNdsRequest : TENANT IS NULL");
+            throw new NdsApplicationException("Error in validating the GetPRSAccountExemptionsNdsRequest : TENANT IS NULL");
         }
 
         return request;

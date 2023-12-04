@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * The response from the ESB detailing the outcome of the application for BEIS
@@ -15,7 +15,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetReferenceValuesNdsResponse", propOrder = { "getReferenceValuesResponseDetails" })
 @XmlRootElement(name = "GetReferenceValuesNdsResponse")
-public class GetReferenceValuesNdsResponse extends AbstractNdsResponse {
+public class GetReferenceValuesNdsResponse extends NdsErrorResponse {
 
     @XmlElement(name = "GetReferenceValuesResponseDetails")
     protected GetReferenceValuesResponseDetails getReferenceValuesResponseDetails;

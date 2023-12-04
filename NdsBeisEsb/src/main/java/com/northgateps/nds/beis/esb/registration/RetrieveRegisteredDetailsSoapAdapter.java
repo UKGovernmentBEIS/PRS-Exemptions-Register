@@ -2,6 +2,7 @@ package com.northgateps.nds.beis.esb.registration;
 
 import org.apache.camel.TypeConverter;
 
+import com.northgateps.nds.beis.api.UserType;
 import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsRequest;
 import com.northgateps.nds.beis.api.retrieveregistereddetails.RetrieveRegisteredDetailsNdsResponse;
 import com.northgateps.nds.beis.backoffice.service.getpartydetails.GetPartyDetailsRequest;
@@ -60,8 +61,8 @@ public class RetrieveRegisteredDetailsSoapAdapter extends
 
         try {
             TypeConverter converter = ndsExchange.getTypeConverter();
-            retrieveRegisteredDetailsNdsResponse = converter.convertTo(RetrieveRegisteredDetailsNdsResponse.class,
-                    externalResponse);
+            retrieveRegisteredDetailsNdsResponse = converter.convertTo(RetrieveRegisteredDetailsNdsResponse.class, externalResponse);
+                        
             String username = retrieveUsernameFromDn((String) ndsExchange.getAnExchangeProperty("USERNAME"));
             if (retrieveRegisteredDetailsNdsResponse.isSuccess()){
                 retrieveRegisteredDetailsNdsResponse.getBeisRegistrationDetails().getUserDetails().setUsername(username);

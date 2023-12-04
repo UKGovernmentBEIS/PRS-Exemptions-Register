@@ -18,6 +18,7 @@ import org.apereo.cas.authentication.PreventedException;
 import org.apereo.cas.authentication.credential.UsernamePasswordCredential;
 import org.apereo.cas.authentication.principal.Principal;
 import org.apereo.cas.authentication.principal.PrincipalFactory;
+import org.apereo.cas.authentication.principal.Service;
 import org.apereo.cas.services.ServicesManager;
 import org.ldaptive.LdapEntry;
 import org.ldaptive.LdapException;
@@ -74,7 +75,7 @@ public class LdapTenantAuthenticationHandler extends LdapAuthenticationHandler {
      */
     @Override
     @SneakyThrows
-    protected AuthenticationHandlerExecutionResult doAuthentication(final Credential credential) {
+    protected AuthenticationHandlerExecutionResult doAuthentication(final Credential credential, final Service service) throws GeneralSecurityException {
         final UsernamePasswordCredential userPass = (UsernamePasswordCredential) credential;
 
         try {
@@ -97,7 +98,7 @@ public class LdapTenantAuthenticationHandler extends LdapAuthenticationHandler {
          * If you wrap this exception then you'll be stopping processing of CredentialExpiredExceptions later on
          * ie you'd disable the password policy system which shows the casExpiredPassView.html and similar pages.
          */
-        return authenticateUsernamePasswordInternal(userPass, userPass.getPassword());
+        return authenticateUsernamePasswordInternal(userPass, new String(userPass.getPassword()));
     }
 
     /**
@@ -117,7 +118,7 @@ public class LdapTenantAuthenticationHandler extends LdapAuthenticationHandler {
     * but as we are only checking the password and not transforming it, then the method name would not have made sense.
     */
     protected void checkPassword(final UsernamePasswordCredential userPass) throws FailedLoginException {
-        if (StringUtils.isBlank(userPass.getPassword())) {
+        if (StringUtils.isBlank(new String(userPass.getPassword()))) {
             throw new FailedLoginException("Password is null.");
         }
     }

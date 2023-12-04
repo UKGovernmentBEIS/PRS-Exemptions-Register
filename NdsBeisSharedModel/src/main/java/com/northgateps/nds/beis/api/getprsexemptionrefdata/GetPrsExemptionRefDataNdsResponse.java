@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.northgateps.nds.beis.api.ExemptionTypeDetails;
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * Response to hold exemption type text from the back office
@@ -17,7 +17,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetPrsExemptionRefDataNdsResponse", propOrder = { "exemptionTypeTextList" })
 @XmlRootElement(name = "GetPrsExemptionRefDataNdsResponse")
-public class GetPrsExemptionRefDataNdsResponse extends AbstractNdsResponse{
+public class GetPrsExemptionRefDataNdsResponse extends NdsErrorResponse{
     List<ExemptionTypeDetails> exemptionTypeTextList;
 
     public List<ExemptionTypeDetails> getExemptionTypeTextList() {

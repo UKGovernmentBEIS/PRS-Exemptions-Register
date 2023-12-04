@@ -1,9 +1,11 @@
 package com.northgateps.nds.cas.pm.web.flow;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apereo.cas.configuration.CasConfigurationProperties;
-import org.apereo.cas.pm.web.flow.PasswordManagementWebflowUtils;
+import org.apereo.cas.configuration.model.support.pm.PasswordManagementProperties;
+import org.apereo.cas.pm.PasswordManagementService;
 import org.apereo.cas.util.CollectionUtils;
 import org.apereo.cas.web.flow.CasWebflowConstants;
 import org.apereo.cas.web.flow.actions.ConsumerExecutionAction;
@@ -13,8 +15,10 @@ import org.apereo.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.webflow.action.SetAction;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.engine.ActionState;
+import org.springframework.webflow.engine.EndState;
 import org.springframework.webflow.engine.Flow;
 import org.springframework.webflow.engine.SubflowState;
 import org.springframework.webflow.engine.TransitionSet;
@@ -31,7 +35,7 @@ import com.northgateps.nds.cas.pm.ChangePasswordDetails;
 * hence the copying. 
 *
 * This contains code that has knowledge of the login flow, and is thus vulnerable to changes in
-* that login flow, as happened between CAS 5.2 and 5.3 and 6.2 and 6.4.
+* that login flow, as happened between CAS 5.2 and 5.3 and 6.2 and 6.4 and 6.6.
 */
 //@formatter:off
 public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowConfigurer {
@@ -39,11 +43,7 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
 	
   /**
    * Flow id for password reset.
-   */
-  public static final String FLOW_ID_PASSWORD_RESET = "pswdreset";
-
-  /**
-   * Flow id for password reset.
+   * TODO: 6.6 has this as just "password" but we have it in html etc as newPassword
    */
   public static final String FLOW_VAR_ID_PASSWORD = "newPassword";
 
@@ -74,11 +74,13 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
       createViewState(flow, CasWebflowConstants.STATE_ID_AUTHENTICATION_BLOCKED, "login-error/casAuthenticationBlockedView");
       createViewState(flow, CasWebflowConstants.STATE_ID_INVALID_WORKSTATION, "login-error/casBadWorkstationView");
       createViewState(flow, CasWebflowConstants.STATE_ID_INVALID_AUTHENTICATION_HOURS, "login-error/casBadHoursView");
-      createViewState(flow, CasWebflowConstants.STATE_ID_ACCOUNT_LOCKED, "login-error/casAccountLockedView");
-      createViewState(flow, CasWebflowConstants.STATE_ID_ACCOUNT_DISABLED, "login-error/casAccountDisabledView");
       createViewState(flow, CasWebflowConstants.STATE_ID_PASSWORD_UPDATE_SUCCESS, "password-reset/casPasswordUpdateSuccessView");
 
-      if (casProperties.getAuthn().getPm().getCore().isEnabled()) {
+        ViewState accountLockedState = createViewState(flow, CasWebflowConstants.STATE_ID_ACCOUNT_LOCKED, "login-error/casAccountLockedView");
+        ViewState accountDisabledState = createViewState(flow, CasWebflowConstants.STATE_ID_ACCOUNT_DISABLED, "login-error/casAccountDisabledView");
+
+        PasswordManagementProperties pm = casProperties.getAuthn().getPm();
+        if (pm.getCore().isEnabled()) {
            configurePasswordResetFlow(flow, CasWebflowConstants.STATE_ID_EXPIRED_PASSWORD, "login-error/casExpiredPassView");
           configurePasswordResetFlow(flow, CasWebflowConstants.STATE_ID_MUST_CHANGE_PASSWORD, "login-error/casMustChangePassView");
           configurePasswordMustChangeForAuthnWarnings(flow);
@@ -86,11 +88,29 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
           createPasswordResetFlow();
 
           ActionState startState = (ActionState) flow.getStartState();
-          prependActionsToActionStateExecutionList(flow, startState.getId(), "validatePasswordResetTokenAction");
+            prependActionsToActionStateExecutionList(flow, startState.getId(), CasWebflowConstants.ACTION_ID_PASSWORD_RESET_VALIDATE_TOKEN);
           createTransitionForState(startState, CasWebflowConstants.TRANSITION_ID_INVALID_PASSWORD_RESET_TOKEN,
               CasWebflowConstants.STATE_ID_PASSWORD_RESET_ERROR_VIEW);
           createViewState(flow, CasWebflowConstants.STATE_ID_PASSWORD_RESET_ERROR_VIEW,
               "password-reset/casResetPasswordErrorView");
+
+            SetAction enableUnlockAction = createSetAction("viewScope.enableAccountUnlock", "true");
+            Stream.of(accountLockedState, accountDisabledState).forEach(state -> {
+                state.getRenderActionList().add(enableUnlockAction);
+                state.getEntryActionList().add(createEvaluateAction(CasWebflowConstants.ACTION_ID_ACCOUNT_UNLOCK_PREPARE));
+            });
+
+            EndState unlockedView = createEndState(flow, CasWebflowConstants.STATE_ID_ACCOUNT_UNLOCKED, "login-error/casAccountUnlockedView");
+            createTransitionForState(accountLockedState, CasWebflowConstants.TRANSITION_ID_SUBMIT, "unlockAccountStatus");
+            ActionState unlockAction = createActionState(flow, "unlockAccountStatus", CasWebflowConstants.ACTION_ID_UNLOCK_ACCOUNT_STATUS);
+            createTransitionForState(unlockAction, CasWebflowConstants.TRANSITION_ID_SUCCESS, unlockedView.getId());
+            createTransitionForState(unlockAction, CasWebflowConstants.TRANSITION_ID_ERROR, accountLockedState.getId());
+
+            createTransitionForState(accountDisabledState, CasWebflowConstants.TRANSITION_ID_SUBMIT, "enableAccountStatus");
+            ActionState enableAction = createActionState(flow, "enableAccountStatus", CasWebflowConstants.ACTION_ID_UNLOCK_ACCOUNT_STATUS);
+            createTransitionForState(enableAction, CasWebflowConstants.TRANSITION_ID_SUCCESS, unlockedView.getId());
+            createTransitionForState(enableAction, CasWebflowConstants.TRANSITION_ID_ERROR, accountDisabledState.getId());
+
       } else {
           ViewState expiredState = createViewState(flow, CasWebflowConstants.STATE_ID_EXPIRED_PASSWORD, "login-error/casExpiredPassView");
           expiredState.getEntryActionList().add(createEvaluateAction(CasWebflowConstants.ACTION_ID_INIT_PASSWORD_CHANGE));
@@ -101,7 +121,7 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
 
   private void configurePasswordExpirationWarning(final Flow flow) {
       TransitionableState warningState = getTransitionableState(flow, CasWebflowConstants.STATE_ID_SHOW_AUTHN_WARNING_MSGS);
-      warningState.getEntryActionList().add(createEvaluateAction("handlePasswordExpirationWarningMessagesAction"));
+        warningState.getEntryActionList().add(createEvaluateAction(CasWebflowConstants.ACTION_ID_PASSWORD_EXPIRATION_HANDLE_WARNINGS));
   }
 
   private void configurePasswordMustChangeForAuthnWarnings(final Flow flow) {
@@ -124,7 +144,7 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
           createTransitionForState(viewState, "findAccount", CasWebflowConstants.STATE_ID_SEND_PASSWORD_RESET_INSTRUCTIONS);
 
           ActionState sendInst = createActionState(flow, CasWebflowConstants.STATE_ID_SEND_PASSWORD_RESET_INSTRUCTIONS,
-              "sendPasswordResetInstructionsAction");
+                CasWebflowConstants.ACTION_ID_PASSWORD_RESET_SEND_INSTRUCTIONS);
           createTransitionForState(sendInst, CasWebflowConstants.TRANSITION_ID_SUCCESS,
               CasWebflowConstants.STATE_ID_SENT_RESET_PASSWORD_ACCT_INFO);
           createTransitionForState(sendInst, CasWebflowConstants.TRANSITION_ID_ERROR, viewState.getId());
@@ -141,8 +161,9 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
           createTgt.getEntryActionList().add(
               createEvaluateAction(String.join(DO_CHANGE_PASSWORD_PARAMETER, "flowScope.", " = requestParameters.", " != null")));
 
-          createDecisionState(flow, CasWebflowConstants.DECISION_STATE_CHECK_FOR_PASSWORD_RESET_TOKEN_ACTION, "requestParameters."
-              + PasswordManagementWebflowUtils.REQUEST_PARAMETER_NAME_PASSWORD_RESET_TOKEN
+            createDecisionState(flow, CasWebflowConstants.DECISION_STATE_CHECK_FOR_PASSWORD_RESET_TOKEN_ACTION,
+                "requestParameters."
+                + PasswordManagementService.PARAMETER_PASSWORD_RESET_TOKEN
               + " != null", CasWebflowConstants.STATE_ID_PASSWORD_RESET_SUBFLOW, originalTargetState);
           createTransitionForState(initializeLoginFormState,
               CasWebflowConstants.STATE_ID_SUCCESS,
@@ -185,15 +206,19 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
 
       pswdFlow.getStartActionList().add(createEvaluateAction(CasWebflowConstants.ACTION_ID_INITIAL_FLOW_SETUP));
 
-      ActionState initReset = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_INIT_PASSWORD_RESET, "initPasswordResetAction");
+      ActionState initReset = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_INIT_PASSWORD_RESET,
+            CasWebflowConstants.ACTION_ID_PASSWORD_RESET_INIT);
+        
       createStateDefaultTransition(initReset, CasWebflowConstants.STATE_ID_MUST_CHANGE_PASSWORD);
 
-      ActionState verifyQuestions = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_VERIFY_SECURITY_QUESTIONS, "verifySecurityQuestionsAction");
-      createTransitionForState(verifyQuestions, CasWebflowConstants.TRANSITION_ID_SUCCESS, CasWebflowConstants.STATE_ID_INIT_PASSWORD_RESET);
+      ActionState verifyQuestions = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_VERIFY_SECURITY_QUESTIONS,
+            CasWebflowConstants.ACTION_ID_PASSWORD_RESET_VERIFY_SECURITY_QUESTIONS);
+                  createTransitionForState(verifyQuestions, CasWebflowConstants.TRANSITION_ID_SUCCESS, CasWebflowConstants.STATE_ID_INIT_PASSWORD_RESET);
       createTransitionForState(verifyQuestions, CasWebflowConstants.TRANSITION_ID_ERROR, CasWebflowConstants.STATE_ID_PASSWORD_RESET_ERROR_VIEW);
 
-      ActionState verifyRequest = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_VERIFY_PASSWORD_RESET_REQUEST, "verifyPasswordResetRequestAction");
-      createTransitionForState(verifyRequest, CasWebflowConstants.TRANSITION_ID_SUCCESS, CasWebflowConstants.STATE_ID_SECURITY_QUESTIONS_VIEW);
+      ActionState verifyRequest = createActionState(pswdFlow, CasWebflowConstants.STATE_ID_VERIFY_PASSWORD_RESET_REQUEST,
+            CasWebflowConstants.ACTION_ID_PASSWORD_RESET_VERIFY_REQUEST);
+                  createTransitionForState(verifyRequest, CasWebflowConstants.TRANSITION_ID_SUCCESS, CasWebflowConstants.STATE_ID_SECURITY_QUESTIONS_VIEW);
       createTransitionForState(verifyRequest, CasWebflowConstants.TRANSITION_ID_ERROR, CasWebflowConstants.STATE_ID_PASSWORD_RESET_ERROR_VIEW);
       createTransitionForState(verifyRequest, "questionsDisabled", CasWebflowConstants.STATE_ID_INIT_PASSWORD_RESET);
 
@@ -221,10 +246,12 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
           CasWebflowConstants.STATE_ID_PASSWORD_RESET_FLOW_COMPLETE);
   }
 
-  private void enablePasswordManagementForFlow(final Flow flow) {
-      flow.getStartActionList().add(
-          new ConsumerExecutionAction(context -> WebUtils.putPasswordManagementEnabled(context,
-              casProperties.getAuthn().getPm().getCore().isEnabled())));
+  private void enablePasswordManagementForFlow(final Flow flow) {           
+	  ConsumerExecutionAction action = new ConsumerExecutionAction(context -> {
+            WebUtils.putAccountProfileManagementEnabled(context, applicationContext.containsBean(CasWebflowConstants.BEAN_NAME_ACCOUNT_PROFILE_FLOW_DEFINITION_REGISTRY));
+            WebUtils.putPasswordManagementEnabled(context, casProperties.getAuthn().getPm().getCore().isEnabled());
+        });
+      flow.getStartActionList().add(action);  
   }
 
   /*
@@ -244,9 +271,10 @@ public class NdsPasswordManagementWebflowConfigurer extends AbstractCasWebflowCo
       createStateDefaultTransition(viewState, id);
 
       ActionState pswChangeAction = createActionState(flow, CasWebflowConstants.STATE_ID_PASSWORD_CHANGE_ACTION,
-          createEvaluateAction(CasWebflowConstants.STATE_ID_PASSWORD_CHANGE_ACTION));
+          createEvaluateAction(CasWebflowConstants.ACTION_ID_PASSWORD_CHANGE));
       TransitionSet transitionSet = pswChangeAction.getTransitionSet();
-      transitionSet.add(createTransition(CasWebflowConstants.TRANSITION_ID_PASSWORD_UPDATE_SUCCESS, CasWebflowConstants.STATE_ID_PASSWORD_UPDATE_SUCCESS));
+        transitionSet.add(
+            createTransition(CasWebflowConstants.TRANSITION_ID_PASSWORD_UPDATE_SUCCESS, CasWebflowConstants.STATE_ID_PASSWORD_UPDATE_SUCCESS));
       transitionSet.add(createTransition(CasWebflowConstants.TRANSITION_ID_ERROR, id));
   }
 }

@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 
 /**
  * The response from the ESB detailing the Exemption search result
@@ -15,7 +15,7 @@ import com.northgateps.nds.platform.api.AbstractNdsResponse;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PRSExemptionSearchNdsResponse", propOrder = { "getExemptionSearchResponseDetail" })
 @XmlRootElement(name = "PRSExemptionSearchNdsResponse")
-public class PRSExemptionSearchNdsResponse extends AbstractNdsResponse {
+public class PRSExemptionSearchNdsResponse extends NdsErrorResponse {
 
     private GetExemptionSearchResponseDetail getExemptionSearchResponseDetail;
 

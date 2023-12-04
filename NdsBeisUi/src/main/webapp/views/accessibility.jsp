@@ -31,9 +31,9 @@
         <div class="column-two-thirds">
           <div class="form-group">
 <p class="body-text">This website is run by <a
-  href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" 
-  id="link.dbeis" target="_blank">Department of Business, Energy and Industrial Strategy 
-  <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> (BEIS).</p>
+  href="https://www.gov.uk/government/organisations/department-for-energy-security-and-net-zero" 
+  id="link.dbeis" target="_blank">Department for Energy Security and Net Zero  
+  <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> (DESNZ).</p>
 <p class="body-text">We want as many people as possible to be able to use this website. For example, that means you
   should be able to:</p>
 <ul class="list list-bullet">
@@ -49,19 +49,19 @@
   use if you have a disability.</p>
 
 <h2 class="heading-medium">Technical information about this website’s accessibility</h2>
-<p class="body-text">BEIS is committed to making its website accessible, in accordance with the Public Sector Bodies
+<p class="body-text">DESNZ is committed to making its website accessible, in accordance with the Public Sector Bodies
   (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.</p>
 <p class="body-text">This website is fully compliant with the <a href="https://www.w3.org/TR/WCAG21/" id="link.wcag"
     target="_blank">Web Content Accessibility Guidelines version 2.1
     <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a> AA standard.</p>
-<p class="body-text">This statement was prepared in October 2022. It was last updated in October 2022.</p>
+<p class="body-text">This statement was prepared in September 2020. It was last updated in October 2023.</p>
 
 <h2 class="heading-medium">Reporting accessibility problems with this website</h2>
 <p class="body-text">We’re always looking to improve the accessibility of this website. If you find any problems not
   listed on this page or think we’re not meeting accessibility requirements, contact:</p>
 <ul class="list list-bullet">
-  <li><a href="mailto:PRSRegisterSupport@beis.gov.uk" id="link.mailto.prs1" target="_blank">PRSRegisterSupport@beis.gov.uk</a> or call the
-    digital helpline on 0333 234 3422 for the PRS register</li>
+  <li><a href="mailto:PRSRegisterSupport@energysecurity.gov.uk" id="link.mailto.prs1" target="_blank">PRSRegisterSupport@energysecurity.gov.uk</a> or call the
+    digital helpline on 0800 098 7950 for the PRS register</li>
 </ul>
 <h2 class="heading-medium">Enforcement procedure</h2>
 <p class="body-text">The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector
@@ -71,7 +71,7 @@
     <fmt:message bundle="${FieldsBundle}" key="Link_NewWindowWarning" /></a>.</p>
 
 <h2 class="heading-medium">How we tested this website</h2>
-<p class="body-text">This website was last tested in August 2022. The test was carried out by accessibility
+<p class="body-text">This website was last tested in October 2023. The test was carried out by accessibility
   specialists in the NEC testing team.</p>
 <p class="body-text">The team tested the most used customer journeys through the website and a sample of the different
   types of page.</p>
@@ -80,8 +80,8 @@
 <p class="body-text">If you need information on this website in a different format like accessible PDF, large print,
   easy read, audio recording or braille:</p>
 <ul class="list list-bullet">
-  <li>email <a href="mailto:PRSRegisterSupport@beis.gov.uk" id="link.mailto.prs2" target="_blank">PRSRegisterSupport@beis.gov.uk</a></li>
-  <li>call the digital helpline on 0333 234 3422</li>
+  <li>email <a href="mailto:PRSRegisterSupport@energysecurity.gov.uk" id="link.mailto.prs2" target="_blank">PRSRegisterSupport@energysecurity.gov.uk</a></li>
+  <li>call the digital helpline on 0800 098 7950</li>
 </ul>
 <p class="body-text">We’ll consider your request and get back to you in 10 days.</p>
           </div>

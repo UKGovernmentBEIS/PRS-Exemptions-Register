@@ -60,7 +60,7 @@ public final class ToGetPartyDetailsResponseConverter {
                 retrieveRegisteredDetailsNdsResponse.setSuccess(true);
 
                 if (getPartyDetailsResponse.getUserType() != null) {
-                    if (getPartyDetailsResponse.getUserType().equals("Agent")) {
+                    if (getPartyDetailsResponse.getUserType().equalsIgnoreCase("Agent")) {
                         beisUserDetails.setUserType(UserType.AGENT);
                         accountDetails.setAgentNameDetails(new AgentNameDetails());
                         accountDetails.getAgentNameDetails().setAgentName(

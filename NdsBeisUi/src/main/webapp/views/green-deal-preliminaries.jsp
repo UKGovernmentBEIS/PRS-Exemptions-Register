@@ -36,6 +36,5 @@
 	</div>
 </header>
 <!--end header-->
-<div id="journey"
-	data-journey="beis-apply-${springViewName}:stage:start"></div>
+
 <div id="global-header-bar"></div>

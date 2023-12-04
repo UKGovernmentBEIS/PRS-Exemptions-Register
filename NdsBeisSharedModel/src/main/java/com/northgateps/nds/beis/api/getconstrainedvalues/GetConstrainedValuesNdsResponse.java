@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.northgateps.nds.platform.api.AbstractNdsResponse;
+import com.northgateps.nds.platform.api.NdsErrorResponse;
 import com.northgateps.nds.platform.api.ConstrainedValue;
 
 /**
@@ -17,7 +17,7 @@ import com.northgateps.nds.platform.api.ConstrainedValue;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetConstrainedValuesNdsResponse", propOrder = { "constrainedValues" })
 @XmlRootElement(name = "GetConstrainedValuesNdsResponse")
-public class GetConstrainedValuesNdsResponse extends AbstractNdsResponse {
+public class GetConstrainedValuesNdsResponse extends NdsErrorResponse {
 
     /**
      * Contains each listName with a list of constrained values against it -

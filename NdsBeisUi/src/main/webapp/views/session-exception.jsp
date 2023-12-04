@@ -17,6 +17,10 @@
 	<title>${title}</title>
 	<meta id="springViewName" name="dcterms.identifier" content="SessionException" />
 	
+	<!-- IDs looked for by the google_gtag script -->
+	<meta id="gaId" name="gaId" content="${gaTrackId}" />
+	<script src="${contextUi}/assets/javascripts/google_gtag.js?version=${version}"></script>
+	
 	<c:choose>
 		<c:when test="${not empty minify}">
 			<script src="${contextUi}/assets/javascripts/beis-head-pkg${minify}.js?version=${version}"></script>
@@ -100,7 +104,6 @@
 	<meta property="og:image" content="${contextUi}/assets/images/opengraph-image.png?version=${version}" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
 	<script src="${contextUi}/assets/javascripts/jsinit${minify}.js?version=${version}"></script>
-	<script src="${contextUi}/assets/javascripts/vendor/stageprompt${minify}.js?version=${version}"></script>
 	<script src="${contextUi}/assets/javascripts/session-clear.platform.js?version=${version}"></script>
 </head>
 

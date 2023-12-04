@@ -109,9 +109,9 @@ task springBootVersion(description: "Display current Spring Boot version") {
     }
 }
 
-task containerImageCoords(group: "CAS", description: "Display the coordinates for the container image") {
-    doFirst {
-         println "${project.'containerImageOrg'}/${project.'containerImageName'}:${project.version}"
+task containerImage(description: "Display container image name") {
+    doLast {
+        println rootProject.containerImage
     }
 }
 
@@ -182,7 +182,7 @@ task verifyRequiredJavaVersion {
     def currentVersion = org.gradle.api.JavaVersion.current()
     logger.info "Checking current Java version ${currentVersion} for required Java version ${project.targetCompatibility}"
     if (!currentVersion.name.equalsIgnoreCase("${project.targetCompatibility}")) {
-        throw new GradleException("Current Java version ${currentVersion} does not match required Java version ${project.targetCompatibility}")
+        logger.warn("Careful: Current Java version ${currentVersion} does not match required Java version ${project.targetCompatibility}")
     }
 }
 

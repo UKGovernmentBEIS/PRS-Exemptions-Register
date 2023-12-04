@@ -9,8 +9,12 @@
 <head data-nds-version="${version}">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<title>${param.title}</title>
-	<meta id="springViewName" name="dcterms.identifier"
-		content="${springViewName}" />
+	<meta id="springViewName" name="dcterms.identifier" content="${springViewName}" />
+	
+	<!-- IDs looked for by the google_gtag script -->
+	<meta id="gaId" name="gaId" content="${gaTrackId}" />
+	<script src="${contextUi}/assets/javascripts/google_gtag.js?version=${version}"></script>
+	
 	<base href="${pageContext.request.contextPath}/">
 	
 	<c:choose>
@@ -96,7 +100,6 @@
 	<meta property="og:image" content="assets/images/opengraph-image.png?version=${version}" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
 	<script src="assets/javascripts/jsinit${minify}.js?version=${version}"></script>
-	<script src="assets/javascripts/vendor/stageprompt${minify}.js?version=${version}"></script>
 </head>
 
 <body>

@@ -30,8 +30,8 @@
           </li>
           <li>
             Built by the 
-            <a href="https://www.gov.uk/government/organisations/department-for-business-energy-and-industrial-strategy" id="link.gds" target="_blank" class="with-tooltip">
-              Department of Business, Energy and Industrial Strategy <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
+            <a href="https://www.gov.uk/government/organisations/department-for-energy-security-and-net-zero" id="link.gds" target="_blank" class="with-tooltip">
+              Department for Energy Security and Net Zero - GOV.UK (www.gov.uk) <span class="tooltip-text" role="tooltip">${newWindowWarningText}</span>
             </a>
           </li>
         </ul>
@@ -82,12 +82,10 @@
         <script src="${contextUi}/assets/javascripts/pagination.platform.js?version=${version}" async="true"></script>
         <script src="${contextUi}/assets/javascripts/group-disclosure.platform.js?version=${version}" async="true"></script>
         <script src="${contextUi}/assets/javascripts/govuk-template.platform.js?version=${version}" async="true"></script>
-        <script src="${contextUi}/assets/javascripts/govuk-stageprompt.platform.js?version=${version}" async="true"></script>
         <script src="${contextUi}/assets/javascripts/js-loaded.platform.js?version=${version}" async="true"></script>                           
    </c:otherwise>   
 </c:choose>
 
-<script src="${contextUi}/assets/javascripts/nds-google-analytics.platform${minify}.js?version=${version}" async="true" data-ga-trackId="${gaTrackId}" id="gasrc"></script>
 <!-- govuk_frontend_toolkit js -->
 <script src="${contextUi}/assets/javascripts/vendor/polyfills/bind${minify}.js?version=${version}"></script>
 <script src="${contextUi}/assets/javascripts/govuk/selection-buttons${minify}.js?version=${version}"></script>

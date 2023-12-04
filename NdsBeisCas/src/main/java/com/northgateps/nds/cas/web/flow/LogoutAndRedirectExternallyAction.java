@@ -6,10 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apereo.cas.CasProtocolConstants;
-import org.apereo.cas.CentralAuthenticationService;
 import org.apereo.cas.authentication.principal.Service;
-import org.apereo.cas.authentication.principal.ServiceFactory;
-import org.apereo.cas.authentication.principal.WebApplicationService;
 import org.apereo.cas.authentication.principal.WebApplicationServiceFactory;
 import org.apereo.cas.configuration.CasConfigurationProperties;
 import org.apereo.cas.configuration.model.core.logout.LogoutProperties;
@@ -17,6 +14,7 @@ import org.apereo.cas.logout.LogoutExecutionPlan;
 import org.apereo.cas.services.RegisteredService;
 import org.apereo.cas.services.RegisteredServiceProperty;
 import org.apereo.cas.services.ServicesManager;
+import org.apereo.cas.ticket.registry.TicketRegistry;
 import org.apereo.cas.web.cookie.CasCookieBuilder;
 import org.apereo.cas.web.flow.logout.LogoutAction;
 import org.apereo.cas.web.support.ArgumentExtractor;
@@ -59,12 +57,13 @@ public class LogoutAndRedirectExternallyAction extends LogoutAction {
     /** 
      * Constructs a new Action that will redirect to the configured per service logoutRedirectUrl. 
      */
-    public LogoutAndRedirectExternallyAction(final CentralAuthenticationService centralAuthenticationService,
-          final CasCookieBuilder ticketGrantingTicketCookieGenerator,
-          final ArgumentExtractor argumentExtractor, final ServicesManager servicesManager,
-          final LogoutExecutionPlan logoutExecutionPlan, final CasConfigurationProperties casProperties) {
+    public LogoutAndRedirectExternallyAction(final TicketRegistry ticketRegistry,
+                        final CasCookieBuilder ticketGrantingTicketCookieGenerator,
+                        final ArgumentExtractor argumentExtractor, final ServicesManager servicesManager,
+                        final LogoutExecutionPlan logoutExecutionPlan, final CasConfigurationProperties casProperties) {
+        super(ticketRegistry, ticketGrantingTicketCookieGenerator,
+            argumentExtractor, servicesManager, logoutExecutionPlan, casProperties);
         
-        super(centralAuthenticationService, ticketGrantingTicketCookieGenerator, argumentExtractor, servicesManager, logoutExecutionPlan, casProperties);
         this.servicesManager = servicesManager;
         this.logoutProperties = casProperties.getLogout();
     }
